@@ -3,6 +3,12 @@ import re
 import sys
 
 
+REGISTRY = []
+def register(cls):
+    REGISTRY.append(cls)
+    return cls
+
+
 class Post(object):
 
     @property
@@ -29,3 +35,18 @@ class Post(object):
     def __init__(self, slack_client):
         self.slack_client = slack_client
         self.log = logging.getLogger(self.name)
+        self.log.info(f'Registered {self.name}!')
+
+
+class Response(Post):
+
+    def reply(self, msg):
+        raise NotImplementedError
+
+    def _reply(self, stream):
+        if stream:
+            for msg in stream:
+                self.reply(msg)
+
+    def __call__(self, stream):
+        self._reply(stream)

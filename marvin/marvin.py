@@ -1,10 +1,10 @@
 import logging
 import os
-import schedule
 from slackclient import SlackClient
 import sys
 from time import sleep
 from websocket._exceptions import WebSocketConnectionClosedException
+from .core import REGISTRY
 
 
 LOG_FILE = os.path.expanduser('./marvin.log')
@@ -13,17 +13,29 @@ LOG_FILE = os.path.expanduser('./marvin.log')
 class Marvin(object):
 
     RATE_LIMIT = 0.25
+    ID = 'UBEEMJZFX'
 
     def __init__(self, fname=None, client=SlackClient):
+        self.name = 'marvin'
         self.logging(fname=fname)
         logging.info('Marvin turning on!')
         self.slack_client = client(os.environ.get('MARVIN_TOKEN'))
         self.responses = []
+        for resp in REGISTRY:
+            self.responses.append(resp(self.slack_client))
 
-#        for resp in REGISTRY:
-#            init = resp(self.slack_client)
-#            self.responses.append(init)
-#            logging.info('Registered {}'.format(init.name))
+    def get_users(self):
+        users = self.slack_client.api_call("users.list")
+        user_dict = {}
+        for user in users['members']:
+            if not user['is_bot'] and user['name'] != 'slackbot':
+                user_dict[user['name']] = user['id']
+
+        return user_dict
+
+    def get_dm_channel_id(self, user):
+        user_info = self.slack_client.api_call("im.open", user=user)
+        return user_info['channel']['id']
 
     def logging(self, fname=None):
         logging.basicConfig(filename=fname,
@@ -43,22 +55,39 @@ class Marvin(object):
                 raise RuntimeError("Connection to Slack failed.")
         logging.info('Marvin is connected.')
 
-    def listen(self):
+    def listen(self, n=1):
         try:
-            incoming = self.slack_client.rtm_read()
-            if incoming:
-                logging.info(incoming)
-#            for resp in self.responses:
-#                resp(incoming)
+            for _ in range(n):
+                incoming = self.slack_client.rtm_read()
+                if incoming:
+                    logging.info(incoming)
+                    for resp in self.responses:
+                        resp(incoming)
         except WebSocketConnectionClosedException:
             self.connect()
+
+    def say(self, words, channel=None, **kwargs):
+        logging.info('{0} saying "{1}" in channel {2}'.format(self.name, words, channel))
+        posted_msg = self.slack_client.api_call("chat.postMessage",
+                                    channel=channel,
+                                    text=words,
+                                    as_user=True, **kwargs)
+        return posted_msg
+
+    def react(self, emoji, channel=None, ts=None, **kwargs):
+        txt = kwargs.get('text')
+        logging.info('{0} reacting to "{1}" with :{2}: in channel {3}'.format(self.name, txt, emoji, channel))
+        posted_msg = self.slack_client.api_call("reactions.add",
+                                    channel=channel,
+                                    name=emoji,
+                                    timestamp=ts, as_user=True)
+        return posted_msg
 
     def start(self, stop_after=None):
         self.connect()
         end_iter = 0 if stop_after is None else stop_after
         while not end_iter:
             sleep(self.RATE_LIMIT)
-            schedule.run_pending()
             self.listen()
             end_iter = max(end_iter - 1, 0)
 
