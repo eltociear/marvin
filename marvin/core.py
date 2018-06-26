@@ -15,6 +15,19 @@ class Post(object):
     def name(self):
         return type(self).__name__
 
+    def get_users(self):
+        users = self.slack_client.api_call("users.list")
+        user_dict = {}
+        for user in users['members']:
+            if not user['is_bot'] and user['name'] != 'slackbot':
+                user_dict[user['name']] = user['id']
+
+        return user_dict
+
+    def get_dm_channel_id(self, user):
+        user_info = self.slack_client.api_call("im.open", user=user)
+        return user_info['channel']['id']
+
     def say(self, words, channel=None, **kwargs):
         self.log.info('{0} saying "{1}" in channel {2}'.format(self.name, words, channel))
         posted_msg = self.slack_client.api_call("chat.postMessage",

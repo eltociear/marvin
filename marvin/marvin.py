@@ -1,5 +1,6 @@
 import logging
 import os
+import schedule
 from slackclient import SlackClient
 import sys
 from time import sleep
@@ -23,19 +24,6 @@ class Marvin(object):
         self.responses = []
         for resp in REGISTRY:
             self.responses.append(resp(self.slack_client))
-
-    def get_users(self):
-        users = self.slack_client.api_call("users.list")
-        user_dict = {}
-        for user in users['members']:
-            if not user['is_bot'] and user['name'] != 'slackbot':
-                user_dict[user['name']] = user['id']
-
-        return user_dict
-
-    def get_dm_channel_id(self, user):
-        user_info = self.slack_client.api_call("im.open", user=user)
-        return user_info['channel']['id']
 
     def logging(self, fname=None):
         logging.basicConfig(filename=fname,
@@ -88,6 +76,7 @@ class Marvin(object):
         end_iter = 0 if stop_after is None else stop_after
         while not end_iter:
             sleep(self.RATE_LIMIT)
+            schedule.run_pending()
             self.listen()
             end_iter = max(end_iter - 1, 0)
 
