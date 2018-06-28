@@ -1,3 +1,5 @@
+image: docker:stable
+
 services:
   - docker:dind
 
