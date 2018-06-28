@@ -17,3 +17,17 @@ build:
     - docker build --cache-from $CONTAINER_IMAGE:latest --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:latest .
     - docker push $CONTAINER_IMAGE:$CI_BUILD_REF
     - docker push $CONTAINER_IMAGE:latest
+
+k8s-deploy:
+  image: google/cloud-sdk
+  stage: deploy
+  script:
+    - echo "$GOOGLE_KEY" > key.json # Google Cloud service account key
+    - gcloud auth activate-service-account --key-file key.json
+    - gcloud config set compute/zone us-east4-b
+    - gcloud config set project prefect-marvin
+    - gcloud config set container/use_client_certificate True
+    - gcloud container clusters get-credentials marvin-cluster
+    - kubectl delete secret registry.gitlab.com  --ignore-not-found
+    - kubectl create secret docker-registry registry.gitlab.com --docker-server=https://registry.gitlab.com/v1/ --docker-username="$CI_REGISTRY_USER" --docker-password="$CI_REGISTRY_PASSWORD" --docker-email=chris@prefect.io
+    - kubectl apply -f  kubernetes/deployment.yml
