@@ -21,7 +21,6 @@ k8s-deploy:
   stage: deploy
   script:
     - echo "$GOOGLE_KEY" > key.json # Google Cloud service account key
-    - export GOOGLE_APPLICATION_CREDENTIALS="./key.json"
     - gcloud auth activate-service-account --key-file key.json
     - gcloud config set compute/zone us-east4-b
     - gcloud config set project prefect-marvin
