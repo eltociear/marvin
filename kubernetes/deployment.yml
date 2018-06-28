@@ -17,4 +17,4 @@ spec:
       containers:
       - name: marvin
         image: marvin
-		imagePullPolicy: Always
+        imagePullPolicy: Always
