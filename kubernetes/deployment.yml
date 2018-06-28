@@ -18,5 +18,11 @@ spec:
       - name: marvin
         image: registry.gitlab.com/prefect/marvin
         imagePullPolicy: Always
+        env:
+          - name: MARVIN_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: slacktoken
+                key: slacktoken.txt
       imagePullSecrets:
         - name: registry.gitlab.com

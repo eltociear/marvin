@@ -21,10 +21,13 @@ k8s-deploy:
   stage: deploy
   script:
     - echo "$GOOGLE_KEY" > key.json # Google Cloud service account key
+    - echo -n "$SLACK_TOKEN" > slacktoken.txt
     - gcloud auth activate-service-account --key-file key.json
     - gcloud config set compute/zone us-east4-b
     - gcloud config set project prefect-marvin
     - gcloud container clusters get-credentials marvin-cluster
+    - kubectl delete secret slacktoken --ignore-not-found
+    - kubectl create secret generic slacktoken --from-file=./slacktoken.txt
     - kubectl delete secret registry.gitlab.com  --ignore-not-found
     - kubectl create secret docker-registry registry.gitlab.com --docker-server=https://registry.gitlab.com/v1/ --docker-username="$CI_REGISTRY_USER" --docker-password="$CI_REGISTRY_PASSWORD" --docker-email=chris@prefect.io
     - kubectl apply -f  kubernetes/deployment.yml
