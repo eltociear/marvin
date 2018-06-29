@@ -33,7 +33,7 @@ class Standup(Response):
 
     def pre_standup(self):
         if not self._is_weekday():
-            pass
+            return
         users = self.get_users()
         self.updates = {}
         self.sent_at = {}
@@ -45,7 +45,7 @@ class Standup(Response):
 
     def standup(self):
         if not self._is_weekday():
-            pass
+            return
         public_msg = '<!here> are today\'s standup updates:\n' + '='*30
         for user, update in self.updates.items():
             public_msg += f'\n*{user}*: {update}'
