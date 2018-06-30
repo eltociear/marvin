@@ -1,0 +1,57 @@
+setup_gcloud_sdk: &setup_gcloud_sdk
+    name: Set up Google Cloud SDK
+    command: |
+        echo "$GOOGLE_SERVICE_ACCOUNT_KEY" > key.json
+        gcloud auth activate-service-account --key-file key.json
+        gcloud config set compute/zone $GCLOUD_ZONE
+        gcloud config set project $GCLOUD_PROJECT
+
+
+version: 2
+jobs:
+
+  build:
+    docker:
+      - image: google/cloud-sdk
+
+    steps:
+      - checkout
+      - run: *setup_gcloud_sdk
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: |
+            gcloud auth configure-docker
+            docker build -t gcr.io/$GCLOUD_PROJECT/marvin .
+      - run:
+          name: Push Docker image
+          command: docker push gcr.io/$GCLOUD_PROJECT/marvin
+
+  deploy:
+    docker:
+      - image: google/cloud-sdk
+
+    steps:
+      - checkout
+      - run: *setup_gcloud_sdk
+      - run: gcloud container clusters get-credentials $GCLOUD_GKE_CLUSTER
+      - run:
+          name: Add Slack token to Kubernetes
+          command: |
+            echo -n "$SLACK_TOKEN" > slacktoken.txt
+            kubectl delete secret slacktoken --ignore-not-found
+            kubectl create secret generic slacktoken --from-file=./slacktoken.txt
+      - run:
+          name: Deploy Marvin
+          command: kubectl apply -f kubernetes/deployment.yml
+
+
+
+workflows:
+    version: 2
+    build_and_deploy:
+        jobs:
+            - build
+            # - deploy:
+            #     requires:
+            #       - build
