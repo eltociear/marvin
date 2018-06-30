@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: marvin
-        image: registry.gitlab.com/prefect/marvin
+        image: gcr.io/prefect-marvin/marvin
         imagePullPolicy: Always
         env:
           - name: MARVIN_TOKEN
@@ -24,5 +24,3 @@ spec:
               secretKeyRef:
                 name: slacktoken
                 key: slacktoken.txt
-      imagePullSecrets:
-        - name: registry.gitlab.com
