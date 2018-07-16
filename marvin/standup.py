@@ -8,7 +8,7 @@ from .core import Response, register
 @register
 class Standup(Response):
 
-    standup_channel = "CANLZB1L3"
+    standup_channel = "CBH18KG8G"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
