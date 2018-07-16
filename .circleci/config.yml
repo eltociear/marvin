@@ -16,10 +16,9 @@ jobs:
 
     steps:
       - checkout
-
-    run:
-        name: Create conda environment
-        run: conda env create
+      - run:
+          name: Create conda environment
+          command: conda env create
 
   build:
     docker:
