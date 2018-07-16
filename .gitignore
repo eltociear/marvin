@@ -7,6 +7,9 @@ __pycache__/
 # C extensions
 *.so
 
+# vim noise
+*.swp
+
 # Distribution / packaging
 .Python
 env/
@@ -100,3 +103,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# pytest
+.pytest_cache
