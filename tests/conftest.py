@@ -4,11 +4,12 @@ from unittest.mock import MagicMock
 
 @pytest.fixture
 def slack():
-    '''Creates mock Slack API with simpler testing API'''
+    """Creates mock Slack API with simpler testing API"""
+
     class Slack(MagicMock):
         def api_called_with(self, *args, **kwargs):
-            '''asserts at least one call was made with the provided args
-            and kwargs (kwargs may be a partial list)'''
+            """asserts at least one call was made with the provided args
+            and kwargs (kwargs may be a partial list)"""
             for call in self.api_call.call_args_list:
                 agrees_with = []
                 a, k = call
