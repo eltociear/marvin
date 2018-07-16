@@ -14,8 +14,9 @@ class Standup(Response):
         super().__init__(*args, **kwargs)
         schedule.every().day.at("13:30").do(self.pre_standup)  # UTC, 9:30 AM EST
         schedule.every().day.at("14:00").do(self.standup)
-        self.updates = {}
         self.sent_at = {}
+        self.updates = {}
+        self.users = {}
 
     def _is_weekday(self):
         now = datetime.datetime.now()
@@ -26,17 +27,9 @@ class Standup(Response):
             return True
 
     def reply(self, msg):
-        user = msg.get("user", "")
         thread_ts = msg.get("thread_ts", "")
-        edits = msg.get("previous_message")
-        if edits:
-            user = edits.get("user")
-            old = edits.get("text")
-            new = msg.get("message", {}).get("text", "")
-            if self.sent_at[self.users[user]] == thread_ts:
-                self.updates[name].replace(old, new)
-        else:
-            if self.sent_at[self.users[user]] == thread_ts:
+        for name, ts in self.sent_at.items():
+            if ts == thread_ts:
                 self.updates[name] += msg.get("text", "") + "\n"
 
     def pre_standup(self):
