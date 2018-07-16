@@ -30,10 +30,12 @@ class Post(object):
 
     def say(self, words, channel=None, **kwargs):
         self.log.info('{0} saying "{1}" in channel {2}'.format(self.name, words, channel))
+        thread_ts = kwargs.get('thread_ts')
         posted_msg = self.slack_client.api_call("chat.postMessage",
                                     channel=channel,
                                     text=words,
-                                    as_user=True)
+                                    as_user=True,
+                                    thread_ts=thread_ts)
         return posted_msg
 
     def react(self, emoji, channel=None, ts=None, **kwargs):
