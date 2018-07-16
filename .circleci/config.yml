@@ -25,7 +25,7 @@ jobs:
             source activate marvin
             pip install .
       - run:
-          name: test Marvin
+          name: Test Marvin
           command: |
             source activate marvin
             pytest -v
