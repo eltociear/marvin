@@ -10,6 +10,17 @@ setup_gcloud_sdk: &setup_gcloud_sdk
 version: 2
 jobs:
 
+  test:
+    docker:
+      - image: continuumio/miniconda3
+
+    steps:
+      - checkout
+
+    run:
+        name: Create conda environment
+        run: conda env create
+
   build:
     docker:
       - image: google/cloud-sdk
@@ -51,7 +62,10 @@ workflows:
     version: 2
     build_and_deploy:
         jobs:
+            - test
             - build:
+                requires:
+                  - test
                 filters:
                   branches:
                     only: master
