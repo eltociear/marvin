@@ -26,9 +26,17 @@ class Standup(Response):
             return True
 
     def reply(self, msg):
+        user = msg.get("user", "")
         thread_ts = msg.get("thread_ts", "")
-        for name, ts in self.sent_at.items():
-            if ts == thread_ts:
+        edits = msg.get("previous_message")
+        if edits:
+            user = edits.get("user")
+            old = edits.get("text")
+            new = msg.get("message", {}).get("text", "")
+            if self.sent_at[self.users[user]] == thread_ts:
+                self.updates[name].replace(old, new)
+        else:
+            if self.sent_at[self.users[user]] == thread_ts:
                 self.updates[name] += msg.get("text", "") + "\n"
 
     def pre_standup(self):
@@ -44,6 +52,7 @@ class Standup(Response):
             )
             self.sent_at[name] = msg["ts"]
             self.updates[name] = ""
+            self.users[uid] = name
 
     def standup(self):
         if not self._is_weekday():
