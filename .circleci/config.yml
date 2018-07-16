@@ -26,7 +26,9 @@ jobs:
             pip install .
       - run:
           name: test Marvin
-          command: pytest -v
+          command: |
+            source activate marvin
+            pytest -v
 
   build:
     docker:
