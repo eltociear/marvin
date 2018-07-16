@@ -26,6 +26,7 @@ class AtMentions(Response):
 
     def reply(self, msg):
         text = msg.get('text', '')
-        if f'@{self.ID}' in text:
+        who_spoke = msg.get('user', '')
+        if f'@{self.ID}' in text and who_spoke != self.ID:
             quote = random.choice(self.quotes)
             self.say(quote, **msg)
