@@ -20,11 +20,13 @@ jobs:
           name: Create conda environment
           command: conda env create
       - run:
-          name: Install Marvin and run tests
+          name: Install Marvin
           command: |
             source activate marvin
             pip install .
-            pytest -v
+      - run:
+          name: test Marvin
+          command: pytest -v
 
   build:
     docker:
