@@ -64,7 +64,7 @@ jobs:
       - run:
           name: Deploy Marvin
           command: |
-            sed -i  "s/${IMAGE_TAG}/$CIRCLE_SHA1/g" kubernetes/deployment.yml
+            sed -i  "s/\${IMAGE_TAG}/$CIRCLE_SHA1/g" kubernetes/deployment.yml
             kubectl apply -f kubernetes/deployment.yml
 
 
