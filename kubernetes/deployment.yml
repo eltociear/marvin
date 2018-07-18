@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: marvin
-        image: gcr.io/prefect-marvin/marvin
+        image: gcr.io/prefect-marvin/marvin:${IMAGE_TAG}
         imagePullPolicy: Always
         env:
           - name: MARVIN_TOKEN
