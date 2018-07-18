@@ -42,10 +42,10 @@ jobs:
           name: Build Docker image
           command: |
             gcloud auth configure-docker
-            docker build -t gcr.io/$GCLOUD_PROJECT/marvin .
+            docker build -t gcr.io/$GCLOUD_PROJECT/marvin:$CIRCLE_SHA1 .
       - run:
           name: Push Docker image
-          command: docker push gcr.io/$GCLOUD_PROJECT/marvin
+          command: docker push gcr.io/$GCLOUD_PROJECT/marvin:$CIRCLE_SHA1
 
   deploy:
     docker:
@@ -63,7 +63,9 @@ jobs:
             kubectl create secret generic slacktoken --from-file=./slacktoken.txt
       - run:
           name: Deploy Marvin
-          command: kubectl apply -f kubernetes/deployment.yml
+          command: |
+            sed -i  "s/${IMAGE_TAG}/$CIRCLE_SHA1/g" kubernetes/deployment.yml
+            kubectl apply -f kubernetes/deployment.yml
 
 
 
