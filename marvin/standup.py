@@ -1,8 +1,9 @@
 import asyncio
 import datetime
 import schedule
-from apistar.http import Body, RequestData, Response
-from utilities import get_dm_channel_id, get_users, say
+from apistar.http import RequestData
+
+from .utilities import get_dm_channel_id, get_users, say
 
 
 standup_channel = "CBH18KG8G"
@@ -45,7 +46,7 @@ def _post_standup():
     for user, update in UPDATES.items():
         public_msg += f"\n*{user}*: {update}"
     say(public_msg, channel=standup_channel)
-    UPDATE.clear()
+    UPDATES.clear()
 
 
 def _is_weekday():

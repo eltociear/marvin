@@ -2,7 +2,8 @@ import json
 import random
 import requests
 from apistar.http import Body, Response
-from utilities import say
+
+from .utilities import say
 
 
 MARVIN_ID = "UBEEMJZFX"

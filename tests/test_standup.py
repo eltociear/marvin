@@ -2,8 +2,6 @@ import datetime
 import pytest
 import schedule
 
-from marvin.standup import Standup
-
 
 @pytest.fixture(autouse=True)
 def clear_schedule():
