@@ -17,17 +17,12 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Create conda environment
-          command: conda env create
-      - run:
           name: Install Marvin
           command: |
-            source activate marvin
             pip install .
       - run:
           name: Test Marvin
           command: |
-            source activate marvin
             pytest -v
 
   build:
