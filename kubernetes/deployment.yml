@@ -18,6 +18,8 @@ spec:
       - name: marvin
         image: gcr.io/prefect-marvin/marvin:${IMAGE_TAG}
         imagePullPolicy: Always
+        ports:
+          - containerPort: 8080
         env:
           - name: MARVIN_TOKEN
             valueFrom:
