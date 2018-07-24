@@ -13,6 +13,6 @@ setup(
     maintainer_email="chris@prefect.io",
     packages=["marvin"],
     install_requires=list(open("requirements.txt").read().strip().split("\n")),
-    entry_points={"console_scripts": ["marvin=marvin.marvin:run"]},
+    entry_points={"console_scripts": ["marvin=marvin.core:run"]},
     zip_safe=False,
 )

@@ -1,3 +1,5 @@
+aiofiles
+apistar
 pytest
 schedule
-slackclient
+uvicorn

@@ -24,3 +24,8 @@ spec:
               secretKeyRef:
                 name: slacktoken
                 key: slacktoken.txt
+          - name: SLACK_VALIDATION_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: slackvalidationtoken
+                key: slackvalidationtoken.txt

@@ -12,22 +12,17 @@ jobs:
 
   test:
     docker:
-      - image: continuumio/miniconda3
+      - image: python:3.6 
 
     steps:
       - checkout
       - run:
-          name: Create conda environment
-          command: conda env create
-      - run:
           name: Install Marvin
           command: |
-            source activate marvin
             pip install .
       - run:
           name: Test Marvin
           command: |
-            source activate marvin
             pytest -v
 
   build:
@@ -61,6 +56,9 @@ jobs:
             echo -n "$SLACK_TOKEN" > slacktoken.txt
             kubectl delete secret slacktoken --ignore-not-found
             kubectl create secret generic slacktoken --from-file=./slacktoken.txt
+            echo -n "$SLACK_VALIDATION_TOKEN" > slackvalidationtoken.txt
+            kubectl delete secret slackvalidationtoken --ignore-not-found
+            kubectl create secret generic slackvalidationtoken --from-file=./slackvalidationtoken.txt
       - run:
           name: Deploy Marvin
           command: |

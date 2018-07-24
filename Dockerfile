@@ -1,12 +1,7 @@
-FROM continuumio/miniconda3:latest
+FROM python:3.6
 
 ADD . marvin
 
-RUN cd marvin && conda env create
+RUN pip install ./marvin
 
-#RUN source activate marvin \
-#    && pip install . \
-#    && marvin
-RUN bash -c "source activate marvin && pip install ./marvin"
-
-CMD bash -c "source activate marvin && marvin"
+CMD marvin

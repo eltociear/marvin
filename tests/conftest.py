@@ -1,25 +1,21 @@
+import os
 import pytest
+from apistar import test
 from unittest.mock import MagicMock
+from marvin import MarvinApp
 
 
 @pytest.fixture
-def slack():
-    """Creates mock Slack API with simpler testing API"""
+def app():
+    return test.TestClient(MarvinApp)
 
-    class Slack(MagicMock):
-        def api_called_with(self, *args, **kwargs):
-            """asserts at least one call was made with the provided args
-            and kwargs (kwargs may be a partial list)"""
-            for call in self.api_call.call_args_list:
-                agrees_with = []
-                a, k = call
-                agrees_with.append(args == a)
-                agrees_with.extend([k.get(key) == val for key, val in kwargs.items()])
-                if all(agrees_with):
-                    return True
-            return False
 
-        def api_not_called(self):
-            return not self.api_call.called
+@pytest.fixture
+def token():
+    return os.environ.get('SLACK_VALIDATION_TOKEN')
 
-    return Slack()
+
+@pytest.fixture(autouse=True)
+def no_requests(monkeypatch):
+    "Ensures that no test accidentally sends a real request."
+    monkeypatch.delattr("marvin.utilities.requests.post")
