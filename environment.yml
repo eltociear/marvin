@@ -1,11 +1,13 @@
 name: marvin
 
 dependencies:
+    - apistar
+    - aiofiles
     - jupyter
     - ipython
     - pip
     - pip:
         - schedule
-        - slackclient
     - pytest
     - python=3.6
+    - uvicorn
