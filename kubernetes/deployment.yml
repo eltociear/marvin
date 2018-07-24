@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       labels:
-        app: marvin
+        app: marvin-app
     spec:
       containers:
       - name: marvin
