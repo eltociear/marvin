@@ -19,11 +19,18 @@ async def scheduler():
 
 
 async def standup_handler(data: RequestData):
-    payload = data.to_dict()
+    payload = data.to_dict() if not isinstance(data, dict) else data
     user = payload.get('user_name')
     update = payload.get("text")
-    UPDATES[user] += update + '\n'
-    return f"Thanks! {user}"
+    if update.startswith('clear '):
+        _ = UPDATES.pop(user, None)
+        return
+
+    if user in UPDATES:
+        UPDATES[user] += update + '\n'
+    else:
+        UPDATES[user] = update + '\n'
+    return f"Thanks {user}!"
 
 
 def _pre_standup():

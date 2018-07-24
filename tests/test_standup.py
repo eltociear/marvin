@@ -67,3 +67,31 @@ def test_standup_queries_users(app, monkeypatch, token):
     pub_msg = "<!here> are today's standup updates"
     assert say.call_args_list[0][0][0] == dm_msg
     assert pub_msg in say.call_args_list[1][0][0]
+
+
+def test_standup_stores_updates(app, monkeypatch, token):
+    # required to prime the asyncio loop
+    asyncio.ensure_future(standup.scheduler())
+    say = MagicMock()
+    monkeypatch.setattr(standup, 'say', say)
+
+    r = app.post('/standup', json={'token': token, 'user_name': "test-user",
+                               "text": "not much"})
+    assert r.ok
+    assert r.text == 'Thanks test-user!'
+    assert standup.UPDATES == {'test-user': 'not much\n'}
+    standup.UPDATES.clear()
+
+
+def test_standup_has_a_clear_feature(app, monkeypatch, token):
+    # required to prime the asyncio loop
+    asyncio.ensure_future(standup.scheduler())
+    say = MagicMock()
+    monkeypatch.setattr(standup, 'say', say)
+
+    r = app.post('/standup', json={'token': token, 'user_name': "test-user",
+                               "text": "not much"})
+    r = app.post('/standup', json={'token': token, 'user_name': "test-user",
+                               "text": "clear and a bunch of other noise"})
+    assert r.ok
+    assert standup.UPDATES == {}
