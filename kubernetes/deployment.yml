@@ -8,11 +8,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: marvin-app
+      app: marvin
   template:
     metadata:
       labels:
-        app: marvin-app
+        app: marvin
     spec:
       containers:
       - name: marvin
