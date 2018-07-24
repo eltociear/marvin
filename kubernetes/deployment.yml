@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: marvin-deployment
   labels:
-    app: marvin
+    app: marvin-app
 spec:
   replicas: 1
   selector:
