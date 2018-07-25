@@ -1,4 +1,5 @@
 import json
+import os
 import random
 import requests
 from apistar.http import Body, Response
@@ -6,6 +7,7 @@ from apistar.http import Body, Response
 from .utilities import say
 
 
+GIT_SHA = os.environ.get('GIT_SHA')
 MARVIN_ID = "UBEEMJZFX"
 quotes = [
     '"Let’s build robots with Genuine People Personalities," they said. So they tried it out with me. I’m a personality prototype. You can tell, can’t you?',
@@ -44,3 +46,8 @@ def app_mention(event):
         quote = random.choice(quotes)
         say(quote, channel=event.get("channel"), thread_ts=event.get("thread_ts"))
     return Response("")
+
+
+async def version_handler():
+    base_url = 'https://github.com/PrefectHQ/marvin/commit/'
+    return f"{base_url}{GIT_SHA}"

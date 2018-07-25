@@ -6,7 +6,7 @@ import uvicorn
 from apistar import ASyncApp, Route
 from apistar.http import Body
 
-from .responses import event_handler
+from .responses import event_handler, version_handler
 from .standup import scheduler, standup_handler
 
 
@@ -24,8 +24,10 @@ class TokenVerificationHook:
         assert token == VALIDATION_TOKEN, 'Token Authentication Failed'
 
 
-MarvinApp = ASyncApp(routes=[Route('/standup', method='POST', handler=standup_handler),
-                       Route('/', method='POST', handler=event_handler)],
+MarvinApp = ASyncApp(routes=[
+                             Route('/standup', method='POST', handler=standup_handler),
+                             Route('/version', method='POST', handler=version_handler),
+                             Route('/', method='POST', handler=event_handler)],
                event_hooks=[TokenVerificationHook])
 
 
