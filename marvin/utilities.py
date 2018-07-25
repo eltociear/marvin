@@ -16,6 +16,8 @@ def get_users():
            if not user["is_bot"] and user["name"] != "slackbot":
                 user_dict[user["name"]] = user["id"]
         return user_dict
+    else:
+        return dict()
 
 
 def get_dm_channel_id(userid):
