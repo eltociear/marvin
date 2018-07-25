@@ -31,7 +31,7 @@ MarvinApp = ASyncApp(routes=[Route('/standup', method='POST', handler=standup_ha
 
 def run():
     asyncio.ensure_future(scheduler())
-    uvicorn.run(MarvinApp, '0.0.0.0', 8080, log_level="debug", loop='asyncio')
+    uvicorn.run(MarvinApp, '0.0.0.0', 8080, log_level="info", loop='asyncio')
 
 
 if __name__ == "__main__":

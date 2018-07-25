@@ -8,14 +8,16 @@ TOKEN = os.environ.get('MARVIN_TOKEN')
 
 def get_users():
     params = {'token': TOKEN}
-    r = requests.post('https://slack.com/api/users.list', data=params)
+    r = requests.post('https://slack.com/api/user_dict.list', data=params)
     if r.ok:
-        users = {}
+        user_dict = {}
         user_data = json.loads(r.text)['members']
         for user in user_data:
            if not user["is_bot"] and user["name"] != "slackbot":
                 user_dict[user["name"]] = user["id"]
-        return users
+        return user_dict
+    else:
+        return dict()
 
 
 def get_dm_channel_id(userid):
