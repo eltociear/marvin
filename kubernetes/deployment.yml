@@ -31,3 +31,9 @@ spec:
               secretKeyRef:
                 name: slackvalidationtoken
                 key: slackvalidationtoken.txt
+          - name: GIT_SHA
+            valueFrom:
+              secretKeyRef:
+                name: gitsha
+                key: gitsha.txt
+

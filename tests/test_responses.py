@@ -51,3 +51,11 @@ def test_at_mentions_responds_within_thread(app, token, monkeypatch):
     assert say.call_count == 1
     assert say.call_args[1]['channel'] == 'foo'
     assert say.call_args[1]['thread_ts'] == '00834934.0704'
+
+
+def test_slash_version_responds(app, token, monkeypatch):
+    say = MagicMock()
+    monkeypatch.setattr(marvin.responses, 'say', say)
+    r = app.post('/version', json={'channel': 'foo', 'token': token})
+    assert r.ok
+    assert 'https://github.com' in r.text
