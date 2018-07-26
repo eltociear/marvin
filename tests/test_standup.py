@@ -95,3 +95,17 @@ def test_standup_has_a_clear_feature(app, monkeypatch, token):
                                "text": "clear and a bunch of other noise"})
     assert r.ok
     assert standup.UPDATES == {}
+
+
+def test_standup_has_a_clear_feature_that_doesnt_require_a_space(app, monkeypatch, token):
+    # required to prime the asyncio loop
+    asyncio.ensure_future(standup.scheduler())
+    say = MagicMock()
+    monkeypatch.setattr(standup, 'say', say)
+
+    r = app.post('/standup', json={'token': token, 'user_name': "test-user",
+                               "text": "not much"})
+    r = app.post('/standup', json={'token': token, 'user_name': "test-user",
+                               "text": "clear"})
+    assert r.ok
+    assert standup.UPDATES == {}

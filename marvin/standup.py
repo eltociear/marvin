@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import re
 import schedule
 from apistar.http import RequestData
 
@@ -22,7 +23,8 @@ async def standup_handler(data: RequestData):
     payload = data.to_dict() if not isinstance(data, dict) else data
     user = payload.get('user_name')
     update = payload.get("text")
-    if update.startswith('clear '):
+    clear_match = re.compile('^clear($|\s)')
+    if clear_match.match(update):
         _ = UPDATES.pop(user, None)
         return
 
