@@ -28,6 +28,11 @@ async def standup_handler(data: RequestData):
         _ = UPDATES.pop(user, None)
         return
 
+    show_match = re.compile('^show($|\s)')
+    if show_match.match(update):
+        current_update = UPDATES.get(user, f'I haven\'t received any updates from you yet, {user}.')
+        return current_update
+
     if user in UPDATES:
         UPDATES[user] += update + '\n'
     else:
