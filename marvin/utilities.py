@@ -8,7 +8,7 @@ TOKEN = os.environ.get('MARVIN_TOKEN')
 
 def get_users():
     params = {'token': TOKEN}
-    r = requests.post('https://slack.com/api/user_dict.list', data=params)
+    r = requests.post('https://slack.com/api/users.list', data=params)
     if r.ok:
         user_dict = {}
         user_data = json.loads(r.text)['members']

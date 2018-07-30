@@ -109,3 +109,29 @@ def test_standup_has_a_clear_feature_that_doesnt_require_a_space(app, monkeypatc
                                "text": "clear"})
     assert r.ok
     assert standup.UPDATES == {}
+
+
+def test_standup_show_displays_current_status(app, monkeypatch, token):
+    # required to prime the asyncio loop
+    asyncio.ensure_future(standup.scheduler())
+    say = MagicMock()
+    monkeypatch.setattr(standup, 'say', say)
+
+    standup.UPDATES = {'test-user': 'debugging'}
+    r = app.post('/standup', json={'token': token, 'user_name': "test-user",
+                               "text": "show"})
+    assert r.ok
+    assert r.text == 'debugging'
+    standup.UPDATES.clear()
+
+
+def test_standup_show_is_empty(app, monkeypatch, token):
+    # required to prime the asyncio loop
+    asyncio.ensure_future(standup.scheduler())
+    say = MagicMock()
+    monkeypatch.setattr(standup, 'say', say)
+
+    r = app.post('/standup', json={'token': token, 'user_name': "test-user",
+                               "text": "show"})
+    assert r.ok
+    assert r.text == 'I haven\'t received any updates from you yet, test-user.'
