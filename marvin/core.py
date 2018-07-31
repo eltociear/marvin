@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import os
 import uvicorn
 
@@ -11,6 +12,7 @@ from .standup import scheduler, standup_handler
 
 
 VALIDATION_TOKEN = os.environ.get('SLACK_VALIDATION_TOKEN')
+logging.getLogger('asyncio').setLevel(logging.INFO)
 
 
 class TokenVerificationHook:
