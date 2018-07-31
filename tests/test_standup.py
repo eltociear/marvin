@@ -94,6 +94,7 @@ def test_standup_has_a_clear_feature(app, monkeypatch, token):
     r = app.post('/standup', json={'token': token, 'user_name': "test-user",
                                "text": "clear and a bunch of other noise"})
     assert r.ok
+    assert r.text == '~not much~'
     assert standup.UPDATES == {}
 
 
@@ -108,6 +109,7 @@ def test_standup_has_a_clear_feature_that_doesnt_require_a_space(app, monkeypatc
     r = app.post('/standup', json={'token': token, 'user_name': "test-user",
                                "text": "clear"})
     assert r.ok
+    assert r.text == '~not much~'
     assert standup.UPDATES == {}
 
 
