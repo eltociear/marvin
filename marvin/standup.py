@@ -25,8 +25,8 @@ async def standup_handler(data: RequestData):
     update = payload.get("text")
     clear_match = re.compile('^clear($|\s)')
     if clear_match.match(update):
-        _ = UPDATES.pop(user, None)
-        return
+        old = UPDATES.pop(user, None).replace('\n', '')
+        return f'~{old}~'
 
     show_match = re.compile('^show($|\s)')
     if show_match.match(update):
