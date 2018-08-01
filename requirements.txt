@@ -2,4 +2,4 @@ aiofiles
 apistar
 pytest
 schedule
-uvicorn
+uvicorn == 0.2.22

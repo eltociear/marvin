@@ -21,22 +21,24 @@ async def scheduler():
 
 async def standup_handler(data: RequestData):
     payload = data.to_dict() if not isinstance(data, dict) else data
-    user = payload.get('user_name')
+    user = payload.get("user_name")
     update = payload.get("text")
-    clear_match = re.compile('^clear($|\s)')
+    clear_match = re.compile("^clear($|\s)")
     if clear_match.match(update):
-        old = UPDATES.pop(user, None).replace('\n', '')
-        return f'~{old}~'
+        old = UPDATES.pop(user, None).replace("\n", "")
+        return f"~{old}~"
 
-    show_match = re.compile('^show($|\s)')
+    show_match = re.compile("^show($|\s)")
     if show_match.match(update):
-        current_update = UPDATES.get(user, f'I haven\'t received any updates from you yet, {user}.')
+        current_update = UPDATES.get(
+            user, f"I haven't received any updates from you yet, {user}."
+        )
         return current_update
 
     if user in UPDATES:
-        UPDATES[user] += update + '\n'
+        UPDATES[user] += update + "\n"
     else:
-        UPDATES[user] = update + '\n'
+        UPDATES[user] = update + "\n"
     return f"Thanks {user}!"
 
 
@@ -46,9 +48,10 @@ def _pre_standup():
     users = get_users()
     for name, uid in users.items():
         if UPDATES.get(name) is None:
-            msg = say(
+            say(
                 f"Hi {name}! I haven't heard from you yet; what updates do you have for the team today? Please respond by using the slash command `/standup`,  and remember: your response will be shared!",
-                channel=get_dm_channel_id(uid), mrkdwn="true",
+                channel=get_dm_channel_id(uid),
+                mrkdwn="true",
             )
             UPDATES[name] = ""
 
