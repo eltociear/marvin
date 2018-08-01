@@ -2,7 +2,7 @@ import os
 import pytest
 from apistar import test
 from unittest.mock import MagicMock
-from marvin import MarvinApp
+from marvin.core import MarvinApp
 
 
 @pytest.fixture
@@ -12,7 +12,7 @@ def app():
 
 @pytest.fixture
 def token():
-    return os.environ.get('SLACK_VALIDATION_TOKEN')
+    return os.environ.get("SLACK_VALIDATION_TOKEN")
 
 
 @pytest.fixture(autouse=True)
