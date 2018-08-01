@@ -1,13 +1,12 @@
 import json
 import os
 import random
-import requests
 from apistar.http import Body, Response
 
 from .utilities import say
 
 
-GIT_SHA = os.environ.get('GIT_SHA')
+GIT_SHA = os.environ.get("GIT_SHA")
 MARVIN_ID = "UBEEMJZFX"
 quotes = [
     '"Let’s build robots with Genuine People Personalities," they said. So they tried it out with me. I’m a personality prototype. You can tell, can’t you?',
@@ -30,13 +29,13 @@ quotes = [
 async def event_handler(data: Body):
     # for validating your URL with slack
     json_data = json.loads(data)
-    is_challenge = json_data.get('type') == 'url_verification'
+    is_challenge = json_data.get("type") == "url_verification"
     if is_challenge:
-        return json_data['challenge']
+        return json_data["challenge"]
 
-    event = json_data.get('event', {})
-    event_type = event.get('type')
-    if event_type == 'app_mention' or MARVIN_ID in event.get("text", ""):
+    event = json_data.get("event", {})
+    event_type = event.get("type")
+    if event_type == "app_mention" or MARVIN_ID in event.get("text", ""):
         return app_mention(event)
 
 
@@ -49,5 +48,5 @@ def app_mention(event):
 
 
 async def version_handler():
-    base_url = 'https://github.com/PrefectHQ/marvin/commit/'
+    base_url = "https://github.com/PrefectHQ/marvin/commit/"
     return f"{base_url}{GIT_SHA}"
