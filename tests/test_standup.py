@@ -127,6 +127,20 @@ def test_standup_has_a_clear_feature_that_doesnt_require_a_space(
     assert standup.UPDATES == {}
 
 
+def test_standup_clear_responds_even_when_nothing_to_clear(app, monkeypatch, token):
+    # required to prime the asyncio loop
+    asyncio.ensure_future(standup.scheduler())
+    say = MagicMock()
+    monkeypatch.setattr(standup, "say", say)
+
+    r = app.post(
+        "/standup", json={"token": token, "user_name": "test-user", "text": "clear"}
+    )
+    assert r.ok
+    assert r.text == "No updates to clear!"
+    assert standup.UPDATES == {}
+
+
 def test_standup_show_displays_current_status(app, monkeypatch, token):
     # required to prime the asyncio loop
     asyncio.ensure_future(standup.scheduler())
