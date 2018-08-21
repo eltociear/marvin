@@ -13,7 +13,11 @@ def get_users():
         user_dict = {}
         user_data = json.loads(r.text)["members"]
         for user in user_data:
-            if not user["is_bot"] and user["name"] != "slackbot":
+            if (
+                not user["is_bot"]
+                and user["name"] not in ("slackbot", "test-user")
+                and not user["is_ultra_restricted"]
+            ):
                 user_dict[user["name"]] = user["id"]
         return user_dict
     else:
