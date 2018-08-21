@@ -3,7 +3,7 @@ import os
 import random
 from apistar.http import Body, Response
 
-from .utilities import say
+from .utilities import get_dm_channel_id, say
 
 
 GIT_SHA = os.environ.get("GIT_SHA")
@@ -24,6 +24,7 @@ quotes = [
     "Do you want me to sit in a corner and rust, or just fall apart where I'm standing?",
     "Don't feel you have to take any notice of me, please.",
 ]
+GITHUB_MAP = {"cicdw": "UBBE1SC8L", "jlowin": "UAPLR5SHL", "joshmeek": "UBE4N2LG1"}
 
 
 async def event_handler(data: Body):
@@ -37,6 +38,8 @@ async def event_handler(data: Body):
     event_type = event.get("type")
     if event_type == "app_mention" or MARVIN_ID in event.get("text", ""):
         return app_mention(event)
+    elif event_type == "message" and event.get("bot_id") == "BBGMPFDHQ":
+        return github_mention(event)
 
 
 def app_mention(event):
@@ -45,6 +48,19 @@ def app_mention(event):
         quote = random.choice(quotes)
         say(quote, channel=event.get("channel"), thread_ts=event.get("thread_ts"))
     return Response("")
+
+
+def github_mention(event):
+    data = event.get("attachments", [{}])[0]
+    text = data.get("text", "")
+    was_mentioned = {uid: (f"@{github}" in text) for github, uid in GITHUB_MAP.items()}
+    for uid, mentioned in was_mentioned.items():
+        if not mentioned:
+            continue
+        else:
+            link = data.get("title_link", "link unavailable")
+            msg = f"You were mentioned on GitHub @ {link}"
+            say(msg, channel=get_dm_channel_id(uid))
 
 
 async def version_handler():
