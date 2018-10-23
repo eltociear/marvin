@@ -56,6 +56,9 @@ jobs:
             echo -n "$SLACK_TOKEN" > slacktoken.txt
             kubectl delete secret slacktoken --ignore-not-found
             kubectl create secret generic slacktoken --from-file=./slacktoken.txt
+            echo -n "$SLACK_OAUTH_TOKEN" > slackoauthtoken.txt
+            kubectl delete secret slackoauthtoken --ignore-not-found
+            kubectl create secret generic slackoauthtoken --from-file=./slackoauthtoken.txt
             echo -n "$SLACK_VALIDATION_TOKEN" > slackvalidationtoken.txt
             kubectl delete secret slackvalidationtoken --ignore-not-found
             kubectl create secret generic slackvalidationtoken --from-file=./slackvalidationtoken.txt
