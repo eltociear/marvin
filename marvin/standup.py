@@ -7,7 +7,7 @@ from apistar.http import RequestData
 from .utilities import get_dm_channel_id, get_users, say
 
 
-standup_channel = "CANLZB1L3" # "CBH18KG8G"
+standup_channel = "CANLZB1L3"  # "CBH18KG8G"
 UPDATES = {}
 
 

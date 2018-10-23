@@ -3,7 +3,29 @@ import os
 import requests
 
 
+OAUTH_TOKEN = os.environ.get("MARVIN_OAUTH_TOKEN")
 TOKEN = os.environ.get("MARVIN_TOKEN")
+
+
+def get_pins(channel="CBH18KG8G"):
+    params = {"token": OAUTH_TOKEN, "channel": channel}
+    r = requests.post("https://slack.com/api/pins.list", data=params)
+    if r.ok:
+        return json.loads(r.text)["items"]
+    else:
+        raise ValueError(f"Request failed with status code {r.status_code}")
+
+
+def add_pin(channel, timestamp):
+    params = {"token": OAUTH_TOKEN, "channel": channel, "timestamp": timestamp}
+    r = requests.post("https://slack.com/api/pins.add", data=params)
+    return r
+
+
+def remove_pin(channel, timestamp):
+    params = {"token": OAUTH_TOKEN, "channel": channel, "timestamp": timestamp}
+    r = requests.post("https://slack.com/api/pins.remove", data=params)
+    return r
 
 
 def get_channels():
