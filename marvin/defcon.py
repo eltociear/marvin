@@ -44,7 +44,7 @@ async def defcon_handler(data: RequestData):
         for pin in pins
         if pin["type"] == "message" and pin["message"]["user"] == MARVIN_ID
     ]
-    if len(defcon_pins) <= 1:
+    if len(defcon_pins) > 1:
         return "Multiple DEFCON pins found"
 
     defcon_pin = defcon_pins[0] if defcon_pins else None
