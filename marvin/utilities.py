@@ -6,6 +6,19 @@ import requests
 TOKEN = os.environ.get("MARVIN_TOKEN")
 
 
+def get_channels():
+    params = {"token": TOKEN}
+    r = requests.post("https://slack.com/api/channels.list", data=params)
+    if r.ok:
+        channel_dict = {}
+        channel_data = json.loads(r.text)["channels"]
+        for channel in channel_data:
+            channel_dict[channel["name"]] = channel["id"]
+        return channel_dict
+    else:
+        return dict()
+
+
 def get_users():
     params = {"token": TOKEN}
     r = requests.post("https://slack.com/api/users.list", data=params)
