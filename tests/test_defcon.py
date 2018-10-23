@@ -19,9 +19,10 @@ def test_defcon_can_be_updated(app, monkeypatch, token, text):
     ]
     monkeypatch.setattr(defcon, "get_pins", MagicMock(return_value=pins))
     say = MagicMock(return_value=MagicMock(text='{"ts": "yesterday"}'))
+    add_pin, remove_pin = MagicMock(), MagicMock()
     monkeypatch.setattr(defcon, "say", say)
-    monkeypatch.setattr(defcon, "add_pin", MagicMock())
-    monkeypatch.setattr(defcon, "remove_pin", MagicMock())
+    monkeypatch.setattr(defcon, "add_pin", add_pin)
+    monkeypatch.setattr(defcon, "remove_pin", remove_pin)
     monkeypatch.setattr(defcon, "get_pins", MagicMock(return_value=pins))
 
     r = app.post(
@@ -29,6 +30,8 @@ def test_defcon_can_be_updated(app, monkeypatch, token, text):
     )
     assert r.ok
     assert r.text == "DEFCON level updated!"
+    assert add_pin.called_once
+    assert remove_pin.called_once
 
 
 @pytest.mark.parametrize("text", ["raise", "lower"])
