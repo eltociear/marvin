@@ -15,7 +15,8 @@ levels = {
     + ":matrixparrot:  *DONT PANIC*  :matrixparrot:"
     + "\n"
     + ":matrixparrot:" * 7,
-    2: "_Funny, how just when you think life can’t possibly get any worse it suddenly does._",
+    2: ":red-light-blinker: :red-light-blinker:",
+    3: "_Funny, how just when you think life can’t possibly get any worse it suddenly does._",
 }
 
 
