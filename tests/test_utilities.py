@@ -3,12 +3,30 @@ import pytest
 from collections import namedtuple
 from unittest.mock import MagicMock
 import marvin
-from marvin.utilities import get_users, get_dm_channel_id, say
+from marvin.utilities import get_channels, get_users, get_dm_channel_id, say
 
 
 @pytest.fixture
 def postdata():
     return namedtuple("ReturnPost", ["ok", "text"])
+
+
+def test_get_channels_returns_user_dict(monkeypatch, postdata):
+    returned = dict(channels=[dict(name="channel5news", id="1")])
+    post = MagicMock(return_value=postdata(ok=True, text=json.dumps(returned)))
+    monkeypatch.setattr(marvin.utilities.requests, "post", post, raising=False)
+    channels = get_channels()
+    assert len(channels) == 1
+    assert channels["channel5news"] == "1"
+
+
+def test_get_channels_returns_empty_dict_if_request_fails(monkeypatch, postdata):
+    returned = dict(channels=[dict(name="channel5news", id="1")])
+    post = MagicMock(return_value=postdata(ok=False, text=json.dumps(returned)))
+    monkeypatch.setattr(marvin.utilities.requests, "post", post, raising=False)
+    channels = get_channels()
+    assert isinstance(channels, dict)
+    assert len(channels) == 0
 
 
 def test_get_users_returns_user_dict(monkeypatch, postdata):
@@ -27,6 +45,7 @@ def test_get_users_returns_empty_dict_if_request_fails(monkeypatch, postdata):
     post = MagicMock(return_value=postdata(ok=False, text=json.dumps(returned)))
     monkeypatch.setattr(marvin.utilities.requests, "post", post, raising=False)
     users = get_users()
+    assert isinstance(users, dict)
     assert len(users) == 0
 
 

@@ -9,6 +9,7 @@ from apistar.http import Body
 
 from .loop_policy import SchedulerPolicy
 from .responses import event_handler, version_handler
+from .defcon import defcon_handler
 from .standup import standup_handler
 
 
@@ -35,6 +36,7 @@ class TokenVerificationHook:
 
 MarvinApp = ASyncApp(
     routes=[
+        Route("/defcon", method="POST", handler=defcon_handler),
         Route("/standup", method="POST", handler=standup_handler),
         Route("/version", method="POST", handler=version_handler),
         Route("/", method="POST", handler=event_handler),
@@ -45,7 +47,7 @@ MarvinApp = ASyncApp(
 
 def run():
     asyncio.set_event_loop_policy(SchedulerPolicy())
-    uvicorn.run(MarvinApp, "0.0.0.0", 8080, log_level="info", loop="asyncio")
+    uvicorn.run(MarvinApp, "0.0.0.0", 8080, log_level="debug", loop="asyncio")
 
 
 if __name__ == "__main__":

@@ -26,6 +26,11 @@ spec:
               secretKeyRef:
                 name: slacktoken
                 key: slacktoken.txt
+          - name: MARVIN_OAUTH_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: slackoauthtoken
+                key: slackoauthtoken.txt
           - name: SLACK_VALIDATION_TOKEN
             valueFrom:
               secretKeyRef:

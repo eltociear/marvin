@@ -1,5 +1,5 @@
 aiofiles
-apistar
+apistar == 0.5.40
 pytest
 schedule
 uvicorn == 0.2.22
