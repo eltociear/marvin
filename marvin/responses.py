@@ -24,7 +24,12 @@ quotes = [
     "Do you want me to sit in a corner and rust, or just fall apart where I'm standing?",
     "Don't feel you have to take any notice of me, please.",
 ]
-GITHUB_MAP = {"cicdw": "UBBE1SC8L", "jlowin": "UAPLR5SHL", "joshmeek": "UBE4N2LG1"}
+GITHUB_MAP = {
+    "cicdw": "UBBE1SC8L",
+    "dylanbhughes": "UDKF9U8UC",
+    "jlowin": "UAPLR5SHL",
+    "joshmeek": "UBE4N2LG1",
+}
 
 
 async def event_handler(data: Body):
