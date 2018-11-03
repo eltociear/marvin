@@ -93,7 +93,8 @@ def notion_mention(event):
             link_pattern = re.compile("\*<(.*)\|.*\*")
             link = link_pattern.findall(event.get("text", ""))
             if link:
-                msg = f"You were mentioned on Notion @ {link[0]}"
+                formatted_link = link[0].lstrip("\"'").rstrip("\"'")  # remove quotes
+                msg = f"You were mentioned on Notion @ {formatted_link}"
             else:
                 msg = f"You were mentioned on Notion, but I don't have the link available..."
             say(msg, channel=get_dm_channel_id(uid))
