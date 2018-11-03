@@ -59,6 +59,7 @@ def test_standup_queries_users(app, monkeypatch, token):
 
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
+    monkeypatch.setattr(standup, "_is_weekday", lambda: True)
 
     pre, post = schedule.jobs
     pre.next_run = datetime.datetime.now()
