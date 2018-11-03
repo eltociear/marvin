@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import re
 from apistar.http import Body, Response
 
 from .utilities import get_dm_channel_id, say
@@ -24,11 +25,22 @@ quotes = [
     "Do you want me to sit in a corner and rust, or just fall apart where I'm standing?",
     "Don't feel you have to take any notice of me, please.",
 ]
+
+
 GITHUB_MAP = {
     "cicdw": "UBBE1SC8L",
     "dylanbhughes": "UDKF9U8UC",
     "jlowin": "UAPLR5SHL",
     "joshmeek": "UBE4N2LG1",
+}
+
+
+NOTION_MAP = {
+    "Chris": "UBBE1SC8L",
+    "Dylan": "UDKF9U8UC",
+    "Jeremiah": "UAPLR5SHL",
+    "Josh": "UBE4N2LG1",
+    "Ngan": "UDTREHXGD",
 }
 
 
@@ -45,6 +57,8 @@ async def event_handler(data: Body):
         return app_mention(event)
     elif event_type == "message" and event.get("bot_id") == "BBGMPFDHQ":
         return github_mention(event)
+    elif event_type == "message" and event.get("bot_id") == "BDUBG9WAD":
+        return notion_mention(event)
 
 
 def app_mention(event):
@@ -65,6 +79,23 @@ def github_mention(event):
         else:
             link = data.get("title_link", "link unavailable")
             msg = f"You were mentioned on GitHub @ {link}"
+            say(msg, channel=get_dm_channel_id(uid))
+
+
+def notion_mention(event):
+    data = event.get("attachments", [{}])[0]
+    text = data.get("text", "")
+    was_mentioned = {uid: (f"@{notion}" in text) for notion, uid in NOTION_MAP.items()}
+    for uid, mentioned in was_mentioned.items():
+        if not mentioned:
+            continue
+        else:
+            link_pattern = re.compile("\*<(.*)\|.*\*")
+            link = link_pattern.findall(event.get("text", ""))
+            if link:
+                msg = f"You were mentioned on Notion @ {link[0]}"
+            else:
+                msg = f"You were mentioned on Notion, but I don't have the link available..."
             say(msg, channel=get_dm_channel_id(uid))
 
 
