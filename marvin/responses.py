@@ -83,8 +83,7 @@ def github_mention(event):
 
 
 def notion_mention(event):
-    data = event.get("attachments", [{}])[0]
-    text = data.get("text", "")
+    text = "\n".join(d.get("text", "") for d in event.get("attachments", [{}]))
     was_mentioned = {uid: (f"@{notion}" in text) for notion, uid in NOTION_MAP.items()}
     for uid, mentioned in was_mentioned.items():
         if not mentioned:
