@@ -161,6 +161,31 @@ def test_notion_mentions_works(app, token, monkeypatch):
     assert say.call_args[1]["channel"] == "dm_chris"
 
 
+def test_notion_mentions_works_with_multiple_attachments(app, token, monkeypatch):
+    post_event = {
+        "text": "Chris White commented in *<https://foo.bar/baz/page|This is not real ignore this>*",
+        "bot_id": "BDUBG9WAD",
+        "channel": "foo",
+        "type": "message",
+        "attachments": [
+            {"text": "hey @Chris White you need to fix marvin"},
+            {"text": "hey @Dylan Hughes this is random"},
+        ],
+    }
+    say = MagicMock()
+    monkeypatch.setattr(
+        marvin.responses, "get_dm_channel_id", lambda *args, **kwargs: "dm_chris"
+    )
+    monkeypatch.setattr(marvin.responses, "say", say)
+    r = app.post("/", json={"event": post_event, "token": token})
+    assert r.ok
+    assert say.call_count == 2
+    assert say.call_args[0] == (
+        "You were mentioned on Notion @ https://foo.bar/baz/page",
+    )
+    assert say.call_args[1]["channel"] == "dm_chris"
+
+
 def test_notion_mentions_tells_everyone(app, token, monkeypatch):
     post_event = {
         "text": "Billy Bob commented in *<https://foo.bar/baz/page|This is not real ignore this>*",
