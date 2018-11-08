@@ -32,6 +32,7 @@ GITHUB_MAP = {
     "dylanbhughes": "UDKF9U8UC",
     "jlowin": "UAPLR5SHL",
     "joshmeek": "UBE4N2LG1",
+    "itsngansense": "UDTREHXGD",
 }
 
 
