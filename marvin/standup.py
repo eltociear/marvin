@@ -12,8 +12,8 @@ UPDATES = {}
 
 
 async def scheduler():
-    schedule.every().day.at("14:30").do(_pre_standup)
-    schedule.every().day.at("15:00").do(_post_standup)
+    schedule.every().day.at("13:30").do(_pre_standup)
+    schedule.every().day.at("14:00").do(_post_standup)
     while True:
         await asyncio.sleep(5)
         schedule.run_pending()
