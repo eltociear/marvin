@@ -20,8 +20,8 @@ def test_standup_is_scheduled(app, token):
 
     jobs = schedule.jobs
     assert len(jobs) == 2
-    assert jobs[0].next_run.hour == 14  # pre-standup
-    assert jobs[1].next_run.hour == 15  # post-standup
+    assert jobs[0].next_run.hour == 13  # pre-standup
+    assert jobs[1].next_run.hour == 14  # post-standup
 
 
 @pytest.mark.parametrize(
