@@ -6,17 +6,15 @@ from apistar.http import RequestData
 
 from .utilities import get_dm_channel_id, get_users, say
 
-
-standup_channel = "CANLZB1L3"  # "CBH18KG8G"
 UPDATES = {}
 
+standup_channel = "CANLZB1L3"  # "CBH18KG8G"
 
-async def scheduler():
+
+# schedule standup
+async def schedule_standup():
     schedule.every().day.at("13:30").do(_pre_standup)
     schedule.every().day.at("14:00").do(_post_standup)
-    while True:
-        await asyncio.sleep(5)
-        schedule.run_pending()
 
 
 async def standup_handler(data: RequestData):
@@ -25,6 +23,7 @@ async def standup_handler(data: RequestData):
     update = payload.get("text")
     clear_match = re.compile("^clear($|\s)")
     if clear_match.match(update):
+
         old = UPDATES.pop(user, None)
         if old is None:
             return "No updates to clear!"
