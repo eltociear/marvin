@@ -11,7 +11,6 @@ from google.cloud import firestore
 
 from .utilities import get_dm_channel_id, say
 
-loop = asyncio.get_event_loop()
 executor = ThreadPoolExecutor(max_workers=3)
 USERS = {}
 
@@ -37,12 +36,13 @@ quotes = [
 
 async def schedule_refresh_users():
     # run once for initial load
-    await loop.run_in_executor(executor, _refresh_users)
+    await refresh_users()
     # schedule updates every hour
     schedule.every().hour.do(refresh_users)
 
 
 async def refresh_users():
+    loop = asyncio.get_event_loop()
     await loop.run_in_executor(executor, _refresh_users)
 
 
