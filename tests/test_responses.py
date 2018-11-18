@@ -1,6 +1,35 @@
 import pytest
 from unittest.mock import MagicMock
-import marvin
+import marvin.responses
+
+
+@pytest.fixture(autouse=True, scope="module")
+def set_users():
+    marvin.responses.USERS.update(
+        {
+            "q6kqpHrZcLLekeToWvrB": {
+                "name": "Chris",
+                "email": "chris@prefect.io",
+                "slack": "UBBE1SC8L",
+                "notion": "Chris",
+                "github": "cicdw",
+            },
+            "rvFokTPSoHca1pyGJpL8": {
+                "email": "josh@prefect.io",
+                "slack": "UBE4N2LG1",
+                "notion": "Josh",
+                "github": "joshmeek",
+                "name": "Josh",
+            },
+            "IVHJCBIxbLHA3iQniVUQ": {
+                "name": "Jeremiah",
+                "email": "jeremiah@prefect.io",
+                "slack": "UAPLR5SHL",
+                "github": "jlowin",
+                "notion": "Jeremiah",
+            },
+        }
+    )
 
 
 def test_at_mentions_responds_privately(app, token, monkeypatch):
@@ -169,7 +198,8 @@ def test_notion_mentions_works_with_multiple_attachments(app, token, monkeypatch
         "type": "message",
         "attachments": [
             {"text": "hey @Chris White you need to fix marvin"},
-            {"text": "hey @Dylan Hughes this is random"},
+            {"text": "hey @Josh this is random"},
+            {"text": "hey @Nobody this shouldn't notify at all"},
         ],
     }
     say = MagicMock()
