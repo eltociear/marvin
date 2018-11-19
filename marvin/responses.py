@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import schedule
 from apistar.http import Body, Response
-from google.cloud import firestore
+import google.cloud.firestore
 
 from .utilities import get_dm_channel_id, say
 
@@ -33,6 +33,8 @@ quotes = [
     "Don't feel you have to take any notice of me, please.",
 ]
 
+firestore = google.cloud.firestore.Client(project="prefect-marvin")
+
 
 async def schedule_refresh_users():
     # run once for initial load
@@ -51,8 +53,9 @@ def _refresh_users():
     Firestore doesn't have an async API so this should be run in a ThreadPool via the
     `refresh_users()` coroutine
     """
-    client = firestore.Client(project="prefect-marvin")
-    new_users = {user.id: user.to_dict() for user in client.collection("users").get()}
+    new_users = {
+        user.id: user.to_dict() for user in firestore.collection("users").get()
+    }
     # add new users to USERS
     USERS.update(new_users)
     # delete old users from USERS -- don't clear() because we don't want USERS empty
