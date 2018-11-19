@@ -2,6 +2,7 @@ import asyncio
 import logging
 import schedule
 import marvin.standup
+import marvin.responses
 
 
 async def run_scheduler():
