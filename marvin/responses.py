@@ -24,6 +24,7 @@ quotes = [
     ":marvin:",
     "Do you want me to sit in a corner and rust, or just fall apart where I'm standing?",
     "Don't feel you have to take any notice of me, please.",
+    "Why should I want to make anything up? Life’s bad enough as it is without wanting to invent any more of it.",
 ]
 
 
