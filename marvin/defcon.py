@@ -17,6 +17,8 @@ levels = {
     + ":matrixparrot:" * 7,
     2: ":red-light-blinker: :red-light-blinker:",
     3: "_Funny, how just when you think life can’t possibly get any worse it suddenly does._",
+    4: "I’m not getting you down at all am I?",
+    5: ":four::two:",
 }
 
 
