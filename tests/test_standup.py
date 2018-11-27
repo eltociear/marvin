@@ -4,7 +4,6 @@ import pytest
 import schedule
 from unittest.mock import MagicMock
 from marvin import standup
-from marvin import loop_policy
 
 
 @pytest.fixture(autouse=True)
@@ -14,21 +13,15 @@ def clear_schedule():
     schedule.clear()
 
 
-def get_pre_post_jobs():
-    "Utility for retrieveing the _pre_standup and _post_standup jobs"
-    pre = next(j for j in schedule.jobs if j.job_func.__name__ == "_pre_standup")
-    post = next(j for j in schedule.jobs if j.job_func.__name__ == "_post_standup")
-    return pre, post
-
-
 def test_standup_is_scheduled(app, token):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler())
+    asyncio.ensure_future(standup.scheduler())
     app.post("/", json={"token": token})
 
-    pre, post = get_pre_post_jobs()
-    assert pre.next_run.hour == 13
-    assert post.next_run.hour == 14
+    jobs = schedule.jobs
+    assert len(jobs) == 2
+    assert jobs[0].next_run.hour == 13  # pre-standup
+    assert jobs[1].next_run.hour == 14  # post-standup
 
 
 @pytest.mark.parametrize(
@@ -36,12 +29,12 @@ def test_standup_is_scheduled(app, token):
 )
 def test_standup_takes_the_weekend_off(app, monkeypatch, token, now):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler())
+    asyncio.ensure_future(standup.scheduler())
     app.post("/", json={"token": token})
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
 
-    pre, post = get_pre_post_jobs()
+    pre, post = schedule.jobs
     pre.next_run = now
     post.next_run = now
 
@@ -61,14 +54,14 @@ def test_standup_queries_users(app, monkeypatch, token):
     monkeypatch.setattr(
         standup, "get_dm_channel_id", lambda *args, **kwargs: "dm_chris"
     )
-    asyncio.ensure_future(loop_policy.run_scheduler())
+    asyncio.ensure_future(standup.scheduler())
     app.post("/", json={"token": token})
 
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
     monkeypatch.setattr(standup, "_is_weekday", lambda: True)
 
-    pre, post = get_pre_post_jobs()
+    pre, post = schedule.jobs
     pre.next_run = datetime.datetime.now()
     schedule.run_all()
     assert say.call_count == 2
@@ -81,7 +74,7 @@ def test_standup_queries_users(app, monkeypatch, token):
 
 def test_standup_stores_updates(app, monkeypatch, token):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler())
+    asyncio.ensure_future(standup.scheduler())
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
 
@@ -96,7 +89,7 @@ def test_standup_stores_updates(app, monkeypatch, token):
 
 def test_standup_has_a_clear_feature(app, monkeypatch, token):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler())
+    asyncio.ensure_future(standup.scheduler())
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
 
@@ -120,7 +113,7 @@ def test_standup_has_a_clear_feature_that_doesnt_require_a_space(
     app, monkeypatch, token
 ):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler())
+    asyncio.ensure_future(standup.scheduler())
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
 
@@ -137,7 +130,7 @@ def test_standup_has_a_clear_feature_that_doesnt_require_a_space(
 
 def test_standup_clear_responds_even_when_nothing_to_clear(app, monkeypatch, token):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler())
+    asyncio.ensure_future(standup.scheduler())
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
 
@@ -151,7 +144,7 @@ def test_standup_clear_responds_even_when_nothing_to_clear(app, monkeypatch, tok
 
 def test_standup_show_displays_current_status(app, monkeypatch, token):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler())
+    asyncio.ensure_future(standup.scheduler())
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
 
@@ -166,7 +159,7 @@ def test_standup_show_displays_current_status(app, monkeypatch, token):
 
 def test_standup_show_is_empty(app, monkeypatch, token):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler())
+    asyncio.ensure_future(standup.scheduler())
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
 
