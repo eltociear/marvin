@@ -53,6 +53,29 @@ def test_at_mentions_doesnt_respond_if_marvin_tags_himself(
     assert say.call_count == 0
 
 
+def test_marvin_gives_psa_when_new_emoji_added(app, token, monkeypatch):
+    post_event = {"type": "emoji_changed", "subtype": "add", "name": "test-emoji"}
+    say = MagicMock()
+    monkeypatch.setattr(marvin.responses, "say", say)
+    r = app.post("/", json={"event": post_event, "token": token})
+    assert r.ok
+    assert say.call_count == 1
+    assert (
+        say.call_args[0][0]
+        == "*PSA*: A new slackmoji :test-emoji: was added! :more_you_know:"
+    )
+    assert say.call_args[1]["channel"] == "CANLZB1L3"
+
+
+def test_marvin_only_gives_psa_for_additions(app, token, monkeypatch):
+    post_event = {"type": "emoji_changed", "subtype": "changed", "name": "test-emoji"}
+    say = MagicMock()
+    monkeypatch.setattr(marvin.responses, "say", say)
+    r = app.post("/", json={"event": post_event, "token": token})
+    assert r.ok
+    assert say.call_count == 0
+
+
 def test_at_mentions_responds_within_thread(app, token, monkeypatch):
     post_event = {
         "text": "<@UBEEMJZFX>",
