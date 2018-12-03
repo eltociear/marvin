@@ -57,6 +57,8 @@ async def event_handler(data: Body):
     event_type = event.get("type")
     if event_type == "app_mention" or MARVIN_ID in event.get("text", ""):
         return app_mention(event)
+    elif event_type == "emoji_changed" and event.get("subtype") == "add":
+        return emoji_added(event)
     elif event_type == "message" and event.get("bot_id") == "BBGMPFDHQ":
         return github_mention(event)
     elif event_type == "message" and event.get("bot_id") == "BDUBG9WAD":
@@ -68,6 +70,14 @@ def app_mention(event):
     if who_spoke != MARVIN_ID:
         quote = random.choice(quotes)
         say(quote, channel=event.get("channel"), thread_ts=event.get("thread_ts"))
+    return Response("")
+
+
+def emoji_added(event):
+    name = event.get("name", "grey_question")
+    psa = f"*PSA*: A new slackmoji :{name}: was added! :more_you_know:"
+    psa_channel = "CANLZB1L3"  # general
+    say(psa, channel=psa_channel)
     return Response("")
 
 
