@@ -64,7 +64,7 @@ def test_marvin_gives_psa_when_new_emoji_added(app, token, monkeypatch):
         say.call_args[0][0]
         == "*PSA*: A new slackmoji :test-emoji: was added! :more_you_know:"
     )
-    assert say.call_args[1]["channel"] == "CANLZB1L3"
+    assert say.call_args[1]["channel"] == "CANPVTSKU"
 
 
 def test_marvin_only_gives_psa_for_additions(app, token, monkeypatch):
