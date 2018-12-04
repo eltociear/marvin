@@ -76,7 +76,7 @@ def app_mention(event):
 def emoji_added(event):
     name = event.get("name", "grey_question")
     psa = f"*PSA*: A new slackmoji :{name}: was added! :more_you_know:"
-    psa_channel = "CANLZB1L3"  # general
+    psa_channel = "CANPVTSKU"  # random
     say(psa, channel=psa_channel)
     return Response("")
 
