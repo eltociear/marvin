@@ -67,7 +67,7 @@ async def defcon_handler(data: RequestData):
         msg = levels.get(new_level, "")
         if defcon_pin:
             remove_pin(channel=defcon_channel, timestamp=defcon_pin["message"]["ts"])
-        resp = say(f"*DEFCON LEVEL*: {new_level}" + msg, channel=defcon_channel)
+        resp = say(f"*DEFCON LEVEL*: {new_level}\n" + msg, channel=defcon_channel)
         data = json.loads(resp.text)
         add_pin(channel=defcon_channel, timestamp=data.get("ts", data.get("timestamp")))
         return "DEFCON level updated!"
