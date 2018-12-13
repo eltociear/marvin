@@ -1,21 +1,24 @@
 setup_gcloud_sdk: &setup_gcloud_sdk
-    name: Set up Google Cloud SDK
-    command: |
-        echo "$GOOGLE_SERVICE_ACCOUNT_KEY" > key.json
-        gcloud auth activate-service-account --key-file key.json
-        gcloud config set compute/zone $GCLOUD_ZONE
-        gcloud config set project $GCLOUD_PROJECT
-
+  name: Set up Google Cloud SDK
+  command: |
+    echo "$GOOGLE_SERVICE_ACCOUNT_KEY" > key.json
+    gcloud auth activate-service-account --key-file key.json
+    gcloud config set compute/zone $GCLOUD_ZONE
+    gcloud config set project $GCLOUD_PROJECT
 
 version: 2
 jobs:
-
   test:
     docker:
-      - image: python:3.6 
+      - image: python:3.6
 
     steps:
       - checkout
+      - run:
+          name: Set Google credentials
+          command: |
+            echo "$GOOGLE_SERVICE_ACCOUNT_KEY" > key.json
+            echo 'export GOOGLE_APPLICATION_CREDENTIALS=key.json' >> $BASH_ENV
       - run:
           name: Install Marvin
           command: |
@@ -71,21 +74,18 @@ jobs:
             sed -i  "s/\${IMAGE_TAG}/$CIRCLE_SHA1/g" kubernetes/deployment.yml
             kubectl apply -f kubernetes/deployment.yml
 
-
-
 workflows:
-    version: 2
-    build_and_deploy:
-        jobs:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - test
+      - build:
+          requires:
             - test
-            - build:
-                requires:
-                  - test
-                filters:
-                  branches:
-                    only: master
+          filters:
+            branches:
+              only: master
 
-            - deploy:
-                requires:
-                  - build
-
+      - deploy:
+          requires:
+            - build
