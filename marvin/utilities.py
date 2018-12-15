@@ -134,6 +134,7 @@ def say(text, channel=None, **kwargs):
     params = {
         "token": TOKEN,
         "as_user": "true",
+        "link_names": "true",
         "mrkdwn": "true",
         "channel": channel,
         "text": text,
