@@ -56,6 +56,9 @@ jobs:
       - run:
           name: Add Slack token to Kubernetes
           command: |
+            echo -n "$GITHUB_VALIDATION_TOKEN" > githubvalidationtoken.txt
+            kubectl delete secret githubvalidationtoken --ignore-not-found
+            kubectl create secret generic githubvalidationtoken --from-file=./githubvalidationtoken.txt
             echo -n "$SLACK_TOKEN" > slacktoken.txt
             kubectl delete secret slacktoken --ignore-not-found
             kubectl create secret generic slacktoken --from-file=./slacktoken.txt
