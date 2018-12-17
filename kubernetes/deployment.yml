@@ -21,6 +21,16 @@ spec:
         ports:
           - containerPort: 8080
         env:
+          - name: GITHUB_VALIDATION_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: githubvalidationtoken
+                key: githubvalidationtoken.txt
+          - name: MARVIN_ACCESS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: marvinaccesstoken
+                key: marvinaccesstoken.txt
           - name: MARVIN_TOKEN
             valueFrom:
               secretKeyRef:
