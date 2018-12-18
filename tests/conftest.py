@@ -12,6 +12,11 @@ def app():
 
 
 @pytest.fixture
+def secret():
+    return os.environ.get("GITHUB_VALIDATION_TOKEN", "").encode()
+
+
+@pytest.fixture
 def token():
     return os.environ.get("SLACK_VALIDATION_TOKEN")
 
@@ -25,4 +30,5 @@ def no_google(monkeypatch):
 @pytest.fixture(autouse=True)
 def no_requests(monkeypatch):
     "Ensures that no test accidentally sends a real request."
+    monkeypatch.delattr("marvin.github.requests")
     monkeypatch.delattr("marvin.utilities.requests.post")
