@@ -7,10 +7,8 @@ from apistar.http import RequestData
 
 from .utilities import get_dm_channel_id, get_users, say
 
-UPDATES = {}
 
 client = google.cloud.firestore.Client(project="prefect-marvin")
-
 standup_channel = "CANLZB1L3"  # "CBH18KG8G"
 
 
