@@ -21,10 +21,17 @@ async def schedule_standup():
 
 
 def get_collection_name():
+    date_format = "%Y-%m-%d"
     now = datetime.datetime.utcnow()
-    if now.hour < 14:
-        pass
-    return now.strftime('%Y-%m-%d')
+    day_name = now.strftime("%A")
+    weekend_offsets = {"Friday": 3, "Saturday": 2, "Sunday": 1}
+    if now.hour < 14 and day_name not in ["Saturday", "Sunday"]:
+        return now.strftime(date_format)
+    elif now.hour >= 14 and day_name not in weekend_offsets:
+        return (now + datetime.timedelta(days=1)).strftime(date_format)
+    elif day_name in weekend_offsets:
+        day_offset = weekend_offsets[day_name]
+        return (now + datetime.timedelta(days=day_offset)).strftime(date_format)
 
 
 def get_latest_updates():
@@ -34,7 +41,7 @@ def get_latest_updates():
     date = get_collection_name()
     collection = client.collection(f"standup/{date}/users")
     updates = collection.get()
-    user_dict = {doc.id: (doc.to_dict() or {}).get('updates') for doc in updates}
+    user_dict = {doc.id: (doc.to_dict() or {}).get("updates") for doc in updates}
     return user_dict
 
 
@@ -45,7 +52,7 @@ def pop_user_updates(user):
     date = get_collection_name()
     collection = client.collection(f"standup/{date}/users")
     user_doc = collection.document(user)
-    old_update = (user_doc.get().to_dict() or {}).get('updates')
+    old_update = (user_doc.get().to_dict() or {}).get("updates")
     user_doc.delete()
     return old_update
 
@@ -56,10 +63,10 @@ def update_user_updates(user, update):
     user_doc = collection.document(user)
     current_status = user_doc.get().to_dict()
     if current_status is None:
-        user_doc.create({'updates': update})
+        user_doc.create({"updates": update})
     else:
-        new_update = current_status.get('updates', '') + '\n' + update
-        user_doc.update({'updates': new_update})
+        new_update = current_status.get("updates", "") + "\n" + update
+        user_doc.update({"updates": new_update})
 
 
 async def standup_handler(data: RequestData):
@@ -83,7 +90,7 @@ async def standup_handler(data: RequestData):
         )
         return current_update
 
-    update_user_updates(user, update):
+    update_user_updates(user, update)
     return f"Thanks {user}!"
 
 
