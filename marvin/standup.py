@@ -23,12 +23,14 @@ def get_collection_name():
     now = datetime.datetime.utcnow()
     day_name = now.strftime("%A")
     weekend_offsets = {"Friday": 3, "Saturday": 2, "Sunday": 1}
-    if (now.hour <= 14 and now.minute <= 1) and day_name not in ["Saturday", "Sunday"]:
-        return now.strftime(date_format)
-    elif (now.hour >= 14 and now.minute > 1) and day_name not in weekend_offsets:
-        return (now + datetime.timedelta(days=1)).strftime(date_format)
-    elif day_name in weekend_offsets:
-        day_offset = weekend_offsets[day_name]
+    day_offset = weekend_offsets.get(day_name, 1)
+
+    if day_name not in ["Saturday", "Sunday"]:
+        if (now.hour < 14) or (now.hour == 14 and now.minute <= 1):
+            return now.strftime(date_format)
+        else:
+            return (now + datetime.timedelta(days=day_offset)).strftime(date_format)
+    else:
         return (now + datetime.timedelta(days=day_offset)).strftime(date_format)
 
 
