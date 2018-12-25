@@ -43,6 +43,7 @@ def test_standup_is_scheduled(app, token):
         (datetime.datetime(2018, 7, 17, 14, 0), "2018-07-17"),
         (datetime.datetime(2018, 7, 17, 14, 1), "2018-07-17"),
         (datetime.datetime(2018, 7, 17, 14, 2), "2018-07-18"),
+        (datetime.datetime(2018, 12, 25, 5, 20, 55, 592853), "2018-12-25"),
     ],
 )
 def test_standup_identifies_the_right_date_an_update_belongs_to(
