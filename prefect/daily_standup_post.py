@@ -32,9 +32,7 @@ def get_latest_updates(date):
     """
     Returns dictionary of users -> updates
     """
-    GOOGLE_CREDS = json.loads(Secret("GOOGLE_JSON_CREDENTIALS").get().replace("'", '"'))
-    creds = service_account.Credentials.from_service_account_info(GOOGLE_CREDS)
-    client = google.cloud.firestore.Client(credentials=creds, project="prefect-marvin")
+    client = google.cloud.firestore.Client(project="prefect-marvin")
     collection = client.collection(f"standup/{date}/users")
     updates = collection.get()
     user_dict = {doc.id: (doc.to_dict() or {}).get("updates") for doc in updates}
@@ -62,11 +60,13 @@ def post_standup(updates, channel):
 
 
 weekday_schedule = CronSchedule("0 0 * * 1-5")
-env = ContainerEnvironment(
-    base_image="python:3.6",
-    registry_url="gcr.io/prefect-dev/flows/",
-    python_dependencies=["google-cloud-firestore", "requests"],
-)
+#env = ContainerEnvironment(
+#    base_image="python:3.6",
+#    registry_url="gcr.io/prefect-dev/flows/",
+#    python_dependencies=["google-cloud-firestore", "requests"],
+#)
+from prefect.environments import LocalEnvironment
+env = LocalEnvironment()
 
 
 with Flow("post-standup", schedule=weekday_schedule, environment=env) as flow:
