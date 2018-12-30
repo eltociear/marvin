@@ -100,14 +100,20 @@ def reminder(user_tuple):
     return r
 
 
-weekday_schedule = CronSchedule("0 0 * * 1-5")
+weekday_schedule = CronSchedule("30 13 * * 1-5")
 env = ContainerEnvironment(
     base_image="python:3.6",
     registry_url="gcr.io/prefect-dev/flows/",
     python_dependencies=["google-cloud-firestore", "requests"],
+    files={
+        "/Users/chris/Developer/marvin/prefect-marvin-e5f415f8d2b2.json": "/root/.prefect/prefect-marvin-credentials.json"
+    },
+    env_vars={
+        "GOOGLE_APPLICATION_CREDENTIALS": "/root/.prefect/prefect-marvin-credentials.json"
+    },
 )
 
 
-with Flow("standup-reminder", schedule=weekday_schedule, environment=env) as flow:
+with Flow("dc-standup-reminder", schedule=weekday_schedule, environment=env) as flow:
     updates = get_latest_updates(get_collection_name)
     res = reminder.map(does_user_need_reminder.map(get_users, unmapped(updates)))
