@@ -57,19 +57,25 @@ def post_standup(updates, channel):
     }
     r = requests.post("https://slack.com/api/chat.postMessage", data=params)
     r.raise_for_status()
-    if r.json()['ok'] is False:
-        raise ValueError(r.json().get('error', "Requests error"))
+    if r.json()["ok"] is False:
+        raise ValueError(r.json().get("error", "Requests error"))
     return r
 
 
-weekday_schedule = CronSchedule("0 0 * * 1-5")
-#env = ContainerEnvironment(
-#    base_image="python:3.6",
-#    registry_url="gcr.io/prefect-dev/flows/",
-#    python_dependencies=["google-cloud-firestore", "requests"],
-#)
-from prefect.environments import LocalEnvironment
-env = LocalEnvironment()
+weekday_schedule = CronSchedule("0 14 * * 1-5")
+env = ContainerEnvironment(
+    base_image="python:3.6",
+    registry_url="gcr.io/prefect-dev/flows/",
+    python_dependencies=["google-cloud-firestore", "requests"],
+    files={
+        "/Users/chris/Developer/marvin/prefect-marvin-e5f415f8d2b2.json": "/root/.prefect/prefect-marvin-credentials.json"
+    },
+    env_vars={
+        "GOOGLE_APPLICATION_CREDENTIALS": "/root/.prefect/prefect-marvin-credentials.json"
+    },
+)
+# from prefect.environments import LocalEnvironment
+# env = LocalEnvironment()
 
 
 with Flow("post-standup", schedule=weekday_schedule, environment=env) as flow:

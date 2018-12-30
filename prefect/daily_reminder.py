@@ -84,14 +84,18 @@ def reminder(user_tuple):
     channel_id = json.loads(r.text)["channel"]["id"]
 
     params.pop("user")
-    text = f"Hi {user_name}! I haven't heard from you yet; what updates do you have for the team today? Please respond by using the slash command `/standup`,  and remember: your response will be shared!",
-    params.update({
-        "as_user": "true",
-        "link_names": "true",
-        "mrkdwn": "true",
-        "channel": channel_id,
-        "text": text,
-    })
+    text = (
+        f"Hi {user_name}! I haven't heard from you yet; what updates do you have for the team today? Please respond by using the slash command `/standup`,  and remember: your response will be shared!",
+    )
+    params.update(
+        {
+            "as_user": "true",
+            "link_names": "true",
+            "mrkdwn": "true",
+            "channel": channel_id,
+            "text": text,
+        }
+    )
     r = requests.post("https://slack.com/api/chat.postMessage", data=params)
     return r
 
