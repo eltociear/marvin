@@ -56,6 +56,9 @@ def post_standup(updates, channel):
         "text": public_msg,
     }
     r = requests.post("https://slack.com/api/chat.postMessage", data=params)
+    r.raise_for_status()
+    if r.json()['ok'] is False:
+        raise ValueError(r.json().get('error', "Requests error"))
     return r
 
 
