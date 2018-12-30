@@ -52,6 +52,10 @@ def get_users():
     TOKEN = Secret("MARVIN_TOKEN")
     params = {"token": TOKEN.get()}
     r = requests.post("https://slack.com/api/users.list", data=params)
+    r.raise_for_status()
+    if r.json()["ok"] is False:
+        raise ValueError(r.json().get("error", "Requests error"))
+
     user_dict = {}
     user_data = json.loads(r.text)["members"]
     for user in user_data:
@@ -97,6 +101,9 @@ def reminder(user_tuple):
         }
     )
     r = requests.post("https://slack.com/api/chat.postMessage", data=params)
+    r.raise_for_status()
+    if r.json()["ok"] is False:
+        raise ValueError(r.json().get("error", "Requests error"))
     return r
 
 
