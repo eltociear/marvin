@@ -5,11 +5,12 @@ import marvin.standup
 import marvin.responses
 
 
-async def run_scheduler(ignore_google=False):
+async def run_scheduler(ignore_google=False, ignore_standup=True):
     """
     Create schedules, then look for scheduled jobs every 5 seconds.
     """
-#    await marvin.standup.schedule_standup()
+    if not ignore_standup:
+        await marvin.standup.schedule_standup()
     if not ignore_google:
         await marvin.responses.schedule_refresh_users()
 
