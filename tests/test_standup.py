@@ -23,7 +23,7 @@ def get_pre_post_jobs():
 
 def test_standup_is_scheduled(app, token):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True))
+    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True, ignore_standup=False))
     app.post("/", json={"token": token})
 
     pre, post = get_pre_post_jobs()
@@ -63,7 +63,7 @@ def test_standup_identifies_the_right_date_an_update_belongs_to(
 )
 def test_standup_takes_the_weekend_off(app, monkeypatch, token, now):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True))
+    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True, ignore_standup=False))
     app.post("/", json={"token": token})
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
@@ -88,7 +88,7 @@ def test_standup_queries_users(app, monkeypatch, token):
     monkeypatch.setattr(
         standup, "get_dm_channel_id", lambda *args, **kwargs: "dm_chris"
     )
-    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True))
+    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True, ignore_standup=False))
     app.post("/", json={"token": token})
 
     say = MagicMock()
@@ -108,7 +108,7 @@ def test_standup_queries_users(app, monkeypatch, token):
 
 def test_standup_stores_updates(app, monkeypatch, token):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True))
+    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True, ignore_standup=False))
     say = MagicMock()
     updates = MagicMock()
     monkeypatch.setattr(standup, "say", say)
@@ -124,7 +124,7 @@ def test_standup_stores_updates(app, monkeypatch, token):
 
 def test_standup_has_a_clear_feature(app, monkeypatch, token):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True))
+    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True, ignore_standup=False))
     say = MagicMock()
     clear = MagicMock(return_value="not much")
     monkeypatch.setattr(standup, "say", say)
@@ -150,7 +150,7 @@ def test_standup_has_a_clear_feature_that_doesnt_require_a_space(
     app, monkeypatch, token
 ):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True))
+    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True, ignore_standup=False))
     say = MagicMock()
     clear = MagicMock(return_value="not much")
     monkeypatch.setattr(standup, "say", say)
@@ -169,7 +169,7 @@ def test_standup_has_a_clear_feature_that_doesnt_require_a_space(
 
 def test_standup_clear_responds_even_when_nothing_to_clear(app, monkeypatch, token):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True))
+    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True, ignore_standup=False))
     say = MagicMock()
     clear = MagicMock(return_value=None)
     monkeypatch.setattr(standup, "say", say)
@@ -185,7 +185,7 @@ def test_standup_clear_responds_even_when_nothing_to_clear(app, monkeypatch, tok
 
 def test_standup_show_displays_current_status(app, monkeypatch, token):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True))
+    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True, ignore_standup=False))
     say = MagicMock()
     latest = MagicMock(return_value={"test-user": "debugging"})
     monkeypatch.setattr(standup, "say", say)
@@ -201,7 +201,7 @@ def test_standup_show_displays_current_status(app, monkeypatch, token):
 
 def test_standup_show_is_empty(app, monkeypatch, token):
     # required to prime the asyncio loop
-    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True))
+    asyncio.ensure_future(loop_policy.run_scheduler(ignore_google=True, ignore_standup=False))
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
     latest = MagicMock(return_value=dict())
