@@ -9,7 +9,7 @@ async def run_scheduler(ignore_google=False):
     """
     Create schedules, then look for scheduled jobs every 5 seconds.
     """
-    await marvin.standup.schedule_standup()
+#    await marvin.standup.schedule_standup()
     if not ignore_google:
         await marvin.responses.schedule_refresh_users()
 

@@ -74,8 +74,6 @@ env = ContainerEnvironment(
         "GOOGLE_APPLICATION_CREDENTIALS": "/root/.prefect/prefect-marvin-credentials.json"
     },
 )
-# from prefect.environments import LocalEnvironment
-# env = LocalEnvironment()
 
 
 with Flow("post-standup", schedule=weekday_schedule, environment=env) as flow:
