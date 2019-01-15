@@ -21,7 +21,7 @@ def create_header(secret):
 def test_github_creates_issue_when_pr_is_merged(app, create_header, monkeypatch):
     data = {
         "pull_request": {
-            "labels": [{"name": "core"}],
+            "labels": [{"name": "core", "id": 1163480691}],
             "merged": True,
             "html_url": "foo:bar",
         },
@@ -43,7 +43,7 @@ def test_github_doesnt_create_issue_when_pr_is_not_merged(
 ):
     data = {
         "pull_request": {
-            "labels": [{"name": "core"}],
+            "labels": [{"name": "core", "id": 1163480691}],
             "merged": False,
             "html_url": "foo:bar",
         },
@@ -62,7 +62,7 @@ def test_github_doesnt_create_issue_when_pr_is_not_labeled(
 ):
     data = {
         "pull_request": {
-            "labels": [{"name": "cleanup"}],
+            "labels": [{"name": "cleanup", "id": 73}],
             "merged": True,
             "html_url": "foo:bar",
         },
@@ -81,7 +81,7 @@ def test_github_doesnt_create_issue_when_pr_is_not_closed(
 ):
     data = {
         "pull_request": {
-            "labels": [{"name": "core"}],
+            "labels": [{"name": "core", "id": 1163480691}],
             "merged": True,
             "html_url": "foo:bar",
         },

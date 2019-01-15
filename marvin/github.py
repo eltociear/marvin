@@ -23,8 +23,8 @@ def create_issue(title, body, labels=None):
 async def github_handler(data: Body):
     payload = json.loads(data)
     pr_data = payload.get("pull_request", {})
-    labels = [lab.get("name", "").lower() for lab in pr_data.get("labels", [])]
-    if "core" in labels and payload.get("action") == "closed":
+    labels = [lab.get("id", 0) for lab in pr_data.get("labels", [])]
+    if 1163480691 in labels and payload.get("action") == "closed":
         was_merged = pr_data.get("merged", False)
         pr_link = pr_data.get("html_url")
         if was_merged and pr_link is not None:
