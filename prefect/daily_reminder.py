@@ -13,7 +13,7 @@ from google.oauth2 import service_account
 
 
 @task
-def get_collection_name():
+def get_standup_date():
     date_format = "%Y-%m-%d"
     now = datetime.datetime.utcnow()
     day_name = now.strftime("%A")
@@ -42,7 +42,7 @@ def get_latest_updates(date):
 
 
 @task
-def get_users():
+def get_team():
     """
     Retrieve all current full-time Slack users.
 
@@ -69,17 +69,17 @@ def get_users():
 
 
 @task
-def does_user_need_reminder(user_tuple, current_updates):
-    user_name, user_id = user_tuple
+def is_reminder_needed(user_info, current_updates):
+    user_name, user_id = user_info
     if current_updates.get(user_name) is not None:
         raise SKIP(f"{user_name} has already provided an update")
     else:
-        return user_tuple
+        return user_info
 
 
 @task
-def reminder(user_tuple):
-    user_name, user_id = user_tuple
+def send_reminder(user_info):
+    user_name, user_id = user_info
     TOKEN = Secret("MARVIN_TOKEN")
 
     ## get private channel ID for this user
@@ -122,5 +122,5 @@ env = ContainerEnvironment(
 
 
 with Flow("dc-standup-reminder", schedule=weekday_schedule, environment=env) as flow:
-    updates = get_latest_updates(get_collection_name)
-    res = reminder.map(does_user_need_reminder.map(get_users, unmapped(updates)))
+    updates = get_latest_updates(get_standup_date)
+    res = send_reminder.map(is_reminder_needed.map(get_team, unmapped(updates)))

@@ -3,8 +3,17 @@ import os
 import requests
 
 
+MARVIN_ACCESS_TOKEN = os.environ.get("MARVIN_ACCESS_TOKEN")
 OAUTH_TOKEN = os.environ.get("MARVIN_OAUTH_TOKEN")
 TOKEN = os.environ.get("MARVIN_TOKEN")
+
+
+def get_repo_labels(repo="cloud"):
+    url = f"https://api.github.com/repos/PrefectHQ/{repo}/labels"
+    headers = {"AUTHORIZATION": f"token {MARVIN_ACCESS_TOKEN}"}
+    resp = requests.get(url, headers=headers)
+    resp.raise_for_status()
+    return json.loads(resp.text)
 
 
 def get_pins(channel="CBH18KG8G"):
