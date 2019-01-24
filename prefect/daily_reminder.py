@@ -121,7 +121,7 @@ def report(users):
     user_string = ", ".join([user for user in users if user is not None])
     if user_string.strip() == "":
         user_string = ":marvin-parrot:"
-    message = f"Reminders sent via {prefect.__version__}: {user_string}"
+    message = f"Reminders sent via Prefect `v{prefect.__version__}`: {user_string}"
     r = requests.post(
         url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
     )
