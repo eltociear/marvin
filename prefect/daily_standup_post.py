@@ -1,3 +1,4 @@
+import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
 from prefect.environments import ContainerEnvironment
@@ -6,6 +7,7 @@ from prefect.schedules import CronSchedule
 import datetime
 import google.cloud.firestore
 import json
+import random
 import requests
 from google.oauth2 import service_account
 
@@ -19,7 +21,7 @@ def get_collection_name():
     day_offset = weekend_offsets.get(day_name, 1)
 
     if day_name not in ["Saturday", "Sunday"]:
-        if (now.hour < 14) or (now.hour == 14 and now.minute <= 1):
+        if (now.hour < 14) or (now.hour == 14 and now.minute <= 2):
             return now.strftime(date_format)
         else:
             return (now + datetime.timedelta(days=day_offset)).strftime(date_format)
@@ -41,8 +43,13 @@ def get_latest_updates(date):
 
 @task
 def post_standup(updates, channel):
-    public_msg = "<!here> are today's standup updates:\n" + "=" * 30
-    for user, update in updates.items():
+    public_msg = (
+        f"<!here> are today's standup updates, brought to you by Prefect `v{prefect.__version__}`:\n"
+        + "=" * 30
+    )
+    items = list(updates.items())
+    random.shuffle(items)
+    for user, update in items:
         public_msg += f"\n*{user}*: {update}"
 
     TOKEN = Secret("MARVIN_TOKEN")
@@ -76,6 +83,16 @@ env = ContainerEnvironment(
 )
 
 
-with Flow("post-standup", schedule=weekday_schedule, environment=env) as flow:
+def notify_chris(flow, state):
+    url = Secret("SLACK_WEBHOOK_URL").get()
+    message = f"@chris, the daily standup flow failed; here is everything I know about the Flow state: ```{state.serialize()}```"
+    r = requests.post(
+        url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
+    )
+
+
+with Flow(
+    "post-standup", schedule=weekday_schedule, environment=env, on_failure=notify_chris
+) as flow:
     standup_channel = Parameter("standup_channel", default="CANLZB1L3")
     res = post_standup(get_latest_updates(get_collection_name()), standup_channel)

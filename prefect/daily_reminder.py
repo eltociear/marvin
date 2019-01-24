@@ -1,3 +1,4 @@
+import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
 from prefect.environments import ContainerEnvironment
@@ -9,7 +10,14 @@ import datetime
 import google.cloud.firestore
 import json
 import requests
-from google.oauth2 import service_account
+
+
+def notify_chris(task, state):
+    url = Secret("SLACK_WEBHOOK_URL").get()
+    message = f"@chris, a reminder Task failed; here is everything I know: ```{state.serialize()}```"
+    r = requests.post(
+        url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
+    )
 
 
 @task
@@ -77,7 +85,7 @@ def is_reminder_needed(user_info, current_updates):
         return user_info
 
 
-@task
+@task(on_failure=notify_chris)
 def send_reminder(user_info):
     user_name, user_id = user_info
     TOKEN = Secret("MARVIN_TOKEN")
@@ -104,7 +112,19 @@ def send_reminder(user_info):
     r.raise_for_status()
     if r.json()["ok"] is False:
         raise ValueError(r.json().get("error", "Requests error"))
-    return r
+    return user_name
+
+
+@task(skip_on_upstream_skip=False)
+def report(users):
+    url = Secret("SLACK_WEBHOOK_URL").get()
+    user_string = ", ".join([user for user in users if user is not None])
+    if user_string.strip() == "":
+        user_string = ":marvin-parrot:"
+    message = f"Reminders sent via Prefect `v{prefect.__version__}`: {user_string}"
+    r = requests.post(
+        url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
+    )
 
 
 weekday_schedule = CronSchedule("30 13 * * 1-5")
@@ -124,3 +144,6 @@ env = ContainerEnvironment(
 with Flow("dc-standup-reminder", schedule=weekday_schedule, environment=env) as flow:
     updates = get_latest_updates(get_standup_date)
     res = send_reminder.map(is_reminder_needed.map(get_team, unmapped(updates)))
+    final = report(res)
+
+flow.set_reference_tasks([res])
