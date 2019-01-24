@@ -83,9 +83,9 @@ env = ContainerEnvironment(
 )
 
 
-def notify_chris(state):
+def notify_chris(flow, state):
     url = Secret("SLACK_WEBHOOK_URL").get()
-    message = f"@chris, the daily Standup post failed; here is everything I know about the Flow state: ```{state.serialize()}```"
+    message = f"@chris, the daily standup flow failed; here is everything I know about the Flow state: ```{state.serialize()}```"
     r = requests.post(
         url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
     )

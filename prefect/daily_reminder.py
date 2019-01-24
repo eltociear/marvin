@@ -9,7 +9,14 @@ import datetime
 import google.cloud.firestore
 import json
 import requests
-from google.oauth2 import service_account
+
+
+def notify_chris(task, state):
+    url = Secret("SLACK_WEBHOOK_URL").get()
+    message = f"@chris, a reminder Task failed; here is everything I know: ```{state.serialize()}```"
+    r = requests.post(
+        url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
+    )
 
 
 @task
@@ -77,7 +84,7 @@ def is_reminder_needed(user_info, current_updates):
         return user_info
 
 
-@task
+@task(on_failure=notify_chris)
 def send_reminder(user_info):
     user_name, user_id = user_info
     TOKEN = Secret("MARVIN_TOKEN")
@@ -104,7 +111,6 @@ def send_reminder(user_info):
     r.raise_for_status()
     if r.json()["ok"] is False:
         raise ValueError(r.json().get("error", "Requests error"))
-    return r
 
 
 weekday_schedule = CronSchedule("30 13 * * 1-5")
