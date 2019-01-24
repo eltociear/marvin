@@ -83,6 +83,16 @@ env = ContainerEnvironment(
 )
 
 
-with Flow("post-standup", schedule=weekday_schedule, environment=env) as flow:
+def notify_chris(state):
+    url = Secret("SLACK_WEBHOOK_URL").get()
+    message = f"@chris, the daily Standup post failed; here is everything I know about the Flow state: ```{state.serialize()}```"
+    r = requests.post(
+        url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
+    )
+
+
+with Flow(
+    "post-standup", schedule=weekday_schedule, environment=env, on_failure=notify_chris
+) as flow:
     standup_channel = Parameter("standup_channel", default="CANLZB1L3")
     res = post_standup(get_latest_updates(get_collection_name()), standup_channel)
