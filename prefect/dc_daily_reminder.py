@@ -58,23 +58,10 @@ def get_team():
     Returns:
         - a list of (user name, Slack User ID) tuples
     """
-    TOKEN = Secret("MARVIN_TOKEN")
-    params = {"token": TOKEN.get()}
-    r = requests.post("https://slack.com/api/users.list", data=params)
-    r.raise_for_status()
-    if r.json()["ok"] is False:
-        raise ValueError(r.json().get("error", "Requests error"))
-
-    user_dict = {}
-    user_data = json.loads(r.text)["members"]
-    for user in user_data:
-        if (
-            not user["is_bot"]
-            and user["name"] not in ("slackbot", "test-user")
-            and not user["is_ultra_restricted"]
-        ):
-            user_dict[user["name"]] = user["id"]
-    return [(name, id) for name, id in user_dict.items()]
+    client = google.cloud.firestore.Client(project="prefect-marvin")
+    collection = client.collection(f"users")
+    users = [u.to_dict() for u in collection.get()]
+    return [(u["name"], u["slack"]) for u in users if u["office"] == "DC"]
 
 
 @task
@@ -89,10 +76,10 @@ def is_reminder_needed(user_info, current_updates):
 @task(on_failure=notify_chris)
 def send_reminder(user_info):
     user_name, user_id = user_info
-    TOKEN = Secret("MARVIN_TOKEN")
+    TOKEN = Secret("MARVIN_TOKEN").get()
 
     ## get private channel ID for this user
-    params = {"token": TOKEN.get(), "user": user_id}
+    params = {"token": TOKEN, "user": user_id}
     r = requests.post("https://slack.com/api/im.open", data=params)
     channel_id = json.loads(r.text)["channel"]["id"]
 
