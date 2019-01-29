@@ -1,6 +1,7 @@
 import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
+from prefect.engine.result_handlers import JSONResultHandler
 from prefect.environments import ContainerEnvironment
 from prefect.schedules import CronSchedule
 
@@ -15,7 +16,7 @@ from google.oauth2 import service_account
 @task
 def get_collection_name():
     date_format = "%Y-%m-%d"
-    now = datetime.datetime.utcnow()
+    now = prefect.context["scheduled_start_time"]
     day_name = now.strftime("%A")
     weekend_offsets = {"Friday": 3, "Saturday": 2, "Sunday": 1}
     day_offset = weekend_offsets.get(day_name, 1)
@@ -92,7 +93,11 @@ def notify_chris(flow, state):
 
 
 with Flow(
-    "post-standup", schedule=weekday_schedule, environment=env, on_failure=notify_chris
+    "post-standup",
+    schedule=weekday_schedule,
+    environment=env,
+    on_failure=notify_chris,
+    result_handler=JSONResultHandler(),
 ) as flow:
     standup_channel = Parameter("standup_channel", default="CANLZB1L3")
     res = post_standup(get_latest_updates(get_collection_name()), standup_channel)
