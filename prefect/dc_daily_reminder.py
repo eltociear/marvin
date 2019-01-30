@@ -3,6 +3,7 @@ from prefect import Flow, Parameter, task
 from prefect.client import Secret
 from prefect.environments import ContainerEnvironment
 from prefect.schedules import CronSchedule
+from prefect.engine.result_handlers import JSONResultHandler
 from prefect.engine.signals import SKIP
 from prefect.utilities.tasks import unmapped
 
@@ -23,7 +24,7 @@ def notify_chris(task, state):
 @task
 def get_standup_date():
     date_format = "%Y-%m-%d"
-    now = datetime.datetime.utcnow()
+    now = prefect.context["scheduled_start_time"]
     day_name = now.strftime("%A")
     weekend_offsets = {"Friday": 3, "Saturday": 2, "Sunday": 1}
     day_offset = weekend_offsets.get(day_name, 1)
@@ -57,23 +58,10 @@ def get_team():
     Returns:
         - a list of (user name, Slack User ID) tuples
     """
-    TOKEN = Secret("MARVIN_TOKEN")
-    params = {"token": TOKEN.get()}
-    r = requests.post("https://slack.com/api/users.list", data=params)
-    r.raise_for_status()
-    if r.json()["ok"] is False:
-        raise ValueError(r.json().get("error", "Requests error"))
-
-    user_dict = {}
-    user_data = json.loads(r.text)["members"]
-    for user in user_data:
-        if (
-            not user["is_bot"]
-            and user["name"] not in ("slackbot", "test-user")
-            and not user["is_ultra_restricted"]
-        ):
-            user_dict[user["name"]] = user["id"]
-    return [(name, id) for name, id in user_dict.items()]
+    client = google.cloud.firestore.Client(project="prefect-marvin")
+    collection = client.collection(f"users")
+    users = [u.to_dict() for u in collection.get()]
+    return [(u["name"], u["slack"]) for u in users if u["office"] == "DC"]
 
 
 @task
@@ -88,10 +76,10 @@ def is_reminder_needed(user_info, current_updates):
 @task(on_failure=notify_chris)
 def send_reminder(user_info):
     user_name, user_id = user_info
-    TOKEN = Secret("MARVIN_TOKEN")
+    TOKEN = Secret("MARVIN_TOKEN").get()
 
     ## get private channel ID for this user
-    params = {"token": TOKEN.get(), "user": user_id}
+    params = {"token": TOKEN, "user": user_id}
     r = requests.post("https://slack.com/api/im.open", data=params)
     channel_id = json.loads(r.text)["channel"]["id"]
 
@@ -141,7 +129,12 @@ env = ContainerEnvironment(
 )
 
 
-with Flow("dc-standup-reminder", schedule=weekday_schedule, environment=env) as flow:
+with Flow(
+    "dc-standup-reminder",
+    schedule=weekday_schedule,
+    environment=env,
+    result_handler=JSONResultHandler(),
+) as flow:
     updates = get_latest_updates(get_standup_date)
     res = send_reminder.map(is_reminder_needed.map(get_team, unmapped(updates)))
     final = report(res)
