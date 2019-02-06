@@ -3,6 +3,7 @@ from prefect import Flow, Parameter, task
 from prefect.client import Secret
 from prefect.environments import ContainerEnvironment
 from prefect.schedules import CronSchedule
+from prefect.engine.result import NoResult
 from prefect.engine.result_handlers import JSONResultHandler
 from prefect.engine.signals import SKIP
 from prefect.utilities.tasks import unmapped
@@ -46,7 +47,9 @@ def get_latest_updates(date):
     client = google.cloud.firestore.Client(project="prefect-marvin")
     collection = client.collection(f"standup/{date}/users")
     updates = collection.get()
-    user_dict = {doc.id: (doc.to_dict() or {}).get("updates") for doc in updates}
+    user_dict = {
+        doc.id.lower(): (doc.to_dict() or {}).get("updates") for doc in updates
+    }
     return user_dict
 
 
@@ -67,7 +70,7 @@ def get_team():
 @task
 def is_reminder_needed(user_info, current_updates):
     user_name, user_id = user_info
-    if current_updates.get(user_name) is not None:
+    if current_updates.get(user_name.lower()) is not None:
         raise SKIP(f"{user_name} has already provided an update")
     else:
         return user_info
@@ -106,7 +109,7 @@ def send_reminder(user_info):
 @task(skip_on_upstream_skip=False)
 def report(users):
     url = Secret("SLACK_WEBHOOK_URL").get()
-    user_string = ", ".join([user for user in users if user is not None])
+    user_string = ", ".join([user for user in users if user != NoResult])
     if user_string.strip() == "":
         user_string = ":marvin-parrot:"
     message = f"Reminders sent via Prefect `v{prefect.__version__}`: {user_string}"
