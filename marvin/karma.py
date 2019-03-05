@@ -8,6 +8,10 @@ def update_karma(regex_match):
     subject, vote, reason = regex_match.groups()
     collection = client.collection("karma")
 
+    # strip leading and trailing whitespace
+    subject = subject.strip()
+    reason = reason.strip()
+
     karma_target = collection.document(document_id=subject).get()
     if karma_target.exists:
         value = karma_target.get("value") or 0
