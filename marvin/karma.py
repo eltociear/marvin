@@ -10,7 +10,7 @@ def update_karma(regex_match):
 
     karma_target = collection.document(document_id=subject).get()
     if karma_target.exists:
-        value = karma_target.get("value", 0)
+        value = karma_target.get("value") or 0
         new_value = value + votes[vote]
         karma_target.reference.update({"value": new_value})
         return f"{subject} has {new_value} points"
