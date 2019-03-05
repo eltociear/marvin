@@ -10,6 +10,7 @@ from apistar.http import Body, Response
 import google.cloud.firestore
 
 from .utilities import get_dm_channel_id, say
+from .karma import update_karma
 
 executor = ThreadPoolExecutor(max_workers=3)
 USERS = {}
@@ -36,6 +37,8 @@ quotes = [
 ]
 
 firestore = None
+
+karma_regex = re.compile("^(.+)(\+{2}|\-{2})(.*)$")
 
 
 async def schedule_refresh_users():
@@ -87,6 +90,10 @@ async def event_handler(data: Body):
         return github_mention(event)
     elif event_type == "message" and event.get("bot_id") == "BDUBG9WAD":
         return notion_mention(event)
+    elif event_type == "message" and event.get("bot_id") is None:
+        positive_match = karma_regex.match(event.get("text", ""))
+        if positive_match:
+            return karma_handler(positive_match, event)
 
 
 def app_mention(event):
@@ -140,3 +147,9 @@ def notion_mention(event):
 async def version_handler():
     base_url = "https://github.com/PrefectHQ/marvin/commit/"
     return f"{base_url}{GIT_SHA}"
+
+
+def karma_handler(regex_match, event):
+    response_text = update_karma(regex_match)
+    say(response_text, channel=event.get("channel"))
+    return Response("")
