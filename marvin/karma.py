@@ -4,29 +4,16 @@ client = google.cloud.firestore.Client(project="prefect-marvin")
 
 
 def update_karma(regex_match):
-    groups = regex_match.groups()
-    collection = client.collection(u"karma")
+    votes = {"++": 1, "--": -1}
+    subject, vote, reason = regex_match.groups()
+    collection = client.collection("karma")
 
-    try:
-      karma_target = collection.document(document_id=groups[0]).get()
-      value = karma_target.get("value")
-      if groups[1] == "++":
-        karma_target.update({
-          "value": value += 1
-        })
-      elif groups[1] == "--":
-        karma_target.update({
-          "value": value -= 1
-        })
-      return f"{group[0]} has {value} points"
-    except google.cloud.exceptions.NotFound:
-      if groups[1] == "++":
-        value = 1
-        new_karma_target = {"value": value}
-      elif groups[1] == "--":
-        value = -1
-        new_karma_target = {"value": value}
-
-      collection.add(document_id=groups[0], document_data=new_karma_target)
-      
-      return f"{group[0]} has {value} points
+    karma_target = collection.document(document_id=subject).get()
+    if karma_target.exists:
+        value = karma_target.get("value", 0)
+        new_value = value + votes[vote]
+        karma_target.reference.update({"value": new_value})
+        return f"{subject} has {new_value} points"
+    else:
+        collection.add(document_id=subject, document_data={"value": votes[vote]})
+        return f"{subject} has {votes[vote]} points"
