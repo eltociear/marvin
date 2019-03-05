@@ -93,7 +93,7 @@ async def event_handler(data: Body):
     elif event_type == "message":
         positive_match = karma_regex.match(event.get("text", ""))
         if positive_match:
-            return karma_handler(positive_match)
+            return karma_handler(positive_match, event)
 
 
 def app_mention(event):
@@ -149,7 +149,7 @@ async def version_handler():
     return f"{base_url}{GIT_SHA}"
 
 
-def karma_handler(regex_match):
+def karma_handler(regex_match, event):
     response_text = update_karma(regex_match)
-    say(response_text)
+    say(response_text, channel=event.get("channel"))
     return Response("")
