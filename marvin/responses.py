@@ -90,7 +90,7 @@ async def event_handler(data: Body):
         return github_mention(event)
     elif event_type == "message" and event.get("bot_id") == "BDUBG9WAD":
         return notion_mention(event)
-    elif event_type == "message":
+    elif event_type == "message" and event.get("bot_id") is None:
         positive_match = karma_regex.match(event.get("text", ""))
         if positive_match:
             return karma_handler(positive_match, event)

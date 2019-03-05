@@ -26,3 +26,7 @@ Because Marvin's subscribed events are sent to a fixed IP address, local develop
 #### Deployment
 
 Marvin is deployed via Google Cloud Platform, Kubernetes and Docker. 
+
+### Contributing to Marvin
+
+
