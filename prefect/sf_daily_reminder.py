@@ -1,7 +1,7 @@
 import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
-from prefect.environments import ContainerEnvironment
+from prefect.environments.kubernetes import DaskOnKubernetesEnvironment
 from prefect.schedules import CronSchedule
 from prefect.engine.result import NoResult
 from prefect.engine.result_handlers import JSONResultHandler
@@ -11,6 +11,7 @@ from prefect.utilities.tasks import unmapped
 import datetime
 import google.cloud.firestore
 import json
+import pendulum
 import requests
 
 
@@ -118,11 +119,18 @@ def report(users):
     )
 
 
-weekday_schedule = CronSchedule("0 5 * * 1-5")
-env = ContainerEnvironment(
+weekday_schedule = CronSchedule(
+    "0 20 * * 0-4", start_date=pendulum.parse("2017-03-24", tz="US/Pacific")
+)
+env = DaskOnKubernetesEnvironment(
     base_image="python:3.6",
     registry_url="gcr.io/prefect-dev/flows/",
-    python_dependencies=["google-cloud-firestore", "requests"],
+    python_dependencies=[
+        "google-cloud-firestore",
+        "requests",
+        "dask_kubernetes",
+        "kubernetes",
+    ],
     files={
         "/Users/chris/Developer/marvin/prefect-marvin-e5f415f8d2b2.json": "/root/.prefect/prefect-marvin-credentials.json"
     },
