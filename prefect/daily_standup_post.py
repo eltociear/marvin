@@ -2,12 +2,13 @@ import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
 from prefect.engine.result_handlers import JSONResultHandler
-from prefect.environments import ContainerEnvironment
+from prefect.environments.kubernetes import DaskOnKubernetesEnvironment
 from prefect.schedules import CronSchedule
 
 import datetime
 import google.cloud.firestore
 import json
+import pendulum
 import random
 import requests
 from google.oauth2 import service_account
@@ -70,11 +71,18 @@ def post_standup(updates, channel):
     return r
 
 
-weekday_schedule = CronSchedule("0 14 * * 1-5")
-env = ContainerEnvironment(
+weekday_schedule = CronSchedule(
+    "0 9 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
+)
+env = DaskOnKubernetesEnvironment(
     base_image="python:3.6",
     registry_url="gcr.io/prefect-dev/flows/",
-    python_dependencies=["google-cloud-firestore", "requests"],
+    python_dependencies=[
+        "google-cloud-firestore",
+        "requests",
+        "dask_kubernetes",
+        "kubernetes",
+    ],
     files={
         "/Users/chris/Developer/marvin/prefect-marvin-e5f415f8d2b2.json": "/root/.prefect/prefect-marvin-credentials.json"
     },
