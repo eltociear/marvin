@@ -30,9 +30,7 @@ def test_get_channels_returns_empty_dict_if_request_fails(monkeypatch, postdata)
 
 
 def test_get_users_returns_user_dict(monkeypatch, postdata):
-    returned = dict(
-        members=[dict(is_bot=False, name="chris", id="1", is_ultra_restricted=False)]
-    )
+    returned = dict(members=[dict(is_bot=False, name="chris", id="1")])
     post = MagicMock(return_value=postdata(ok=True, text=json.dumps(returned)))
     monkeypatch.setattr(marvin.utilities.requests, "post", post, raising=False)
     users = get_users()
@@ -49,27 +47,13 @@ def test_get_users_returns_empty_dict_if_request_fails(monkeypatch, postdata):
     assert len(users) == 0
 
 
-def test_get_users_ignores_ultra_restricted_users(monkeypatch, postdata):
-    returned = dict(
-        members=[
-            dict(is_bot=False, name="chris", id="1", is_ultra_restricted=False),
-            dict(is_bot=False, name="jeremiah", id=2, is_ultra_restricted=True),
-        ]
-    )
-    post = MagicMock(return_value=postdata(ok=True, text=json.dumps(returned)))
-    monkeypatch.setattr(marvin.utilities.requests, "post", post, raising=False)
-    users = get_users()
-    assert len(users) == 1
-    assert users["chris"] == "1"
-
-
 def test_get_users_ignores_slackbot_and_other_bots(monkeypatch, postdata):
     returned = dict(
         members=[
-            dict(is_bot=False, name="chris", id="1", is_ultra_restricted=False),
-            dict(is_bot=True, name="jeremiah", id=2, is_ultra_restricted=False),
-            dict(is_bot=False, name="slackbot", id=3, is_ultra_restricted=False),
-            dict(is_bot=False, name="test-user", id=4, is_ultra_restricted=False),
+            dict(is_bot=False, name="chris", id="1"),
+            dict(is_bot=True, name="jeremiah", id=2),
+            dict(is_bot=False, name="slackbot", id=3),
+            dict(is_bot=False, name="test-user", id=4),
         ]
     )
     post = MagicMock(return_value=postdata(ok=True, text=json.dumps(returned)))
