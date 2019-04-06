@@ -8,7 +8,7 @@ import uvicorn
 from apistar import ASyncApp, Route
 from apistar.http import Body, Headers
 
-from .github import github_handler
+from .github import cloud_github_handler, core_github_handler
 from .loop_policy import SchedulerPolicy
 from .responses import event_handler, version_handler
 from .defcon import defcon_handler
@@ -50,7 +50,8 @@ class TokenVerificationHook:
 
 MarvinApp = ASyncApp(
     routes=[
-        Route("/github/cloud", method="POST", handler=github_handler),
+        Route("/github/cloud", method="POST", handler=cloud_github_handler),
+        Route("/github/core", method="POST", handler=core_github_handler),
         Route("/defcon", method="POST", handler=defcon_handler),
         Route("/standup", method="POST", handler=standup_handler),
         Route("/version", method="POST", handler=version_handler),

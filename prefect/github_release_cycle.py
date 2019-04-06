@@ -40,19 +40,19 @@ issue_task = OpenGitHubIssue(
 
 
 biweekly_schedule = IntervalSchedule(
-    start_date=pendulum.parse("2019-03-11", tz="US/Eastern"), interval=datetime.timedelta(days=14)
+    start_date=pendulum.parse("2019-03-11", tz="US/Eastern"),
+    interval=datetime.timedelta(days=14),
 )
 env = DaskOnKubernetesEnvironment(
     base_image="python:3.6",
     registry_url="gcr.io/prefect-dev/flows/",
-    python_dependencies=[
-        "dask_kubernetes",
-        "kubernetes",
-    ],
+    python_dependencies=["dask_kubernetes", "kubernetes"],
 )
 
 
-with Flow("Biweekly Cloud Release", environment=env, schedule=biweekly_schedule) as flow:
+with Flow(
+    "Biweekly Cloud Release", environment=env, schedule=biweekly_schedule
+) as flow:
     exc = prepare_exception(pr_task)  # will only run if pr_task fails in some way
     issue = issue_task(body=exc)
 
