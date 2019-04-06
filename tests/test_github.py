@@ -93,3 +93,39 @@ def test_github_doesnt_create_issue_when_pr_is_not_closed(
     r = app.post("/github/cloud", data=dumped, headers=create_header(dumped))
     assert r.ok
     assert not create_issue.called
+
+
+def test_github_welcomes_new_contributors(app, create_header, monkeypatch):
+    data = {
+        "pull_request": {
+            "author_association": "FIRST_TIME_CONTRIBUTOR",
+            "number": 42,
+            "user": dict(login="marvin-robot"),
+        }
+    }
+    dumped = json.dumps(data).encode()
+    make_pr_comment = MagicMock(return_value=Response(""))
+    monkeypatch.setattr(marvin.github, "make_pr_comment", make_pr_comment)
+    r = app.post("/github/core", data=dumped, headers=create_header(dumped))
+    assert r.ok
+
+    number, body = make_pr_comment.call_args[0]
+    assert number == 42
+    assert "@marvin-robot" in body
+    assert "welcome" in body.lower()
+
+
+def test_github_doesnt_welcome_old_contributors(app, create_header, monkeypatch):
+    data = {
+        "pull_request": {
+            "author_association": "CONTRIBUTOR",
+            "number": 42,
+            "user": dict(login="marvin-robot"),
+        }
+    }
+    dumped = json.dumps(data).encode()
+    make_pr_comment = MagicMock(return_value=Response(""))
+    monkeypatch.setattr(marvin.github, "make_pr_comment", make_pr_comment)
+    r = app.post("/github/core", data=dumped, headers=create_header(dumped))
+    assert r.ok
+    assert not make_pr_comment.called
