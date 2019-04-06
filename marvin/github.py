@@ -7,6 +7,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 from apistar.http import Body, Response
 
+from marvin.utilities import get_users, get_dm_channel_id, say
+
 
 MARVIN_ACCESS_TOKEN = os.environ.get("MARVIN_ACCESS_TOKEN")
 
@@ -45,6 +47,13 @@ def make_pr_comment(pr_num, body):
         return Response("")
 
 
+def notify_chris(pr_num):
+    url = f"https://github.com/PrefectHQ/prefect/pull/{pr_num}"
+    txt = f":tada: :tada: NEW CONTRIBUTOR PR: {url} :tada: :tada:"
+    channel = get_dm_channel_id(get_users().get("chris"))
+    say(txt, channel=channel)
+
+
 async def core_github_handler(data: Body):
     payload = json.loads(data)
     pr_data = payload.get("pull_request", {})
@@ -55,4 +64,8 @@ async def core_github_handler(data: Body):
             "Here I am, brain the size of a planet and they ask me to welcome you to Prefect.\n\n"
             f"So, welcome to the community @{author}! :tada: :tada:"
         )
+        try:
+            notify_chris(pr_num)
+        except:
+            pass
         return make_pr_comment(pr_num, body)
