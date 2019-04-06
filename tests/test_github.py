@@ -101,7 +101,8 @@ def test_github_welcomes_new_contributors(app, create_header, monkeypatch):
             "author_association": "FIRST_TIME_CONTRIBUTOR",
             "number": 42,
             "user": dict(login="marvin-robot"),
-        }
+        },
+        "action": "opened",
     }
     dumped = json.dumps(data).encode()
     make_pr_comment = MagicMock(return_value=Response(""))
@@ -121,7 +122,28 @@ def test_github_doesnt_welcome_old_contributors(app, create_header, monkeypatch)
             "author_association": "CONTRIBUTOR",
             "number": 42,
             "user": dict(login="marvin-robot"),
-        }
+        },
+        "action": "opened",
+    }
+    dumped = json.dumps(data).encode()
+    make_pr_comment = MagicMock(return_value=Response(""))
+    monkeypatch.setattr(marvin.github, "make_pr_comment", make_pr_comment)
+    r = app.post("/github/core", data=dumped, headers=create_header(dumped))
+    assert r.ok
+    assert not make_pr_comment.called
+
+
+@pytest.mark.parametrize("action", ["reopened", "closed", "edited"])
+def test_github_doesnt_welcome_new_contributors_on_other_actions(
+    action, app, create_header, monkeypatch
+):
+    data = {
+        "pull_request": {
+            "author_association": "FIRST_TIME_CONTRIBUTOR",
+            "number": 42,
+            "user": dict(login="marvin-robot"),
+        },
+        "action": action,
     }
     dumped = json.dumps(data).encode()
     make_pr_comment = MagicMock(return_value=Response(""))
