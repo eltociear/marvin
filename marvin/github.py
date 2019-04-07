@@ -49,6 +49,7 @@ def make_pr_comment(pr_num, body):
         return Response("")
 
 
+@lru_cache(maxsize=1024)
 def notify_chris(pr_num):
     url = f"https://github.com/PrefectHQ/prefect/pull/{pr_num}"
     txt = f":tada: :tada: NEW CONTRIBUTOR PR: {url} :tada: :tada:"
