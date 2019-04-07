@@ -57,10 +57,12 @@ def notify_chris(pr_num):
 async def core_github_handler(data: Body):
     payload = json.loads(data)
     pr_data = payload.get("pull_request", {})
-    if (
-        pr_data.get("author_association", "").upper() == "FIRST_TIME_CONTRIBUTOR"
-        and payload.get("action", "").lower() == "opened"
-    ):
+    if pr_data.get(
+        "author_association", ""
+    ).upper() == "FIRST_TIME_CONTRIBUTOR" and payload.get("action", "").lower() in [
+        "opened",
+        "review_requested",
+    ]:
         pr_num = pr_data.get("number")
         author = pr_data.get("user", {}).get("login")
         body = (

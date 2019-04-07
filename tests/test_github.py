@@ -102,7 +102,7 @@ def test_github_welcomes_new_contributors(app, create_header, monkeypatch):
             "number": 42,
             "user": dict(login="marvin-robot"),
         },
-        "action": "opened",
+        "action": "review_requested",
     }
     dumped = json.dumps(data).encode()
     make_pr_comment = MagicMock(return_value=Response(""))
@@ -123,7 +123,7 @@ def test_github_doesnt_welcome_old_contributors(app, create_header, monkeypatch)
             "number": 42,
             "user": dict(login="marvin-robot"),
         },
-        "action": "opened",
+        "action": "review_requested",
     }
     dumped = json.dumps(data).encode()
     make_pr_comment = MagicMock(return_value=Response(""))
