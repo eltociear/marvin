@@ -39,7 +39,7 @@ async def cloud_github_handler(data: Body):
             )
 
 
-@lru_cache(maxsize=128)
+@lru_cache(maxsize=1024)
 def make_pr_comment(pr_num, body):
     url = f"https://api.github.com/repos/PrefectHQ/prefect/issues/{pr_num}/comments"
     headers = {"AUTHORIZATION": f"token {MARVIN_ACCESS_TOKEN}"}
