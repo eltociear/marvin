@@ -107,7 +107,11 @@ def test_github_welcomes_new_contributors(app, assoc, create_header, monkeypatch
     }
     dumped = json.dumps(data).encode()
     make_pr_comment = MagicMock(return_value=Response(""))
+    notify_chris = MagicMock()
+
     monkeypatch.setattr(marvin.github, "make_pr_comment", make_pr_comment)
+    monkeypatch.setattr(marvin.github, "notify_chris", notify_chris)
+
     r = app.post("/github/core", data=dumped, headers=create_header(dumped))
     assert r.ok
 
@@ -115,6 +119,9 @@ def test_github_welcomes_new_contributors(app, assoc, create_header, monkeypatch
     assert number == 42
     assert "@marvin-robot" in body
     assert "welcome" in body.lower()
+
+    assert notify_chris.called
+    assert notify_chris.call_args[0][0] == 42
 
 
 def test_github_welcomes_new_contributors_only_once(app, create_header, monkeypatch):
@@ -128,14 +135,24 @@ def test_github_welcomes_new_contributors_only_once(app, create_header, monkeypa
     }
     dumped = json.dumps(data).encode()
     post = MagicMock(return_value=MagicMock(status_code=201))
+    get_users = MagicMock(return_value={"chris": "chris"})
+    get_dm_channel_id = MagicMock(return_value="X")
+    say = MagicMock()
 
+    # gotta patch everything so `notify_chris` successfully runs, else
+    # it won't be cached
     monkeypatch.undo()
     monkeypatch.setattr(marvin.github.requests, "post", post)
+    monkeypatch.setattr(marvin.github, "get_users", get_users)
+    monkeypatch.setattr(marvin.github, "get_dm_channel_id", get_dm_channel_id)
+    monkeypatch.setattr(marvin.github, "say", say)
+
     for _ in range(5):
         r = app.post("/github/core", data=dumped, headers=create_header(dumped))
         assert r.ok
 
     assert len([p for p in post.call_args_list if "42" in p[0][0]]) == 1
+    assert say.call_count == 1
 
 
 def test_github_doesnt_welcome_old_contributors(app, create_header, monkeypatch):
