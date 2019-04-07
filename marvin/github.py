@@ -4,6 +4,7 @@ import os
 import random
 import requests
 from concurrent.futures import ThreadPoolExecutor
+from functools import lru_cache
 
 from apistar.http import Body, Response
 
@@ -38,6 +39,7 @@ async def cloud_github_handler(data: Body):
             )
 
 
+@lru_cache(maxsize=128)
 def make_pr_comment(pr_num, body):
     url = f"https://api.github.com/repos/PrefectHQ/prefect/issues/{pr_num}/comments"
     headers = {"AUTHORIZATION": f"token {MARVIN_ACCESS_TOKEN}"}

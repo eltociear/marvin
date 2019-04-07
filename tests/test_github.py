@@ -95,10 +95,11 @@ def test_github_doesnt_create_issue_when_pr_is_not_closed(
     assert not create_issue.called
 
 
-def test_github_welcomes_new_contributors(app, create_header, monkeypatch):
+@pytest.mark.parametrize("assoc", ["FIRST_TIME_CONTRIBUTOR", "NONE"])
+def test_github_welcomes_new_contributors(app, assoc, create_header, monkeypatch):
     data = {
         "pull_request": {
-            "author_association": "FIRST_TIME_CONTRIBUTOR",
+            "author_association": assoc,
             "number": 42,
             "user": dict(login="marvin-robot"),
         },
@@ -114,6 +115,27 @@ def test_github_welcomes_new_contributors(app, create_header, monkeypatch):
     assert number == 42
     assert "@marvin-robot" in body
     assert "welcome" in body.lower()
+
+
+def test_github_welcomes_new_contributors_only_once(app, create_header, monkeypatch):
+    data = {
+        "pull_request": {
+            "author_association": "NONE",
+            "number": 42,
+            "user": dict(login="marvin-robot"),
+        },
+        "action": "review_requested",
+    }
+    dumped = json.dumps(data).encode()
+    post = MagicMock(return_value=MagicMock(status_code=201))
+
+    monkeypatch.undo()
+    monkeypatch.setattr(marvin.github.requests, "post", post)
+    for _ in range(5):
+        r = app.post("/github/core", data=dumped, headers=create_header(dumped))
+        assert r.ok
+
+    assert len([p for p in post.call_args_list if "42" in p[0][0]]) == 1
 
 
 def test_github_doesnt_welcome_old_contributors(app, create_header, monkeypatch):
