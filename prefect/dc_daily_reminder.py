@@ -1,7 +1,7 @@
 import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
-from prefect.environments.kubernetes import DaskOnKubernetesEnvironment
+from prefect.environments.storage import Docker
 from prefect.schedules import CronSchedule
 from prefect.engine.result import NoResult
 from prefect.engine.result_handlers import JSONResultHandler
@@ -122,7 +122,8 @@ def report(users):
 weekday_schedule = CronSchedule(
     "30 8 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
 )
-env = DaskOnKubernetesEnvironment(
+storage = Docker(
+    prefect_version="master",
     base_image="python:3.6",
     registry_url="gcr.io/prefect-dev/flows/",
     python_dependencies=[
@@ -143,7 +144,7 @@ env = DaskOnKubernetesEnvironment(
 with Flow(
     "dc-standup-reminder",
     schedule=weekday_schedule,
-    environment=env,
+    storage=storage,
     result_handler=JSONResultHandler(),
 ) as flow:
     updates = get_latest_updates(get_standup_date)
