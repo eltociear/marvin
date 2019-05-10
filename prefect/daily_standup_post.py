@@ -2,7 +2,7 @@ import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
 from prefect.engine.result_handlers import JSONResultHandler
-from prefect.environments.kubernetes import DaskOnKubernetesEnvironment
+from prefect.environments.storage import Docker
 from prefect.schedules import CronSchedule
 
 import datetime
@@ -18,6 +18,8 @@ from google.oauth2 import service_account
 def get_collection_name():
     date_format = "%Y-%m-%d"
     now = prefect.context["scheduled_start_time"]
+    if isinstance(now, str):
+        now = pendulum.parse(now)
     day_name = now.strftime("%A")
     weekend_offsets = {"Friday": 3, "Saturday": 2, "Sunday": 1}
     day_offset = weekend_offsets.get(day_name, 1)
@@ -52,7 +54,7 @@ def post_standup(updates, channel):
     items = list(updates.items())
     random.shuffle(items)
     for user, update in items:
-        public_msg += f"\n*{user}*: {update}"
+        public_msg += f"\n- *{user}*: {update}"
 
     TOKEN = Secret("MARVIN_TOKEN")
 
@@ -74,7 +76,8 @@ def post_standup(updates, channel):
 weekday_schedule = CronSchedule(
     "0 9 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
 )
-env = DaskOnKubernetesEnvironment(
+storage = Docker(
+    prefect_version="master",
     base_image="python:3.6",
     registry_url="gcr.io/prefect-dev/flows/",
     python_dependencies=[
@@ -103,7 +106,7 @@ def notify_chris(flow, state):
 with Flow(
     "post-standup",
     schedule=weekday_schedule,
-    environment=env,
+    storage=storage,
     on_failure=notify_chris,
     result_handler=JSONResultHandler(),
 ) as flow:
