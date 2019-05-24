@@ -12,6 +12,7 @@ from .github import cloud_github_handler, core_github_handler
 from .loop_policy import SchedulerPolicy
 from .responses import event_handler, version_handler
 from .defcon import defcon_handler
+from .leaderboard import leaderboard_handler
 from .standup import standup_handler
 
 
@@ -53,6 +54,7 @@ MarvinApp = ASyncApp(
         Route("/github/cloud", method="POST", handler=cloud_github_handler),
         Route("/github/core", method="POST", handler=core_github_handler),
         Route("/defcon", method="POST", handler=defcon_handler),
+        Route("/leaderboard", method="POST", handler=leaderboard_handler),
         Route("/standup", method="POST", handler=standup_handler),
         Route("/version", method="POST", handler=version_handler),
         Route("/", method="POST", handler=event_handler),
