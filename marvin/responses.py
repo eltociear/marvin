@@ -38,7 +38,7 @@ quotes = [
 
 firestore = None
 
-karma_regex = re.compile("^(.+[^\s])(\+{2}|\-{2})(\s.*|$)$")
+karma_regex = re.compile("^(.+[^\s])(\+{2}|\-{2})(\s*|$)$")
 
 
 async def schedule_refresh_users():
