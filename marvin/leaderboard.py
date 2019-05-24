@@ -2,15 +2,11 @@ import google.cloud.firestore
 
 import asyncio
 import json
-import operator
 import re
 from apistar.http import RequestData
 
 from .utilities import say
 
-
-MARVIN_ID = "UBEEMJZFX"
-defcon_channel = "CBH18KG8G"  # engineering
 
 client = google.cloud.firestore.Client(project="prefect-marvin")
 
