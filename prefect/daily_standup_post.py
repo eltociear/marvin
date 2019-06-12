@@ -96,7 +96,7 @@ storage = Docker(
 
 
 def notify_chris(flow, state):
-    url = Secret("SLACK_WEBHOOK_URL").get()
+    url = Secret("MARVIN_WEBHOOK_URL").get()
     message = f"@chris, the daily standup flow failed; here is everything I know about the Flow state: ```{state.serialize()}```"
     r = requests.post(
         url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
@@ -104,7 +104,7 @@ def notify_chris(flow, state):
 
 
 with Flow(
-    "post-standup",
+    "Daily Standup",
     schedule=weekday_schedule,
     storage=storage,
     on_failure=notify_chris,

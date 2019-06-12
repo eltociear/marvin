@@ -16,7 +16,7 @@ import requests
 
 
 def notify_chris(task, state):
-    url = Secret("SLACK_WEBHOOK_URL").get()
+    url = Secret("MARVIN_WEBHOOK_URL").get()
     message = f"@chris, a reminder Task failed; here is everything I know: ```{state.serialize()}```"
     r = requests.post(
         url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
@@ -109,7 +109,7 @@ def send_reminder(user_info):
 
 @task(skip_on_upstream_skip=False)
 def report(users):
-    url = Secret("SLACK_WEBHOOK_URL").get()
+    url = Secret("MARVIN_WEBHOOK_URL").get()
     user_string = ", ".join([user for user in users if user != NoResult])
     if user_string.strip() == "":
         user_string = ":marvin-parrot:"
@@ -142,7 +142,7 @@ storage = Docker(
 
 
 with Flow(
-    "sf-standup-reminder",
+    "SF Standup Reminder",
     schedule=weekday_schedule,
     storage=storage,
     result_handler=JSONResultHandler(),
