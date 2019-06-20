@@ -23,7 +23,7 @@ async def ping_staging():
             query{
               flow(where: {name: {_eq: "BE: Slightly Longer Sleeper in Stg"}}){
                 flow_runs(where: {scheduled_start_time: {_gte: \""""
-                + pendulum.now("utc").add(minutes=-5).isoformat()
+                + pendulum.now("utc").add(minutes=-7).isoformat()
                 + """\"}, state: {_eq: "Success"}}){
                   state
                 }
@@ -35,9 +35,7 @@ async def ping_staging():
             result = c.graphql(STAGING_QUERY)
             assert result.data.flow, "Flow does not appear to exist!"
             assert result.data.flow[0].flow_runs, "No successful flow runs found!"
-            assert (
-                result.data.flow[0].flow_runs[0].state == "Success"
-            ), "No successful flow runs found!"
+            logger.debug("Staging healthy.  Sleeping for 5...")
         except AssertionError as exc:
             logger.error(exc)
             msg = f"Staging might be down: check your flows!  I tried to query for successful flow runs but got:\n ```{str(exc)}```"
@@ -47,7 +45,6 @@ async def ping_staging():
             msg = f"Staging is down!  I tried to connect but got:\n ```{repr(exc)}```"
             marvin.utilities.say(msg, channel=ALERT_CHANNEL)
 
-        logger.debug("Staging healthy.  Sleeping for 5...")
         await asyncio.sleep(5 * 60)  # 5 minutes
 
 
