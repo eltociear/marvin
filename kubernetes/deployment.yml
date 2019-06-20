@@ -21,6 +21,13 @@ spec:
         ports:
           - containerPort: 8080
         env:
+          - name: PREFECT__CLOUD__GRAPHQL
+            value: "https://api-staging.prefect.io/"
+          - name: PREFECT__CLOUD__AUTH_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: prefectauthtoken
+                key: prefectauthtoken.txt
           - name: GITHUB_VALIDATION_TOKEN
             valueFrom:
               secretKeyRef:
