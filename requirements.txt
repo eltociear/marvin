@@ -1,6 +1,7 @@
 aiofiles
 apistar == 0.5.40
 google-cloud-firestore
+prefect
 pytest
 schedule
 uvicorn == 0.2.22
