@@ -10,25 +10,27 @@ from prefect import Client
 
 
 ALERT_CHANNEL = "CK9RY9J3C"
-STAGING_QUERY = (
-    """
-query{
-  flow(where: {name: {_eq: "BE: Slightly Longer Sleeper in Stg"}}){
-    flow_runs(where: {scheduled_start_time: {_gte: \""""
-    + pendulum.now("utc").add(minutes=-5).isoformat()
-    + """\"}, state: {_eq: "Success"}}){
-      state
-    }
-  }
-}
-"""
-)
 
 
 async def ping_staging():
+    logger = logging.getLogger("Staging")
+    logger.debug("Preparing to ping staging...")
     while True:
         c = Client()
         try:
+            STAGING_QUERY = (
+                """
+            query{
+              flow(where: {name: {_eq: "BE: Slightly Longer Sleeper in Stg"}}){
+                flow_runs(where: {scheduled_start_time: {_gte: \""""
+                + pendulum.now("utc").add(minutes=-5).isoformat()
+                + """\"}, state: {_eq: "Success"}}){
+                  state
+                }
+              }
+            }
+            """
+            )
             result = c.graphql(STAGING_QUERY)
             assert result.data.flow, "Flow does not appear to exist!"
             assert result.data.flow[0].flow_runs, "No successful flow runs found!"
@@ -36,9 +38,11 @@ async def ping_staging():
                 result.data.flow[0].flow_runs[0].state == "Success"
             ), "No successful flow runs found!"
         except AssertionError as exc:
+            logger.error(exc)
             msg = f"Staging might be down: check your flows!  I tried to query for successful flow runs but got:\n ```{repr(exc)}```"
             marvin.utilities.say(msg, channel=ALERT_CHANNEL)
         except Exception as exc:
+            logger.error(exc)
             msg = f"Staging is down!  I tried to connect but got:\n ```{repr(exc)}```"
             marvin.utilities.say(msg, channel=ALERT_CHANNEL)
 
