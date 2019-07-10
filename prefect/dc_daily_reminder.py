@@ -65,7 +65,11 @@ def get_team():
     client = google.cloud.firestore.Client(project="prefect-marvin")
     collection = client.collection(f"users")
     users = [u.to_dict() for u in collection.get()]
-    return [(u["name"], u["slack"]) for u in users if u["office"] == "DC"]
+    return [
+        (u["name"], u["slack"])
+        for u in users
+        if u["office"] == "DC" and u.get("standup") is True
+    ]
 
 
 @task
