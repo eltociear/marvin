@@ -1,6 +1,7 @@
 import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
+from prefect.environments.execution.remote import RemoteEnvironment
 from prefect.environments.storage import Docker
 from prefect.schedules import CronSchedule
 from prefect.engine.result import NoResult
@@ -16,7 +17,7 @@ import requests
 
 
 def notify_chris(task, state):
-    url = Secret("SLACK_WEBHOOK_URL").get()
+    url = Secret("MARVIN_WEBHOOK_URL").get()
     message = f"@chris, a reminder Task failed; here is everything I know: ```{state.serialize()}```"
     r = requests.post(
         url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
@@ -113,7 +114,7 @@ def send_reminder(user_info):
 
 @task(skip_on_upstream_skip=False)
 def report(users):
-    url = Secret("SLACK_WEBHOOK_URL").get()
+    url = Secret("MARVIN_WEBHOOK_URL").get()
     user_string = ", ".join([user for user in users if user != NoResult])
     if user_string.strip() == "":
         user_string = ":marvin-parrot:"
@@ -126,6 +127,7 @@ def report(users):
 weekday_schedule = CronSchedule(
     "0 20 * * 0-4", start_date=pendulum.parse("2017-03-24", tz="US/Pacific")
 )
+environment = RemoteEnvironment(executor="prefect.engine.executors.SynchronousExecutor")
 storage = Docker(
     prefect_version="master",
     base_image="python:3.6",
@@ -146,8 +148,9 @@ storage = Docker(
 
 
 with Flow(
-    "sf-standup-reminder",
+    "SF Standup Reminder",
     schedule=weekday_schedule,
+    environment=environment,
     storage=storage,
     result_handler=JSONResultHandler(),
 ) as flow:
