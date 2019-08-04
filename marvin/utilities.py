@@ -5,7 +5,9 @@ import requests
 
 MARVIN_ACCESS_TOKEN = os.environ.get("MARVIN_ACCESS_TOKEN")
 OAUTH_TOKEN = os.environ.get("MARVIN_OAUTH_TOKEN")
+PUBLIC_OAUTH_TOKEN = os.environ.get("MARVIN_PUBLIC_OAUTH_TOKEN")
 TOKEN = os.environ.get("MARVIN_TOKEN")
+PUBLIC_TOKEN = os.environ.get("MARVIN_PUBLIC_TOKEN")
 
 
 def get_repo_labels(repo="cloud"):
@@ -123,6 +125,32 @@ def get_dm_channel_id(userid):
         return json.loads(r.text)["channel"]["id"]
 
 
+def public_speak(text, channel=None, **kwargs):
+    """
+    Utility for speaking in a given channel.
+
+    Args:
+        - text (str): what you want Marvin to say
+        - channel (str): the Slack Channel ID of the channel you want Marvin to
+            speak in
+        - **kwargs: additional parameters to pass in the POST request
+
+    Returns:
+        - the request.Request object of the POST
+    """
+    params = {
+        "token": PUBLIC_TOKEN,
+        "as_user": "true",
+        "link_names": "true",
+        "mrkdwn": "true",
+        "channel": channel,
+        "text": text,
+    }
+    params.update(kwargs)
+    r = requests.post("https://slack.com/api/chat.postMessage", data=params)
+    return r
+
+
 def say(text, channel=None, **kwargs):
     """
     Utility for speaking in a given channel.
@@ -147,3 +175,27 @@ def say(text, channel=None, **kwargs):
     params.update(kwargs)
     r = requests.post("https://slack.com/api/chat.postMessage", data=params)
     return r
+
+
+def get_public_thread(channel, ts):
+    """
+    Retrieve thread contents from a given thread.
+
+    Returns:
+        - a list of message "items" (see https://api.slack.com/methods/conversations.replies)
+    """
+    params = {"token": PUBLIC_OAUTH_TOKEN, "channel": channel, "ts": ts, "limit": 50}
+    r = requests.post("https://slack.com/api/conversations.replies", data=params)
+    if r.ok:
+        return r.json()["messages"]
+    else:
+        raise ValueError(f"Request failed with status code {r.status_code}")
+
+
+def get_user_info(user):
+    params = {"token": PUBLIC_OAUTH_TOKEN, "user": user}
+    r = requests.post("https://slack.com/api/users.info", data=params)
+    if r.ok:
+        return r.json()["user"].get("name", "unknown")
+    else:
+        raise ValueError(f"Request failed with status code {r.status_code}")

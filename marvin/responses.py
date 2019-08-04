@@ -9,7 +9,14 @@ import schedule
 from apistar.http import Body, Response
 import google.cloud.firestore
 
-from .utilities import get_dm_channel_id, say
+from .github import create_issue
+from .utilities import (
+    get_dm_channel_id,
+    say,
+    public_speak,
+    get_public_thread,
+    get_user_info,
+)
 from .karma import update_karma
 
 executor = ThreadPoolExecutor(max_workers=3)
@@ -153,3 +160,37 @@ def karma_handler(regex_match, event):
     response_text = update_karma(regex_match)
     say(response_text, channel=event.get("channel"))
     return Response("")
+
+
+async def public_event_handler(data: Body):
+    # for validating your URL with slack
+    json_data = json.loads(data)
+    is_challenge = json_data.get("type") == "url_verification"
+    if is_challenge:
+        return json_data["challenge"]
+
+    event = json_data.get("event", {})
+    event_type = event.get("type")
+    if event_type != "app_mention":
+        return Response("")
+
+    # only chris and jeremiah allowed to use this
+    who_spoke = event.get("user", "")
+    if who_spoke != "UKNSNMUE6":
+        return Response("")
+
+    patt = re.compile('archive\s"(.*?)"')
+    matches = patt.findall(event.get("text", "").replace("“", '"').replace("”", '"'))
+    if matches:
+        issue_body = ""
+        thread = get_public_thread(channel=event["channel"], ts=event["thread_ts"])
+        for msg in thread:
+            issue_body += "**{}**: ".format(get_user_info(user=msg["user"]))
+            issue_body += msg["text"] + "\n\n"
+
+        out = create_issue(
+            title=matches[0], body=issue_body, labels=["slack"], issue_state="closed"
+        )
+        public_speak(
+            text=out["html_url"], channel=event["channel"], thread_ts=event["thread_ts"]
+        )

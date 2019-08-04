@@ -14,13 +14,20 @@ from marvin.utilities import get_users, get_dm_channel_id, say
 MARVIN_ACCESS_TOKEN = os.environ.get("MARVIN_ACCESS_TOKEN")
 
 
-def create_issue(title, body, labels=None):
+def create_issue(title, body, labels=None, issue_state="open"):
     url = "https://api.github.com/repos/PrefectHQ/prefect/issues"
     headers = {"AUTHORIZATION": f"token {MARVIN_ACCESS_TOKEN}"}
     issue = {"title": title, "body": body, "labels": labels or []}
     resp = requests.post(url, data=json.dumps(issue), headers=headers)
-    if resp.status_code == 201:
-        return Response("")
+    if issue_state == "closed":
+        number = resp.json()["number"]
+        params = {"state": "closed"}
+        resp = requests.patch(
+            url + f"/{number}", data=json.dumps(params), headers=headers
+        )
+        return resp.json()
+    else:
+        return resp.json()
 
 
 async def cloud_github_handler(data: Body):
@@ -32,11 +39,12 @@ async def cloud_github_handler(data: Body):
         pr_link = pr_data.get("html_url")
         if was_merged and pr_link is not None:
             body = f"See {pr_link} for more details"
-            return create_issue(
+            issue = create_issue(
                 title="Cloud PR references Core",
                 body=body,
                 labels=["cloud-integration-notification"],
             )
+            return Response("")
 
 
 @lru_cache(maxsize=1024)
