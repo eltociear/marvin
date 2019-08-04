@@ -1,6 +1,7 @@
 import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
+from prefect.environments.execution.remote import RemoteEnvironment
 from prefect.environments.storage import Docker
 from prefect.schedules import CronSchedule
 from prefect.engine.result import NoResult
@@ -126,6 +127,7 @@ def report(users):
 weekday_schedule = CronSchedule(
     "0 20 * * 0-4", start_date=pendulum.parse("2017-03-24", tz="US/Pacific")
 )
+environment = RemoteEnvironment(executor="prefect.engine.executors.SynchronousExecutor")
 storage = Docker(
     prefect_version="master",
     base_image="python:3.6",
@@ -148,6 +150,7 @@ storage = Docker(
 with Flow(
     "SF Standup Reminder",
     schedule=weekday_schedule,
+    environment=environment,
     storage=storage,
     result_handler=JSONResultHandler(),
 ) as flow:

@@ -2,6 +2,7 @@ import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
 from prefect.engine.result_handlers import JSONResultHandler
+from prefect.environments.execution.remote import RemoteEnvironment
 from prefect.environments.storage import Docker
 from prefect.schedules import CronSchedule
 
@@ -76,6 +77,7 @@ def post_standup(updates, channel):
 weekday_schedule = CronSchedule(
     "0 9 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
 )
+environment = RemoteEnvironment(executor="prefect.engine.executors.SynchronousExecutor")
 storage = Docker(
     prefect_version="master",
     base_image="python:3.6",
@@ -106,6 +108,7 @@ def notify_chris(flow, state):
 with Flow(
     "Daily Standup",
     schedule=weekday_schedule,
+    environment=environment,
     storage=storage,
     on_failure=notify_chris,
     result_handler=JSONResultHandler(),

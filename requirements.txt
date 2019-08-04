@@ -1,5 +1,6 @@
 aiofiles
 apistar == 0.5.40
+fsspec
 google-cloud-firestore
 prefect
 pytest
