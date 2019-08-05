@@ -81,7 +81,7 @@ environment = RemoteEnvironment(executor="prefect.engine.executors.SynchronousEx
 storage = Docker(
     prefect_version="master",
     base_image="python:3.6",
-    registry_url="gcr.io/prefect-dev/flows/",
+    registry_url="gcr.io/tenant-staging-d49111/flows/",
     python_dependencies=[
         "google-cloud-firestore",
         "requests",

@@ -10,7 +10,7 @@ from apistar.http import Body, Headers
 
 from .github import cloud_github_handler, core_github_handler
 from .loop_policy import SchedulerPolicy
-from .responses import event_handler, version_handler
+from .responses import event_handler, public_event_handler, version_handler
 from .defcon import defcon_handler
 from .leaderboard import leaderboard_handler
 from .standup import standup_handler
@@ -18,6 +18,8 @@ from .standup import standup_handler
 
 GITHUB_VALIDATION_TOKEN = os.environ.get("GITHUB_VALIDATION_TOKEN", "").encode()
 SLACK_VALIDATION_TOKEN = os.environ.get("SLACK_VALIDATION_TOKEN")
+PUBLIC_VALIDATION_TOKEN = os.environ.get("PUBLIC_VALIDATION_TOKEN")
+
 logging.basicConfig(
     level=2,
     format="%(asctime)s %(levelname)s: %(message)s",
@@ -32,7 +34,10 @@ def slack_validation(data):
     except json.JSONDecodeError:
         data = data.decode()
         token = [t.split("=")[1] for t in data.split("&") if t.startswith("token")][0]
-    assert token == SLACK_VALIDATION_TOKEN, "Token Authentication Failed"
+    assert token in [
+        PUBLIC_VALIDATION_TOKEN,
+        SLACK_VALIDATION_TOKEN,
+    ], "Token Authentication Failed"
 
 
 def github_validation(data, sig):
@@ -57,6 +62,7 @@ MarvinApp = ASyncApp(
         Route("/leaderboard", method="POST", handler=leaderboard_handler),
         Route("/standup", method="POST", handler=standup_handler),
         Route("/version", method="POST", handler=version_handler),
+        Route("/public", method="POST", handler=public_event_handler),
         Route("/", method="POST", handler=event_handler),
     ],
     event_hooks=[TokenVerificationHook],
