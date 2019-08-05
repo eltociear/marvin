@@ -20,23 +20,25 @@ async def ping_staging():
         try:
             STAGING_QUERY = (
                 """
-            query{
-              flow(where: {name: {_eq: "BE: Slightly Longer Sleeper in Stg"}}){
-                flow_runs(where: {scheduled_start_time: {_gte: \""""
-                + pendulum.now("utc").add(minutes=-7).isoformat()
-                + """\"}, state: {_eq: "Success"}}){
-                  state
-                }
-              }
-            }
+                    query {
+                     flow_run(
+                      where: {
+                       tenant_id: { _eq: "74aaae1e-3447-4bbd-ab83-ad6dd4e34c90" }
+                       state: { _eq: "Success" }
+                       end_time: {_gte: \""""
+                + pendulum.now("utc").subtract(minutes=5).isoformat()
+                + """\"}
+                      }
+                     ) {
+                      state
+                      end_time
+                     }
+                    }
             """
             )
             logger.debug(STAGING_QUERY)
             result = c.graphql(STAGING_QUERY)
-            assert result.data.flow, "Flow does not appear to exist!"
-            assert result.data.flow[
-                0
-            ].flow_runs, "No successful flow runs found in the past 7 minutes!"
+            assert result.data.flow_run, "No successful flow runs found in the past 5 minutes!"
             logger.debug("Staging healthy.  Sleeping for 5...")
         except AssertionError as exc:
             logger.error(exc)
