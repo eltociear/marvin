@@ -2,6 +2,8 @@ import json
 import os
 import requests
 
+from functools import lru_cache
+
 
 MARVIN_ACCESS_TOKEN = os.environ.get("MARVIN_ACCESS_TOKEN")
 OAUTH_TOKEN = os.environ.get("MARVIN_OAUTH_TOKEN")
@@ -192,6 +194,7 @@ def get_public_thread(channel, ts):
         raise ValueError(f"Request failed with status code {r.status_code}")
 
 
+@lru_cache(maxsize=1024)
 def get_user_info(user):
     params = {"token": PUBLIC_OAUTH_TOKEN, "user": user}
     r = requests.post("https://slack.com/api/users.info", data=params)
