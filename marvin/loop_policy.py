@@ -38,7 +38,9 @@ async def ping_staging():
             )
             logger.debug(STAGING_QUERY)
             result = c.graphql(STAGING_QUERY)
-            assert result.data.flow_run, "No successful flow runs found in the past 5 minutes!"
+            assert (
+                result.data.flow_run
+            ), "No successful flow runs found in the past 5 minutes!"
             logger.debug("Staging healthy.  Sleeping for 5...")
         except AssertionError as exc:
             logger.error(exc)

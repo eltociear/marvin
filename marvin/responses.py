@@ -182,14 +182,17 @@ async def public_event_handler(data: Body):
     patt = re.compile('archive\s"(.*?)"')
     matches = patt.findall(event.get("text", "").replace("“", '"').replace("”", '"'))
     if matches:
-        issue_body = ""
+        issue_body = "## Archived from the [Prefect Public Slack Community](https://join.slack.com/t/prefect-public/shared_invite/enQtNzE5OTU3OTQwNzc1LTQ5M2FkZmQzZjI0ODg1ZTBmOTc0ZjVjYWFjMWExZDAyYzBmYjVmMTE1NTQ1Y2IxZTllOTc4MmI3NzYxMDlhYWU)\n\n"
         thread = get_public_thread(channel=event["channel"], ts=event["thread_ts"])
         for msg in thread:
             issue_body += "**{}**: ".format(get_user_info(user=msg["user"]))
             issue_body += msg["text"] + "\n\n"
 
         out = create_issue(
-            title=matches[0], body=issue_body, labels=["slack"], issue_state="closed"
+            title=matches[0],
+            body=issue_body,
+            labels=["Prefect Slack Community"],
+            issue_state="closed",
         )
         public_speak(
             text=out["html_url"], channel=event["channel"], thread_ts=event["thread_ts"]
