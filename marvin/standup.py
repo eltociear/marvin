@@ -1,12 +1,13 @@
 import asyncio
 import datetime
-import google.cloud.firestore
 import re
+
+import google.cloud.firestore
 import schedule
-from apistar.http import RequestData
+from starlette.requests import Request
+from starlette.responses import Response
 
 from .utilities import get_dm_channel_id, get_users, say
-
 
 client = google.cloud.firestore.Client(project="prefect-marvin")
 standup_channel = "CANLZB1L3"  # "CBH18KG8G"
@@ -69,18 +70,18 @@ def update_user_updates(user, update):
         user_doc.update({"updates": new_update})
 
 
-async def standup_handler(data: RequestData):
-    payload = data.to_dict() if not isinstance(data, dict) else data
+async def standup_handler(request: Request):
+    payload = await request.json()
     user = payload.get("user_name")
     update = payload.get("text")
     clear_match = re.compile("^clear($|\s)")
     if clear_match.match(update):
         old = pop_user_updates(user)
         if old is None:
-            return "No updates to clear!"
+            return Response("No updates to clear!")
         else:
             old = old.replace("\n", "")  # ensures strikethrough formats
-            return f"~{old}~"
+            return Response(f"~{old}~")
 
     show_match = re.compile("^show($|\s)")
     if show_match.match(update):
@@ -88,10 +89,10 @@ async def standup_handler(data: RequestData):
         current_update = current_updates.get(
             user, f"I haven't received any updates from you yet, {user}."
         )
-        return current_update
+        return Response(current_update)
 
     update_user_updates(user, update)
-    return f"Thanks {user}!"
+    return Response(f"Thanks {user}!")
 
 
 def _pre_standup():

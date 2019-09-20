@@ -2,10 +2,11 @@ import asyncio
 import json
 import operator
 import re
-from apistar.http import RequestData
 
-from .utilities import get_pins, add_pin, remove_pin, say
+from starlette.requests import Request
+from starlette.responses import Response
 
+from .utilities import add_pin, get_pins, remove_pin, say
 
 MARVIN_ID = "UBEEMJZFX"
 defcon_channel = "CBH18KG8G"  # engineering
@@ -38,8 +39,8 @@ def level_updater(old_level, old_pin, extreme_level, extreme_msg, oper):
     return "DEFCON level updated!"
 
 
-async def defcon_handler(data: RequestData):
-    payload = data.to_dict() if not isinstance(data, dict) else data
+async def defcon_handler(request: Request):
+    payload = await request.json()
     update = payload.get("text")
 
     pins = get_pins(channel=defcon_channel)
@@ -49,7 +50,7 @@ async def defcon_handler(data: RequestData):
         if pin["type"] == "message" and pin["message"]["user"] == MARVIN_ID
     ]
     if len(defcon_pins) > 1:
-        return "Multiple DEFCON pins found"
+        return Response("Multiple DEFCON pins found")
 
     defcon_pin = defcon_pins[0] if defcon_pins else None
     try:
@@ -70,22 +71,26 @@ async def defcon_handler(data: RequestData):
         resp = say(f"*DEFCON LEVEL*: {new_level}\n" + msg, channel=defcon_channel)
         data = json.loads(resp.text)
         add_pin(channel=defcon_channel, timestamp=data.get("ts", data.get("timestamp")))
-        return "DEFCON level updated!"
+        return Response("DEFCON level updated!")
 
     if lower_match.match(update.lower()):
-        return level_updater(
-            old_level,
-            defcon_pin,
-            1,
-            "DEFCON level is already as low as it can be!",
-            operator.sub,
+        return Response(
+            level_updater(
+                old_level,
+                defcon_pin,
+                1,
+                "DEFCON level is already as low as it can be!",
+                operator.sub,
+            )
         )
 
     if raise_match.match(update.lower()):
-        return level_updater(
-            old_level,
-            defcon_pin,
-            5,
-            "DEFCON level is already as high as it can be!",
-            operator.add,
+        return Response(
+            level_updater(
+                old_level,
+                defcon_pin,
+                5,
+                "DEFCON level is already as high as it can be!",
+                operator.add,
+            )
         )

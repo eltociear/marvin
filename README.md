@@ -4,8 +4,22 @@ Don’t pretend you want to talk to me, I know you hate me.
 
 ### Introduction and Overview
 
-Marvin is the official slackbot for Prefect and is a Genuine People Personality (GPP) prototype; he helps us organize daily updates, 
-test out deployment infrastructures, and other mundane tasks (we haven't found a convincing use of his vast computing power yet, and we suspect this has led to a certain level of ennui with Marvin). 
+Marvin is the official slackbot for Prefect and is a Genuine People Personality (GPP) prototype; he helps us organize daily updates,
+test out deployment infrastructures, and other mundane tasks (we haven't found a convincing use of his vast computing power yet, and we suspect this has led to a certain level of ennui with Marvin).
+
+### Requirements
+Marvin requires Python 3.7+
+
+To install for development:
+```
+git clone https://www.github.com/prefecthq/marvin.git
+pip install -e marvin
+```
+
+Then watch the magic:
+```
+marvin
+```
 
 ### How Marvin works
 
@@ -25,7 +39,7 @@ Because Marvin's subscribed events are sent to a fixed IP address, local develop
 
 #### Deployment
 
-Marvin is deployed via Google Cloud Platform, Kubernetes and Docker. 
+Marvin is deployed via Google Cloud Platform, Kubernetes and Docker.
 
 ### Contributing to Marvin
 

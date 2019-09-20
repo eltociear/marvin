@@ -1,14 +1,29 @@
+import inspect
 import os
-import pytest
 import sys
-from apistar import test
 from unittest.mock import MagicMock
+
+import pytest
+from requests_async import ASGISession
+
 from marvin.core import MarvinApp
 
 
+def pytest_collection_modifyitems(session, config, items):
+    """
+    Modify tests prior to execution
+    """
+    for item in items:
+        # automatically add @pytest.mark.asyncio to async tests
+        if isinstance(item, pytest.Function) and inspect.iscoroutinefunction(
+            item.function
+        ):
+            item.add_marker(pytest.mark.asyncio)
+
+
 @pytest.fixture
-def app():
-    return test.TestClient(MarvinApp)
+async def app():
+    yield ASGISession(MarvinApp)
 
 
 @pytest.fixture

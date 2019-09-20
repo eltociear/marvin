@@ -1,17 +1,25 @@
 import asyncio
 import datetime
+from unittest.mock import MagicMock
+
 import pytest
 import schedule
-from unittest.mock import MagicMock
-from marvin import standup
-from marvin import loop_policy
+
+from marvin import loop_policy, standup
 
 
 @pytest.fixture(autouse=True)
-def clear_schedule():
-    "Fixture for clearing the global schedule after every test."
-    yield
-    schedule.clear()
+async def set_up_schedules():
+    "Fixture for setting and clearing the global schedule after every test."
+    asyncio.ensure_future(
+        loop_policy.run_scheduler(ignore_google=True, ignore_standup=False)
+    )
+    # sleep to allow the future to start running
+    await asyncio.sleep(0.001)
+    try:
+        yield
+    finally:
+        schedule.clear()
 
 
 def get_pre_post_jobs():
@@ -21,12 +29,8 @@ def get_pre_post_jobs():
     return pre, post
 
 
-def test_standup_is_scheduled(app, token):
-    # required to prime the asyncio loop
-    asyncio.ensure_future(
-        loop_policy.run_scheduler(ignore_google=True, ignore_standup=False)
-    )
-    app.post("/", json={"token": token})
+async def test_standup_is_scheduled(app, token):
+    await app.post("/", json={"token": token})
 
     pre, post = get_pre_post_jobs()
     assert pre.next_run.hour == 13
@@ -48,7 +52,7 @@ def test_standup_is_scheduled(app, token):
         (datetime.datetime(2018, 12, 25, 5, 20, 55, 592853), "2018-12-25"),
     ],
 )
-def test_standup_identifies_the_right_date_an_update_belongs_to(
+async def test_standup_identifies_the_right_date_an_update_belongs_to(
     monkeypatch, now, collection
 ):
     class date:
@@ -63,12 +67,9 @@ def test_standup_identifies_the_right_date_an_update_belongs_to(
 @pytest.mark.parametrize(
     "now", [datetime.datetime(2018, 7, 14), datetime.datetime(2018, 7, 15)]
 )
-def test_standup_takes_the_weekend_off(app, monkeypatch, token, now):
-    # required to prime the asyncio loop
-    asyncio.ensure_future(
-        loop_policy.run_scheduler(ignore_google=True, ignore_standup=False)
-    )
-    app.post("/", json={"token": token})
+async def test_standup_takes_the_weekend_off(app, monkeypatch, token, now):
+
+    await app.post("/", json={"token": token})
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
 
@@ -87,15 +88,13 @@ def test_standup_takes_the_weekend_off(app, monkeypatch, token, now):
     assert say.call_count == 0
 
 
-def test_standup_queries_users(app, monkeypatch, token):
+async def test_standup_queries_users(app, monkeypatch, token):
     monkeypatch.setattr(standup, "get_users", lambda *args, **kwargs: {"chris": "999"})
     monkeypatch.setattr(
         standup, "get_dm_channel_id", lambda *args, **kwargs: "dm_chris"
     )
-    asyncio.ensure_future(
-        loop_policy.run_scheduler(ignore_google=True, ignore_standup=False)
-    )
-    app.post("/", json={"token": token})
+
+    await app.post("/", json={"token": token})
 
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
@@ -112,17 +111,14 @@ def test_standup_queries_users(app, monkeypatch, token):
     assert pub_msg in say.call_args_list[1][0][0]
 
 
-def test_standup_stores_updates(app, monkeypatch, token):
-    # required to prime the asyncio loop
-    asyncio.ensure_future(
-        loop_policy.run_scheduler(ignore_google=True, ignore_standup=False)
-    )
+async def test_standup_stores_updates(app, monkeypatch, token):
+
     say = MagicMock()
     updates = MagicMock()
     monkeypatch.setattr(standup, "say", say)
     monkeypatch.setattr(standup, "update_user_updates", updates)
 
-    r = app.post(
+    r = await app.post(
         "/standup", json={"token": token, "user_name": "test-user", "text": "not much"}
     )
     assert r.ok
@@ -130,20 +126,17 @@ def test_standup_stores_updates(app, monkeypatch, token):
     assert updates.call_args[0] == ("test-user", "not much")
 
 
-def test_standup_has_a_clear_feature(app, monkeypatch, token):
-    # required to prime the asyncio loop
-    asyncio.ensure_future(
-        loop_policy.run_scheduler(ignore_google=True, ignore_standup=False)
-    )
+async def test_standup_has_a_clear_feature(app, monkeypatch, token):
+
     say = MagicMock()
     clear = MagicMock(return_value="not much")
     monkeypatch.setattr(standup, "say", say)
     monkeypatch.setattr(standup, "pop_user_updates", clear)
 
-    r = app.post(
+    r = await app.post(
         "/standup", json={"token": token, "user_name": "test-user", "text": "not much"}
     )
-    r = app.post(
+    r = await app.post(
         "/standup",
         json={
             "token": token,
@@ -156,22 +149,19 @@ def test_standup_has_a_clear_feature(app, monkeypatch, token):
     assert clear.call_args[0] == ("test-user",)
 
 
-def test_standup_has_a_clear_feature_that_doesnt_require_a_space(
+async def test_standup_has_a_clear_feature_that_doesnt_require_a_space(
     app, monkeypatch, token
 ):
-    # required to prime the asyncio loop
-    asyncio.ensure_future(
-        loop_policy.run_scheduler(ignore_google=True, ignore_standup=False)
-    )
+
     say = MagicMock()
     clear = MagicMock(return_value="not much")
     monkeypatch.setattr(standup, "say", say)
     monkeypatch.setattr(standup, "pop_user_updates", clear)
 
-    r = app.post(
+    r = await app.post(
         "/standup", json={"token": token, "user_name": "test-user", "text": "not much"}
     )
-    r = app.post(
+    r = await app.post(
         "/standup", json={"token": token, "user_name": "test-user", "text": "clear"}
     )
     assert r.ok
@@ -179,17 +169,16 @@ def test_standup_has_a_clear_feature_that_doesnt_require_a_space(
     assert clear.call_args[0] == ("test-user",)
 
 
-def test_standup_clear_responds_even_when_nothing_to_clear(app, monkeypatch, token):
-    # required to prime the asyncio loop
-    asyncio.ensure_future(
-        loop_policy.run_scheduler(ignore_google=True, ignore_standup=False)
-    )
+async def test_standup_clear_responds_even_when_nothing_to_clear(
+    app, monkeypatch, token
+):
+
     say = MagicMock()
     clear = MagicMock(return_value=None)
     monkeypatch.setattr(standup, "say", say)
     monkeypatch.setattr(standup, "pop_user_updates", clear)
 
-    r = app.post(
+    r = await app.post(
         "/standup", json={"token": token, "user_name": "test-user", "text": "clear"}
     )
     assert r.ok
@@ -197,35 +186,29 @@ def test_standup_clear_responds_even_when_nothing_to_clear(app, monkeypatch, tok
     assert clear.call_args[0] == ("test-user",)
 
 
-def test_standup_show_displays_current_status(app, monkeypatch, token):
-    # required to prime the asyncio loop
-    asyncio.ensure_future(
-        loop_policy.run_scheduler(ignore_google=True, ignore_standup=False)
-    )
+async def test_standup_show_displays_current_status(app, monkeypatch, token):
+
     say = MagicMock()
     latest = MagicMock(return_value={"test-user": "debugging"})
     monkeypatch.setattr(standup, "say", say)
     monkeypatch.setattr(standup, "get_latest_updates", latest)
 
     standup.UPDATES = {"test-user": "debugging"}
-    r = app.post(
+    r = await app.post(
         "/standup", json={"token": token, "user_name": "test-user", "text": "show"}
     )
     assert r.ok
     assert r.text == "debugging"
 
 
-def test_standup_show_is_empty(app, monkeypatch, token):
-    # required to prime the asyncio loop
-    asyncio.ensure_future(
-        loop_policy.run_scheduler(ignore_google=True, ignore_standup=False)
-    )
+async def test_standup_show_is_empty(app, monkeypatch, token):
+
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
     latest = MagicMock(return_value=dict())
     monkeypatch.setattr(standup, "get_latest_updates", latest)
 
-    r = app.post(
+    r = await app.post(
         "/standup", json={"token": token, "user_name": "test-user", "text": "show"}
     )
     assert r.ok

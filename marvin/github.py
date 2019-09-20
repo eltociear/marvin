@@ -2,14 +2,14 @@ import asyncio
 import json
 import os
 import random
-import requests
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 
-from apistar.http import Body, Response
+import requests
+from starlette.requests import Request
+from starlette.responses import Response
 
-from marvin.utilities import get_users, get_dm_channel_id, say
-
+from marvin.utilities import get_dm_channel_id, get_users, say
 
 MARVIN_ACCESS_TOKEN = os.environ.get("MARVIN_ACCESS_TOKEN")
 
@@ -30,11 +30,11 @@ def create_issue(title, body, labels=None, issue_state="open"):
         return resp.json()
 
 
-async def cloud_github_handler(data: Body):
-    payload = json.loads(data)
+async def cloud_github_handler(request: Request):
+    payload = await request.json()
     pr_data = payload.get("pull_request", {})
     labels = [lab.get("id", 0) for lab in pr_data.get("labels", [])]
-    if 1163480691 in labels and payload.get("action") == "closed":
+    if 1_163_480_691 in labels and payload.get("action") == "closed":
         was_merged = pr_data.get("merged", False)
         pr_link = pr_data.get("html_url")
         if was_merged and pr_link is not None:
@@ -44,7 +44,7 @@ async def cloud_github_handler(data: Body):
                 body=body,
                 labels=["cloud-integration-notification"],
             )
-            return Response("")
+    return Response()
 
 
 @lru_cache(maxsize=1024)
@@ -54,7 +54,7 @@ def make_pr_comment(pr_num, body):
     comment = {"body": body}
     resp = requests.post(url, data=json.dumps(comment), headers=headers)
     if resp.status_code == 201:
-        return Response("")
+        return Response()
 
 
 @lru_cache(maxsize=1024)
@@ -65,11 +65,11 @@ def notify_chris(pr_num):
     say(txt, channel=channel)
 
 
-async def core_github_handler(data: Body):
+async def core_github_handler(request: Request):
     actions = ["opened", "review_requested"]
     associations = ["FIRST_TIME_CONTRIBUTOR", "FIRST_TIMER", "NONE"]
 
-    payload = json.loads(data)
+    payload = await request.json()
     pr_data = payload.get("pull_request", {})
     if (
         pr_data.get("author_association", "").upper() in associations
@@ -86,3 +86,4 @@ async def core_github_handler(data: Body):
         except:
             pass
         return make_pr_comment(pr_num, body)
+    return Response()

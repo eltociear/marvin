@@ -1,13 +1,13 @@
 import asyncio
 import logging
+
 import pendulum
 import schedule
-import marvin.standup
+
 import marvin.responses
+import marvin.standup
 import marvin.utilities
-
 from prefect import Client
-
 
 ALERT_CHANNEL = "CK9RY9J3C"
 
@@ -66,15 +66,3 @@ async def run_scheduler(ignore_google=False, ignore_standup=True):
     while True:
         schedule.run_pending()
         await asyncio.sleep(5)
-
-
-class SchedulerPolicy(asyncio.DefaultEventLoopPolicy):
-    def new_event_loop(self):
-        """Override new_event_loop to allow for including arbitrary coroutines
-        into the uvicorn event loop.
-        """
-        loop = super().new_event_loop()
-        asyncio.ensure_future(run_scheduler(), loop=loop)
-        asyncio.ensure_future(ping_staging(), loop=loop)
-        logging.getLogger("asyncio").info("New asyncio event loop created")
-        return loop
