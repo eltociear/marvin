@@ -87,7 +87,7 @@ async def run_scheduled_events():
 
 
 def run():
-    uvicorn.run(MarvinApp, host="0.0.0.0", port=8081, log_level="debug", loop="asyncio")
+    uvicorn.run(MarvinApp, host="0.0.0.0", port=8080, log_level="debug", loop="asyncio")
 
 
 if __name__ == "__main__":
