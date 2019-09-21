@@ -3,18 +3,18 @@ import hmac
 import json
 import logging
 import os
+
 import uvicorn
+from starlette.applications import Starlette
+from starlette.requests import Request
+from starlette.routing import Route
 
-from apistar import ASyncApp, Route
-from apistar.http import Body, Headers
-
-from .github import cloud_github_handler, core_github_handler
-from .loop_policy import SchedulerPolicy
-from .responses import event_handler, public_event_handler, version_handler
 from .defcon import defcon_handler
+from .github import cloud_github_handler, core_github_handler
 from .leaderboard import leaderboard_handler
+from .loop_policy import ping_staging, run_scheduler
+from .responses import event_handler, public_event_handler, version_handler
 from .standup import standup_handler
-
 
 GITHUB_VALIDATION_TOKEN = os.environ.get("GITHUB_VALIDATION_TOKEN", "").encode()
 SLACK_VALIDATION_TOKEN = os.environ.get("SLACK_VALIDATION_TOKEN")
@@ -45,33 +45,49 @@ def github_validation(data, sig):
     assert expected == sig, "Secret Authentication Failed"
 
 
-class TokenVerificationHook:
-    def on_request(self, data: Body, headers: Headers):
-        xhub_sig = headers.get("x-hub-signature", "")
+def check_token(fn):
+    """
+    Check signatures on every request
+
+    Note: this should be a middleware, but Starlette does not allow middleware to access
+    the request body. Therefore, we write it as a decorator and apply it to each route.
+    """
+
+    async def token_verification(request: Request):
+        xhub_sig = request.headers.get("x-hub-signature", "")
+        body = await request.body()
         if xhub_sig.startswith("sha1"):
-            github_validation(data, xhub_sig)
+            github_validation(body, xhub_sig)
         else:
-            slack_validation(data)
+            slack_validation(body)
+        return await fn(request)
+
+    return token_verification
 
 
-MarvinApp = ASyncApp(
-    routes=[
-        Route("/github/cloud", method="POST", handler=cloud_github_handler),
-        Route("/github/core", method="POST", handler=core_github_handler),
-        Route("/defcon", method="POST", handler=defcon_handler),
-        Route("/leaderboard", method="POST", handler=leaderboard_handler),
-        Route("/standup", method="POST", handler=standup_handler),
-        Route("/version", method="POST", handler=version_handler),
-        Route("/public", method="POST", handler=public_event_handler),
-        Route("/", method="POST", handler=event_handler),
-    ],
-    event_hooks=[TokenVerificationHook],
+MarvinApp = Starlette()
+
+MarvinApp.add_route(
+    "/github/cloud", check_token(cloud_github_handler), methods=["POST"]
 )
+MarvinApp.add_route("/github/core", check_token(core_github_handler), methods=["POST"])
+MarvinApp.add_route("/defcon", check_token(defcon_handler), methods=["POST"])
+MarvinApp.add_route("/leaderboard", check_token(leaderboard_handler), methods=["POST"])
+MarvinApp.add_route("/standup", check_token(standup_handler), methods=["POST"])
+MarvinApp.add_route("/version", check_token(version_handler), methods=["POST"])
+MarvinApp.add_route("/public", check_token(public_event_handler), methods=["POST"])
+MarvinApp.add_route("/", check_token(event_handler), methods=["POST"])
+
+
+@MarvinApp.on_event("startup")
+async def run_scheduled_events():
+    asyncio.create_task(run_scheduler())
+    asyncio.create_task(ping_staging())
+    await asyncio.sleep(0.0001)
 
 
 def run():
-    asyncio.set_event_loop_policy(SchedulerPolicy())
-    uvicorn.run(MarvinApp, "0.0.0.0", 8080, log_level="debug", loop="asyncio")
+    uvicorn.run(MarvinApp, host="0.0.0.0", port=8080, log_level="debug", loop="asyncio")
 
 
 if __name__ == "__main__":

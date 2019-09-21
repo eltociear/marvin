@@ -1,12 +1,14 @@
 import asyncio
 import datetime
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
+
 from marvin import defcon
 
 
 @pytest.mark.parametrize("text", ["5", "raise", "lower"])
-def test_defcon_can_be_updated(app, monkeypatch, token, text):
+async def test_defcon_can_be_updated(app, monkeypatch, token, text):
     pins = [
         {
             "type": "message",
@@ -25,7 +27,7 @@ def test_defcon_can_be_updated(app, monkeypatch, token, text):
     monkeypatch.setattr(defcon, "remove_pin", remove_pin)
     monkeypatch.setattr(defcon, "get_pins", MagicMock(return_value=pins))
 
-    r = app.post(
+    r = await app.post(
         "/defcon", json={"token": token, "user_name": "test-user", "text": text}
     )
     assert r.ok
@@ -35,7 +37,7 @@ def test_defcon_can_be_updated(app, monkeypatch, token, text):
 
 
 @pytest.mark.parametrize("text", ["5", "4", "3", "2", "1", "raise", "lower"])
-def test_defcon_levels_format_correctly(app, monkeypatch, token, text):
+async def test_defcon_levels_format_correctly(app, monkeypatch, token, text):
     pins = [
         {
             "type": "message",
@@ -54,7 +56,7 @@ def test_defcon_levels_format_correctly(app, monkeypatch, token, text):
     monkeypatch.setattr(defcon, "remove_pin", remove_pin)
     monkeypatch.setattr(defcon, "get_pins", MagicMock(return_value=pins))
 
-    r = app.post(
+    r = await app.post(
         "/defcon", json={"token": token, "user_name": "test-user", "text": text}
     )
 
@@ -69,10 +71,12 @@ def test_defcon_levels_format_correctly(app, monkeypatch, token, text):
 
 
 @pytest.mark.parametrize("text", ["raise", "lower"])
-def test_defcon_informatively_complains_if_no_level_set(app, monkeypatch, token, text):
+async def test_defcon_informatively_complains_if_no_level_set(
+    app, monkeypatch, token, text
+):
     monkeypatch.setattr(defcon, "get_pins", MagicMock(return_value=[]))
 
-    r = app.post(
+    r = await app.post(
         "/defcon", json={"token": token, "user_name": "test-user", "text": text}
     )
     assert r.ok
@@ -82,14 +86,14 @@ def test_defcon_informatively_complains_if_no_level_set(app, monkeypatch, token,
 
 
 @pytest.mark.parametrize("text", ["5", "raise", "lower"])
-def test_defcon_complains_if_too_many_pins_found(app, monkeypatch, token, text):
+async def test_defcon_complains_if_too_many_pins_found(app, monkeypatch, token, text):
     pins = [
         {"type": "message", "message": {"user": defcon.MARVIN_ID}},
         {"type": "message", "message": {"user": defcon.MARVIN_ID}},
     ]
     monkeypatch.setattr(defcon, "get_pins", MagicMock(return_value=pins))
 
-    r = app.post(
+    r = await app.post(
         "/defcon", json={"token": token, "user_name": "test-user", "text": text}
     )
     assert r.ok

@@ -1,8 +1,10 @@
 aiofiles
-apistar == 0.5.40
+starlette
 fsspec
 google-cloud-firestore
 prefect
 pytest
 schedule
-uvicorn == 0.2.22
+uvicorn >= 0.2.22
+pytest-asyncio
+requests_async

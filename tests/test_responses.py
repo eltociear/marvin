@@ -1,5 +1,7 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
+
 import marvin.responses
 
 
@@ -32,17 +34,17 @@ def set_users():
     )
 
 
-def test_at_mentions_responds_privately(app, token, monkeypatch):
+async def test_at_mentions_responds_privately(app, token, monkeypatch):
     post_event = {"text": "<@UBEEMJZFX>", "channel": "foo", "type": "message.im"}
     say = MagicMock()
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 1
     assert say.call_args[1]["channel"] == "foo"
 
 
-def test_at_mentions_responds_publicly(app, token, monkeypatch):
+async def test_at_mentions_responds_publicly(app, token, monkeypatch):
     post_event = {
         "text": "technically irrelevant if the event is tagged",
         "channel": "foo",
@@ -50,23 +52,23 @@ def test_at_mentions_responds_publicly(app, token, monkeypatch):
     }
     say = MagicMock()
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 1
     assert say.call_args[1]["channel"] == "foo"
 
 
-def test_at_mentions_doesnt_respond(app, token, monkeypatch):
+async def test_at_mentions_doesnt_respond(app, token, monkeypatch):
     post_event = {"text": "<@UBEE>", "channel": "foo", "type": "message.im"}
     say = MagicMock()
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 0
 
 
 @pytest.mark.parametrize("event_type", ["app_mention", "message", "message.im"])
-def test_at_mentions_doesnt_respond_if_marvin_tags_himself(
+async def test_at_mentions_doesnt_respond_if_marvin_tags_himself(
     app, token, monkeypatch, event_type
 ):
     post_event = {
@@ -77,16 +79,16 @@ def test_at_mentions_doesnt_respond_if_marvin_tags_himself(
     }
     say = MagicMock()
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 0
 
 
-def test_marvin_gives_psa_when_new_emoji_added(app, token, monkeypatch):
+async def test_marvin_gives_psa_when_new_emoji_added(app, token, monkeypatch):
     post_event = {"type": "emoji_changed", "subtype": "add", "name": "test-emoji"}
     say = MagicMock()
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 1
     assert (
@@ -96,16 +98,16 @@ def test_marvin_gives_psa_when_new_emoji_added(app, token, monkeypatch):
     assert say.call_args[1]["channel"] == "CANPVTSKU"
 
 
-def test_marvin_only_gives_psa_for_additions(app, token, monkeypatch):
+async def test_marvin_only_gives_psa_for_additions(app, token, monkeypatch):
     post_event = {"type": "emoji_changed", "subtype": "changed", "name": "test-emoji"}
     say = MagicMock()
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 0
 
 
-def test_at_mentions_responds_within_thread(app, token, monkeypatch):
+async def test_at_mentions_responds_within_thread(app, token, monkeypatch):
     post_event = {
         "text": "<@UBEEMJZFX>",
         "channel": "foo",
@@ -114,20 +116,20 @@ def test_at_mentions_responds_within_thread(app, token, monkeypatch):
     }
     say = MagicMock()
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 1
     assert say.call_args[1]["channel"] == "foo"
     assert say.call_args[1]["thread_ts"] == "00834934.0704"
 
 
-def test_slash_version_responds(app, token):
-    r = app.post("/version", json={"channel": "foo", "token": token})
+async def test_slash_version_responds(app, token):
+    r = await app.post("/version", json={"channel": "foo", "token": token})
     assert r.ok
     assert "https://github.com" in r.text
 
 
-def test_github_mentions_works(app, token, monkeypatch):
+async def test_github_mentions_works(app, token, monkeypatch):
     post_event = {
         "text": "",
         "bot_id": "BBGMPFDHQ",
@@ -142,14 +144,14 @@ def test_github_mentions_works(app, token, monkeypatch):
         marvin.responses, "get_dm_channel_id", lambda *args, **kwargs: "dm_chris"
     )
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 1
     assert say.call_args[0] == ("You were mentioned on GitHub @ foo://bar",)
     assert say.call_args[1]["channel"] == "dm_chris"
 
 
-def test_github_mentions_ignores_non_github_posts(app, token, monkeypatch):
+async def test_github_mentions_ignores_non_github_posts(app, token, monkeypatch):
     post_event = {
         "text": "",
         "channel": "foo",
@@ -163,12 +165,12 @@ def test_github_mentions_ignores_non_github_posts(app, token, monkeypatch):
         marvin.responses, "get_dm_channel_id", lambda *args, **kwargs: "dm_chris"
     )
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 0
 
 
-def test_github_mentions_tells_everyone(app, token, monkeypatch):
+async def test_github_mentions_tells_everyone(app, token, monkeypatch):
     post_event = {
         "text": "",
         "bot_id": "BBGMPFDHQ",
@@ -186,12 +188,12 @@ def test_github_mentions_tells_everyone(app, token, monkeypatch):
         marvin.responses, "get_dm_channel_id", lambda *args, **kwargs: "dm_id"
     )
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 3
 
 
-def test_notion_mentions_works(app, token, monkeypatch):
+async def test_notion_mentions_works(app, token, monkeypatch):
     post_event = {
         "text": "Chris White commented in *<https://foo.bar/baz/page|This is not real ignore this>*",
         "bot_id": "BDUBG9WAD",
@@ -204,7 +206,7 @@ def test_notion_mentions_works(app, token, monkeypatch):
         marvin.responses, "get_dm_channel_id", lambda *args, **kwargs: "dm_chris"
     )
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 1
     assert say.call_args[0] == (
@@ -213,7 +215,7 @@ def test_notion_mentions_works(app, token, monkeypatch):
     assert say.call_args[1]["channel"] == "dm_chris"
 
 
-def test_notion_mentions_works_with_multiple_attachments(app, token, monkeypatch):
+async def test_notion_mentions_works_with_multiple_attachments(app, token, monkeypatch):
     post_event = {
         "text": "Chris White commented in *<https://foo.bar/baz/page|This is not real ignore this>*",
         "bot_id": "BDUBG9WAD",
@@ -230,7 +232,7 @@ def test_notion_mentions_works_with_multiple_attachments(app, token, monkeypatch
         marvin.responses, "get_dm_channel_id", lambda *args, **kwargs: "dm_chris"
     )
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 2
     assert say.call_args[0] == (
@@ -239,7 +241,7 @@ def test_notion_mentions_works_with_multiple_attachments(app, token, monkeypatch
     assert say.call_args[1]["channel"] == "dm_chris"
 
 
-def test_notion_mentions_tells_everyone(app, token, monkeypatch):
+async def test_notion_mentions_tells_everyone(app, token, monkeypatch):
     post_event = {
         "text": "Billy Bob commented in *<https://foo.bar/baz/page|This is not real ignore this>*",
         "bot_id": "BDUBG9WAD",
@@ -256,6 +258,6 @@ def test_notion_mentions_tells_everyone(app, token, monkeypatch):
         marvin.responses, "get_dm_channel_id", lambda *args, **kwargs: "dm_id"
     )
     monkeypatch.setattr(marvin.responses, "say", say)
-    r = app.post("/", json={"event": post_event, "token": token})
+    r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 2

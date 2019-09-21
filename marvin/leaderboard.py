@@ -1,18 +1,17 @@
-import google.cloud.firestore
-
 import asyncio
 import json
 import re
-from apistar.http import RequestData
+
+import google.cloud.firestore
+from starlette.requests import Request
 
 from .utilities import say
-
 
 client = google.cloud.firestore.Client(project="prefect-marvin")
 
 
-async def leaderboard_handler(data: RequestData):
-    payload = data.to_dict() if not isinstance(data, dict) else data
+async def leaderboard_handler(request: Request):
+    payload = await request.json()
     update = payload.get("text")
     channel = payload.get("channel_id")
 

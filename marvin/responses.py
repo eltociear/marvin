@@ -5,19 +5,20 @@ import random
 import re
 from concurrent.futures import ThreadPoolExecutor
 
-import schedule
-from apistar.http import Body, Response
 import google.cloud.firestore
+import schedule
+from starlette.requests import Request
+from starlette.responses import Response
 
 from .github import create_issue
+from .karma import update_karma
 from .utilities import (
     get_dm_channel_id,
-    say,
-    public_speak,
     get_public_thread,
     get_user_info,
+    public_speak,
+    say,
 )
-from .karma import update_karma
 
 executor = ThreadPoolExecutor(max_workers=3)
 USERS = {}
@@ -80,27 +81,31 @@ def _refresh_users():
             del USERS[uid]
 
 
-async def event_handler(data: Body):
+async def event_handler(request: Request):
     # for validating your URL with slack
-    json_data = json.loads(data)
+    response = None
+    json_data = await request.json()
     is_challenge = json_data.get("type") == "url_verification"
+
     if is_challenge:
-        return json_data["challenge"]
+        return Response(json_data["challenge"])
 
     event = json_data.get("event", {})
     event_type = event.get("type")
     if event_type == "app_mention" or MARVIN_ID in event.get("text", ""):
-        return app_mention(event)
+        response = app_mention(event)
     elif event_type == "emoji_changed" and event.get("subtype") == "add":
-        return emoji_added(event)
+        response = emoji_added(event)
     elif event_type == "message" and event.get("bot_id") == "BBGMPFDHQ":
-        return github_mention(event)
+        response = github_mention(event)
     elif event_type == "message" and event.get("bot_id") == "BDUBG9WAD":
-        return notion_mention(event)
+        response = notion_mention(event)
     elif event_type == "message" and event.get("bot_id") is None:
         positive_match = karma_regex.match(event.get("text", ""))
         if positive_match:
-            return karma_handler(positive_match, event)
+            response = karma_handler(positive_match, event)
+
+    return Response(response)
 
 
 def app_mention(event):
@@ -108,7 +113,6 @@ def app_mention(event):
     if who_spoke != MARVIN_ID:
         quote = random.choice(quotes)
         say(quote, channel=event.get("channel"), thread_ts=event.get("thread_ts"))
-    return Response("")
 
 
 def emoji_added(event):
@@ -116,7 +120,6 @@ def emoji_added(event):
     psa = f"*PSA*: A new slackmoji :{name}: was added! :more_you_know:"
     psa_channel = "CANPVTSKU"  # random
     say(psa, channel=psa_channel)
-    return Response("")
 
 
 def github_mention(event):
@@ -151,33 +154,32 @@ def notion_mention(event):
             say(msg, channel=get_dm_channel_id(slack_id))
 
 
-async def version_handler():
+async def version_handler(request: Request):
     base_url = "https://github.com/PrefectHQ/marvin/commit/"
-    return f"{base_url}{GIT_SHA}"
+    return Response(f"{base_url}{GIT_SHA}")
 
 
 def karma_handler(regex_match, event):
     response_text = update_karma(regex_match)
     say(response_text, channel=event.get("channel"))
-    return Response("")
 
 
-async def public_event_handler(data: Body):
+async def public_event_handler(request: Request):
     # for validating your URL with slack
-    json_data = json.loads(data)
+    json_data = await request.json()
     is_challenge = json_data.get("type") == "url_verification"
     if is_challenge:
-        return json_data["challenge"]
+        return Response(json_data["challenge"])
 
     event = json_data.get("event", {})
     event_type = event.get("type")
     if event_type != "app_mention":
-        return Response("")
+        return Response()
 
     # only chris and jeremiah allowed to use this
     who_spoke = event.get("user", "")
     if who_spoke not in ["UKNSNMUE6", "UKTUC906M"]:
-        return Response("")
+        return Response()
 
     patt = re.compile('archive\s"(.*?)"')
     matches = patt.findall(event.get("text", "").replace("“", '"').replace("”", '"'))
@@ -197,3 +199,4 @@ async def public_event_handler(data: Body):
         public_speak(
             text=out["html_url"], channel=event["channel"], thread_ts=event["thread_ts"]
         )
+    return Response()
