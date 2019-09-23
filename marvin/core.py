@@ -3,6 +3,7 @@ import hmac
 import json
 import logging
 import os
+import urllib
 
 import uvicorn
 from starlette.applications import Starlette
@@ -32,8 +33,8 @@ def slack_validation(data):
         payload = json.loads(data)
         token = payload.get("token", "")
     except json.JSONDecodeError:
-        data = data.decode()
-        token = [t.split("=")[1] for t in data.split("&") if t.startswith("token")][0]
+        data = urllib.parse.parse_qs(data.decode())
+        token = data.get("token")[0]
     assert token in [
         PUBLIC_VALIDATION_TOKEN,
         SLACK_VALIDATION_TOKEN,

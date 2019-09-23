@@ -71,7 +71,7 @@ def update_user_updates(user, update):
 
 
 async def standup_handler(request: Request):
-    payload = await request.json()
+    payload = await request.form()
     user = payload.get("user_name")
     update = payload.get("text")
     clear_match = re.compile("^clear($|\s)")

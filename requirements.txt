@@ -8,3 +8,4 @@ schedule
 uvicorn >= 0.2.22
 pytest-asyncio
 requests_async
+python-multipart

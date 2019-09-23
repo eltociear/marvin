@@ -4,14 +4,15 @@ import re
 
 import google.cloud.firestore
 from starlette.requests import Request
+from starlette.responses import Response
 
 from .utilities import say
 
 client = google.cloud.firestore.Client(project="prefect-marvin")
 
 
-async def leaderboard_handler(request: Request):
-    payload = await request.json()
+async def leaderboard_handler(request: Request) -> Response:
+    payload = await request.form()
     update = payload.get("text")
     channel = payload.get("channel_id")
 
@@ -62,4 +63,4 @@ async def leaderboard_handler(request: Request):
         msg += f"- {name}: {votes}\n"
 
     say(msg, channel=channel)
-    return ""
+    return Response()
