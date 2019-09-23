@@ -84,7 +84,13 @@ def _refresh_users():
 async def event_handler(request: Request):
     # for validating your URL with slack
     response = None
-    json_data = await request.json()
+
+    # not sure if events are json or form-encoded
+    try:
+        json_data = await request.json()
+    except:
+        json_data = await request.form()
+
     is_challenge = json_data.get("type") == "url_verification"
 
     if is_challenge:

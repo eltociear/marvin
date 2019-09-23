@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 from unittest.mock import MagicMock
+from urllib.parse import urlencode
 
 import pytest
 import schedule
@@ -30,7 +31,11 @@ def get_pre_post_jobs():
 
 
 async def test_standup_is_scheduled(app, token):
-    await app.post("/", json={"token": token})
+    await app.post(
+        "/",
+        data={"token": token},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
+    )
 
     pre, post = get_pre_post_jobs()
     assert pre.next_run.hour == 13
@@ -69,7 +74,11 @@ async def test_standup_identifies_the_right_date_an_update_belongs_to(
 )
 async def test_standup_takes_the_weekend_off(app, monkeypatch, token, now):
 
-    await app.post("/", json={"token": token})
+    await app.post(
+        "/",
+        data={"token": token},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
+    )
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
 
@@ -94,7 +103,7 @@ async def test_standup_queries_users(app, monkeypatch, token):
         standup, "get_dm_channel_id", lambda *args, **kwargs: "dm_chris"
     )
 
-    await app.post("/", json={"token": token})
+    await app.post("/", data={"token": token})
 
     say = MagicMock()
     monkeypatch.setattr(standup, "say", say)
@@ -119,7 +128,9 @@ async def test_standup_stores_updates(app, monkeypatch, token):
     monkeypatch.setattr(standup, "update_user_updates", updates)
 
     r = await app.post(
-        "/standup", json={"token": token, "user_name": "test-user", "text": "not much"}
+        "/standup",
+        data={"token": token, "user_name": "test-user", "text": "not much"},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
     assert r.ok
     assert r.text == "Thanks test-user!"
@@ -134,15 +145,18 @@ async def test_standup_has_a_clear_feature(app, monkeypatch, token):
     monkeypatch.setattr(standup, "pop_user_updates", clear)
 
     r = await app.post(
-        "/standup", json={"token": token, "user_name": "test-user", "text": "not much"}
+        "/standup",
+        data={"token": token, "user_name": "test-user", "text": "not much"},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
     r = await app.post(
         "/standup",
-        json={
+        data={
             "token": token,
             "user_name": "test-user",
             "text": "clear and a bunch of other noise",
         },
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
     assert r.ok
     assert r.text == "~not much~"
@@ -159,10 +173,14 @@ async def test_standup_has_a_clear_feature_that_doesnt_require_a_space(
     monkeypatch.setattr(standup, "pop_user_updates", clear)
 
     r = await app.post(
-        "/standup", json={"token": token, "user_name": "test-user", "text": "not much"}
+        "/standup",
+        data={"token": token, "user_name": "test-user", "text": "not much"},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
     r = await app.post(
-        "/standup", json={"token": token, "user_name": "test-user", "text": "clear"}
+        "/standup",
+        data={"token": token, "user_name": "test-user", "text": "clear"},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
     assert r.ok
     assert r.text == "~not much~"
@@ -179,7 +197,9 @@ async def test_standup_clear_responds_even_when_nothing_to_clear(
     monkeypatch.setattr(standup, "pop_user_updates", clear)
 
     r = await app.post(
-        "/standup", json={"token": token, "user_name": "test-user", "text": "clear"}
+        "/standup",
+        data={"token": token, "user_name": "test-user", "text": "clear"},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
     assert r.ok
     assert r.text == "No updates to clear!"
@@ -195,7 +215,9 @@ async def test_standup_show_displays_current_status(app, monkeypatch, token):
 
     standup.UPDATES = {"test-user": "debugging"}
     r = await app.post(
-        "/standup", json={"token": token, "user_name": "test-user", "text": "show"}
+        "/standup",
+        data={"token": token, "user_name": "test-user", "text": "show"},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
     assert r.ok
     assert r.text == "debugging"
@@ -209,7 +231,9 @@ async def test_standup_show_is_empty(app, monkeypatch, token):
     monkeypatch.setattr(standup, "get_latest_updates", latest)
 
     r = await app.post(
-        "/standup", json={"token": token, "user_name": "test-user", "text": "show"}
+        "/standup",
+        data={"token": token, "user_name": "test-user", "text": "show"},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
     assert r.ok
     assert r.text == "I haven't received any updates from you yet, test-user."
