@@ -8,7 +8,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from .firestore import client
-from .users import USERS
+from .users import get_all_users
 from .utilities import say
 
 connectors = [
@@ -103,16 +103,14 @@ def generate_name() -> str:
 async def roundtable_order_handler(request: Request) -> Response:
 
     payload = await request.form()
-    update = payload.get("text")
     channel = payload.get("channel_id")
 
-    names = [u["name"] for u in USERS]
+    names = [u["name"] for u in get_all_users()]
 
     msgs = []
     for i, name in enumerate(random.sample(names, len(names))):
         alias = " ".join(w.capitalize() for w in generate_name())
         msgs.append(f"{i+1} - *{name}*{random.choice(connectors)} *the {alias}*")
-    print("\n".join(msgs))
 
     say("\n".join(msg), channel=channel)
     return Response()

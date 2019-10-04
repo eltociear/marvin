@@ -49,7 +49,7 @@ def get_all_users():
     """
     Returns all users in the database
     """
-    return [u.to_dict() for u in client.collection("users").get()]
+    return [u.to_dict() for u in USERS.values()]
 
 
 async def schedule_refresh_users():
