@@ -112,5 +112,5 @@ async def roundtable_order_handler(request: Request) -> Response:
         alias = " ".join(w.capitalize() for w in generate_name())
         msgs.append(f"{i+1} - *{name}*{random.choice(connectors)} *the {alias}*")
 
-    say("\n".join(msg), channel=channel)
+    say("\n".join(msgs), channel=channel)
     return Response()
