@@ -16,6 +16,7 @@ from .leaderboard import leaderboard_handler
 from .loop_policy import ping_staging, run_scheduler
 from .responses import event_handler, public_event_handler, version_handler
 from .standup import standup_handler
+from .team import roundtable_order_handler
 
 GITHUB_VALIDATION_TOKEN = os.environ.get("GITHUB_VALIDATION_TOKEN", "").encode()
 SLACK_VALIDATION_TOKEN = os.environ.get("SLACK_VALIDATION_TOKEN")
@@ -74,6 +75,9 @@ MarvinApp.add_route(
 MarvinApp.add_route("/github/core", check_token(core_github_handler), methods=["POST"])
 MarvinApp.add_route("/defcon", check_token(defcon_handler), methods=["POST"])
 MarvinApp.add_route("/leaderboard", check_token(leaderboard_handler), methods=["POST"])
+MarvinApp.add_route(
+    "/roundtable", check_token(roundtable_order_handler), methods=["POST"]
+)
 MarvinApp.add_route("/standup", check_token(standup_handler), methods=["POST"])
 MarvinApp.add_route("/version", check_token(version_handler), methods=["POST"])
 MarvinApp.add_route("/public", check_token(public_event_handler), methods=["POST"])

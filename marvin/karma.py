@@ -1,6 +1,4 @@
-import google.cloud.firestore
-
-client = google.cloud.firestore.Client(project="prefect-marvin")
+from .firestore import client
 
 
 def update_karma(regex_match):
