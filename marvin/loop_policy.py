@@ -61,7 +61,7 @@ async def run_scheduler(ignore_google=False, ignore_standup=True):
     if not ignore_standup:
         await marvin.standup.schedule_standup()
     if not ignore_google:
-        await marvin.responses.schedule_refresh_users()
+        await marvin.users.schedule_refresh_users()
 
     while True:
         schedule.run_pending()

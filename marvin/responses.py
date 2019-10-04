@@ -5,11 +5,11 @@ import random
 import re
 from concurrent.futures import ThreadPoolExecutor
 
-import google.cloud.firestore
 import schedule
 from starlette.requests import Request
 from starlette.responses import Response
 
+from .users import USERS
 from .github import create_issue
 from .karma import update_karma
 from .utilities import (
@@ -21,7 +21,6 @@ from .utilities import (
 )
 
 executor = ThreadPoolExecutor(max_workers=3)
-USERS = {}
 
 GIT_SHA = os.environ.get("GIT_SHA")
 MARVIN_ID = "UBEEMJZFX"
@@ -44,41 +43,8 @@ quotes = [
     "Why should I want to make anything up? Life’s bad enough as it is without wanting to invent any more of it.",
 ]
 
-firestore = None
 
 karma_regex = re.compile("^(.+[^\s])(\+{2}|\-{2})(\s*|$)$")
-
-
-async def schedule_refresh_users():
-    # run once for initial load
-    await refresh_users()
-    # schedule updates every hour
-    schedule.every().hour.do(refresh_users)
-
-
-async def refresh_users():
-    loop = asyncio.get_event_loop()
-    await loop.run_in_executor(executor, _refresh_users)
-
-
-def _refresh_users():
-    """
-    Firestore doesn't have an async API so this should be run in a ThreadPool via the
-    `refresh_users()` coroutine
-    """
-    global firestore
-    if firestore is None:
-        firestore = google.cloud.firestore.Client(project="prefect-marvin")
-
-    new_users = {
-        user.id: user.to_dict() for user in firestore.collection("users").get()
-    }
-    # add new users to USERS
-    USERS.update(new_users)
-    # delete old users from USERS -- don't clear() because we don't want USERS empty
-    for uid in list(USERS.keys()):
-        if uid not in new_users:
-            del USERS[uid]
 
 
 async def event_handler(request: Request):

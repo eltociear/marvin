@@ -2,13 +2,12 @@ import asyncio
 import json
 import re
 
-import google.cloud.firestore
 from starlette.requests import Request
 from starlette.responses import Response
 
 from .utilities import say
 
-client = google.cloud.firestore.Client(project="prefect-marvin")
+from .firestore import client
 
 
 async def leaderboard_handler(request: Request) -> Response:

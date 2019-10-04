@@ -3,11 +3,12 @@ from unittest.mock import MagicMock
 import pytest
 
 import marvin.responses
+import marvin.users
 
 
 @pytest.fixture(autouse=True, scope="module")
 def set_users():
-    marvin.responses.USERS.update(
+    marvin.users.USERS.update(
         {
             "q6kqpHrZcLLekeToWvrB": {
                 "name": "Chris",
