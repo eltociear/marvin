@@ -1,4 +1,5 @@
 aiofiles
+coolname
 starlette
 fsspec
 google-cloud-firestore
