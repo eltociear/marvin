@@ -49,7 +49,7 @@ def get_all_users():
     """
     Returns all users in the database
     """
-    return [USERS.values()]
+    return list(USERS.values())
 
 
 async def schedule_refresh_users():
