@@ -39,7 +39,7 @@ def token():
 @pytest.fixture(autouse=True)
 def no_google(monkeypatch):
     "Ensures that no test accidentally uses Google to do anything."
-    monkeypatch.delattr("marvin.responses.firestore")
+    monkeypatch.delattr("marvin.firestore.client")
     monkeypatch.setattr("marvin.standup.client", MagicMock())
 
 
