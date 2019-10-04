@@ -34,8 +34,20 @@ async def leaderboard_handler(request: Request) -> Response:
             for d in query.get()
             if d.id not in ("marvin", "easter egg")
         ]
-    elif count_match:
-        count = int(count_match.groups()[0].strip())
+    elif bottom_match:
+        count = int(bottom_match.groups()[-1].strip())
+        direction = google.cloud.firestore.Query.ASCENDING
+        query = (
+            client.collection("karma")
+            .order_by("value", direction=direction)
+            .limit(count)
+        )
+        results = [(d.id, d.get("value")) for d in query.get()]
+    else:
+        if count_match:
+            count = int(count_match.groups()[0].strip())
+        else:
+            count = 10
         direction = google.cloud.firestore.Query.DESCENDING
         query = (
             client.collection("karma")
@@ -47,16 +59,6 @@ async def leaderboard_handler(request: Request) -> Response:
             for d in query.get()
             if d.id not in ("marvin", "easter egg")
         ]
-    elif bottom_match:
-        count = int(bottom_match.groups()[-1].strip())
-        direction = google.cloud.firestore.Query.ASCENDING
-        query = (
-            client.collection("karma")
-            .order_by("value", direction=direction)
-            .limit(count)
-        )
-        results = [(d.id, d.get("value")) for d in query.get()]
-
     msg = "The leaderboard results are:\n\n"
 
     for name, votes in results:
