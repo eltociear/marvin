@@ -76,7 +76,7 @@ MarvinApp.add_route("/github/core", check_token(core_github_handler), methods=["
 MarvinApp.add_route("/defcon", check_token(defcon_handler), methods=["POST"])
 MarvinApp.add_route("/leaderboard", check_token(leaderboard_handler), methods=["POST"])
 MarvinApp.add_route(
-    "/roundtable", check_token(roundtable_order_handler), methods=["POST"]
+    "/roundtable-order", check_token(roundtable_order_handler), methods=["POST"]
 )
 MarvinApp.add_route("/standup", check_token(standup_handler), methods=["POST"])
 MarvinApp.add_route("/version", check_token(version_handler), methods=["POST"])
