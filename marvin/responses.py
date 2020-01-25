@@ -133,7 +133,7 @@ async def version_handler(request: Request):
 
 def karma_handler(regex_match, event):
     response_text = update_karma(regex_match)
-    say(response_text, channel=event.get("channel"))
+    say(response_text, channel=event.get("channel"), thread_ts=event.get("thread_ts"))
 
 
 async def public_event_handler(request: Request):

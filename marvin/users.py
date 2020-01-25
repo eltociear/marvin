@@ -82,4 +82,3 @@ def _refresh_users():
     for uid in list(USERS.keys()):
         if uid not in new_users:
             del USERS[uid]
-
