@@ -160,7 +160,10 @@ async def public_event_handler(request: Request):
         thread = get_public_thread(channel=event["channel"], ts=event["thread_ts"])
         for msg in thread:
             issue_body += "**{}**: ".format(get_user_info(user=msg["user"]))
-            issue_body += msg["text"] + "\n\n"
+            text = msg["text"].replace(
+                "```", "\n```\n"
+            )  # for guranteed code formatting in github
+            issue_body += text + "\n\n"
 
         out = create_issue(
             title=matches[0],
