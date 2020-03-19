@@ -98,7 +98,11 @@ def github_mention(event):
     data = event.get("attachments", [{}])[0]
     text = data.get("text", "")
 
-    was_mentioned = {u["slack"]: (f"@{u['github']}" in text) for u in USERS.values()}
+    was_mentioned = {
+        u["slack"]: (f"@{u['github']}" in text)
+        for u in USERS.values()
+        if u.get("github")
+    }
     for slack_id, mentioned in was_mentioned.items():
         if not mentioned:
             continue
