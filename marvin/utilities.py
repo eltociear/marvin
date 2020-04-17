@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import requests
 
@@ -206,7 +207,7 @@ def get_public_message_permalink(channel, message_ts):
     if r.ok:
         return r.json()["permalink"]
     else:
-        raise ValueError(f"Request failed with status code {r.status_code}")
+        logging.error(f"Request failed with status code {r.status_code}")
 
 
 @lru_cache(maxsize=1024)
