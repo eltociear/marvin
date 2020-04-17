@@ -15,6 +15,7 @@ from .karma import update_karma
 from .utilities import (
     get_dm_channel_id,
     get_public_thread,
+    get_public_message_permalink,
     get_user_info,
     public_speak,
     say,
@@ -169,6 +170,15 @@ async def public_event_handler(request: Request):
                 "```", "\n```\n"
             )  # for guranteed code formatting in github
             issue_body += text + "\n\n"
+
+        if thread:
+            original_message = thread[0]
+            permalink = get_public_message_permalink(
+                channel=event["channel"], message_ts=original_message["ts"]
+            )
+            issue_body += (
+                "Original thread can be found [here]({}).".format(permalink) + "\n\n"
+            )
 
         out = create_issue(
             title=matches[0],
