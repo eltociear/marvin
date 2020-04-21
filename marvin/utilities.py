@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import requests
 
@@ -192,6 +193,21 @@ def get_public_thread(channel, ts):
         return r.json()["messages"]
     else:
         raise ValueError(f"Request failed with status code {r.status_code}")
+
+
+def get_public_message_permalink(channel, message_ts):
+    """
+    Retrieve message metadata.
+
+    Returns:
+        - a permalink string to the desired message (see https://api.slack.com/methods/chat.getPermalink)
+    """
+    params = {"token": PUBLIC_OAUTH_TOKEN, "channel": channel, "message_ts": message_ts}
+    r = requests.post("https://slack.com/api/chat.getPermalink", data=params)
+    if r.ok:
+        return r.json()["permalink"]
+    else:
+        logging.error(f"Request failed with status code {r.status_code}")
 
 
 @lru_cache(maxsize=1024)
