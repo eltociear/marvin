@@ -15,6 +15,15 @@ import requests
 from google.oauth2 import service_account
 
 
+SUPPORT_ROTATIONS = {
+    "Monday": "<@UUSSRB4G7>",
+    "Tuesday": "<@U0116UYJFGT> and <@UH8RAUN1Y>",
+    "Wednesday": "<@UM8K2HFQC> and <@UH8SEAG5P>",
+    "Thursday": "<@UDKF9U8UC> and <@UTTUXQVN0>",
+    "Friday": "<@ULWS8CZ47> and <@UBE4N2LG1>",
+}
+
+
 @task
 def get_collection_name():
     date_format = "%Y-%m-%d"
@@ -48,14 +57,22 @@ def get_latest_updates(date):
 
 @task
 def post_standup(updates, channel):
-    public_msg = (
-        f"<!here> are today's standup updates, brought to you by Prefect `v{prefect.__version__}`:\n"
-        + "=" * 30
-    )
-    items = list(updates.items())
-    random.shuffle(items)
-    for user, update in items:
-        public_msg += f"\n- *{user}*: {update}"
+    if updates:
+        public_msg = (
+            f"<!here> are today's standup updates, brought to you by Prefect `v{prefect.__version__}`:\n"
+            + "=" * 30
+        )
+        items = list(updates.items())
+        random.shuffle(items)
+        for user, update in items:
+            public_msg += f"\n- *{user}*: {update}"
+    else:
+        public_msg = (
+            f"<!here> No one told me anything, so I have no updates to share.\n"
+        )
+
+    on_call = SUPPORT_ROTATIONS[pendulum.now("utc").strftime("%A")]
+    public_msg += f"\n\n{on_call} will be covering Slack support for the day."
 
     TOKEN = Secret("MARVIN_TOKEN")
 
@@ -113,5 +130,5 @@ with Flow(
     on_failure=notify_chris,
     result_handler=JSONResultHandler(),
 ) as flow:
-    standup_channel = Parameter("standup_channel", default="CANLZB1L3")
+    standup_channel = Parameter("standup_channel", default="CBH18KG8G")
     res = post_standup(get_latest_updates(get_collection_name()), standup_channel)
