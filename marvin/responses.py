@@ -156,7 +156,13 @@ async def public_event_handler(request: Request):
     # only chris and jeremiah allowed to use this
     # narrator: it wasn't just chris and jeremiah anymore
     who_spoke = event.get("user", "")
-    if who_spoke not in ["UKNSNMUE6", "UKTUC906M", "UL2EX9Y8N", "UTHEQ4F9R"]:
+    if who_spoke not in [
+        "UKNSNMUE6",
+        "UKTUC906M",
+        "UL2EX9Y8N",
+        "UTHEQ4F9R",
+        "UM8K2HFQC",
+    ]:
         return Response()
 
     patt = re.compile('archive\s"(.*?)"')
