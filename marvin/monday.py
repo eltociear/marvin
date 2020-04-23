@@ -33,10 +33,8 @@ def create_item():
     response = requests.post(
         "https://api.monday.com/v2/", json={"query": query, "variables": variables}, headers=headers
     )
-    if response.status_code == 200:
-        return response.json()
-    else:
-        raise Exception("Query failed {}. {}".format(response.status_code, query))
+    response.raise_for_status()
+    return response.json()
 
 
 def get_create_item_id(data):

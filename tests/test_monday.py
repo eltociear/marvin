@@ -9,4 +9,4 @@ async def test_slash_monday_responds(app, token, monkeypatch):
         json={"channel": "foo", "username": "bar", "text": "some text", "token": token},
     )
     assert r.ok
-    assert "item created..." in r.text
+    assert "It gives me a headache just trying to think down to your level, but I have added this to Monday." in r.text
