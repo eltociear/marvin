@@ -22,8 +22,7 @@ def create_item():
     variables = {"MONDAY_BOARD_ID": MONDAY_BOARD_ID, "MONDAY_GROUP_ID": MONDAY_GROUP_ID}
 
     query = """
-        mutation ($MONDAY_BOARD_ID:Int!, $MONDAY_GROUP_ID:String!) 
-        {
+        mutation ($MONDAY_BOARD_ID:Int!, $MONDAY_GROUP_ID:String!) {
             create_item (board_id: $MONDAY_BOARD_ID, group_id: $MONDAY_GROUP_ID, item_name: "Item added from slack")
             {
                 id
