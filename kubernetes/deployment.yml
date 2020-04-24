@@ -33,6 +33,11 @@ spec:
               secretKeyRef:
                 name: githubvalidationtoken
                 key: githubvalidationtoken.txt
+          - name: MONDAY_API_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: mondaytoken
+                key: mondaytoken.txt
           - name: MARVIN_ACCESS_TOKEN
             valueFrom:
               secretKeyRef:
