@@ -28,7 +28,9 @@ async def test_defcon_can_be_updated(app, monkeypatch, token, text):
     monkeypatch.setattr(defcon, "get_pins", MagicMock(return_value=pins))
 
     r = await app.post(
-        "/defcon", json={"token": token, "user_name": "test-user", "text": text}
+        "/defcon",
+        data={"token": token, "user_name": "test-user", "text": text},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
     assert r.ok
     assert r.text == "DEFCON level updated!"
@@ -57,7 +59,9 @@ async def test_defcon_levels_format_correctly(app, monkeypatch, token, text):
     monkeypatch.setattr(defcon, "get_pins", MagicMock(return_value=pins))
 
     r = await app.post(
-        "/defcon", json={"token": token, "user_name": "test-user", "text": text}
+        "/defcon",
+        data={"token": token, "user_name": "test-user", "text": text},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
 
     if text == "raise":
@@ -77,7 +81,9 @@ async def test_defcon_informatively_complains_if_no_level_set(
     monkeypatch.setattr(defcon, "get_pins", MagicMock(return_value=[]))
 
     r = await app.post(
-        "/defcon", json={"token": token, "user_name": "test-user", "text": text}
+        "/defcon",
+        data={"token": token, "user_name": "test-user", "text": text},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
     assert r.ok
     assert (
@@ -94,7 +100,9 @@ async def test_defcon_complains_if_too_many_pins_found(app, monkeypatch, token, 
     monkeypatch.setattr(defcon, "get_pins", MagicMock(return_value=pins))
 
     r = await app.post(
-        "/defcon", json={"token": token, "user_name": "test-user", "text": text}
+        "/defcon",
+        data={"token": token, "user_name": "test-user", "text": text},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
     assert r.ok
     assert "Multiple DEFCON pins" in r.text
