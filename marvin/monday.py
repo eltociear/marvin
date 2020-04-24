@@ -12,8 +12,8 @@ MONDAY_GROUP_ID = "topics"
 async def monday_handler(request: Request):
     payload = await request.form()
     text = payload.get("text")
-    username = payload.get("username")
-    channel = payload.get("channel")
+    username = payload.get("user_name")
+    channel = payload.get("channel_name")
     result = create_item()
     get_id_result = get_create_item_id(result)
     create_update(get_id_result, text, username, channel)

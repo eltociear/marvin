@@ -6,7 +6,7 @@ async def test_slash_monday_responds(app, token, monkeypatch):
     monkeypatch.setattr("marvin.monday.requests", MagicMock())
     r = await app.post(
         "/monday",
-        json={"channel": "foo", "username": "bar", "text": "some text", "token": token},
+        json={"channel_name": "foo", "user_name": "bar", "text": "some text", "token": token},
     )
     assert r.ok
     assert (
