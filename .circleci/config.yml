@@ -56,6 +56,9 @@ jobs:
       - run:
           name: Add Slack token to Kubernetes
           command: |
+            echo -n "$MONDAY_API_TOKEN" > mondaytoken.txt
+            kubectl delete secret mondaytoken --ignore-not-found
+            kubectl create secret generic mondaytoken --from-file=./mondaytoken.txt
             echo -n "$PREFECT__CLOUD__AUTH_TOKEN" > prefectauthtoken.txt
             kubectl delete secret prefectauthtoken --ignore-not-found
             kubectl create secret generic prefectauthtoken --from-file=./prefectauthtoken.txt
