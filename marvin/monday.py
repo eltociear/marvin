@@ -9,7 +9,7 @@ MONDAY_BOARD_ID = 517793474
 MONDAY_GROUP_ID = 'topics'
 
 async def monday_handler(request: Request):
-    payload = await request.json()
+    payload = await request.form()
     text = payload.get("text")
     username = payload.get("username")
     channel = payload.get("channel")

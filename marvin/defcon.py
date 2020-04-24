@@ -40,7 +40,7 @@ def level_updater(old_level, old_pin, extreme_level, extreme_msg, oper):
 
 
 async def defcon_handler(request: Request):
-    payload = await request.json()
+    payload = await request.form()
     update = payload.get("text")
 
     pins = get_pins(channel=defcon_channel)
