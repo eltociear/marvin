@@ -3,6 +3,7 @@ import os
 
 from starlette.requests import Request
 from starlette.responses import Response
+from .utilities import say
 
 headers = {"Authorization": os.getenv("MONDAY_API_TOKEN")}
 MONDAY_BOARD_ID = 517793474
@@ -17,9 +18,16 @@ async def monday_handler(request: Request):
     result = create_item()
     get_id_result = get_create_item_id(result)
     create_update(get_id_result, text, username, channel)
+    notify_engineering(text, username)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
+
+
+def notify_engineering(text, username):
+    txt = f"{username} just added '{text}' to the product laundry basket in Monday"
+    engineering_channel = "CBH18KG8G"
+    say(txt, channel=engineering_channel)
 
 
 def create_item():
