@@ -89,7 +89,7 @@ MarvinApp.add_route("/", check_token(event_handler), methods=["POST"])
 @MarvinApp.on_event("startup")
 async def run_scheduled_events():
     asyncio.create_task(run_scheduler())
-    asyncio.create_task(ping_staging())
+    #    asyncio.create_task(ping_staging())
     await asyncio.sleep(0.0001)
 
 
