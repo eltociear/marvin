@@ -1,7 +1,6 @@
 import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
-from prefect.engine.result_handlers import JSONResultHandler
 from prefect.environments.execution.remote import RemoteEnvironment
 from prefect.environments.storage import Docker
 from prefect.schedules import CronSchedule
@@ -114,21 +113,11 @@ storage = Docker(
 )
 
 
-def notify_chris(flow, state):
-    url = Secret("MARVIN_WEBHOOK_URL").get()
-    message = f"@chris, the daily standup flow failed; here is everything I know about the Flow state: ```{state.serialize()}```"
-    r = requests.post(
-        url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
-    )
-
-
 with Flow(
     "Daily Standup",
     schedule=weekday_schedule,
     environment=environment,
     storage=storage,
-    on_failure=notify_chris,
-    result_handler=JSONResultHandler(),
 ) as flow:
     standup_channel = Parameter("standup_channel", default="CBH18KG8G")
     res = post_standup(get_latest_updates(get_collection_name()), standup_channel)
