@@ -141,6 +141,37 @@ def karma_handler(regex_match, event):
     say(response_text, channel=event.get("channel"), thread_ts=event.get("thread_ts"))
 
 
+def open_issue(event, title, issue_state="closed"):
+
+    issue_body = "## {header} from the [Prefect Public Slack Community](https://join.slack.com/t/prefect-public/shared_invite/enQtNzE5OTU3OTQwNzc1LTQ5M2FkZmQzZjI0ODg1ZTBmOTc0ZjVjYWFjMWExZDAyYzBmYjVmMTE1NTQ1Y2IxZTllOTc4MmI3NzYxMDlhYWU)\n\n".format(
+        header="Archived" if issue_state == "closed" else "Opened"
+    )
+
+    thread = get_public_thread(channel=event["channel"], ts=event["thread_ts"])
+    for msg in thread:
+        issue_body += "**{}**: ".format(get_user_info(user=msg["user"]))
+        text = msg["text"].replace(
+            "```", "\n```\n"
+        )  # for guranteed code formatting in github
+        issue_body += text + "\n\n"
+
+    if thread:
+        original_message = thread[0]
+        permalink = get_public_message_permalink(
+            channel=event["channel"], message_ts=original_message["ts"]
+        )
+        issue_body += (
+            "Original thread can be found [here]({}).".format(permalink) + "\n\n"
+        )
+
+    return create_issue(
+        title=title,
+        body=issue_body,
+        labels=["Prefect Slack Community"],
+        issue_state=issue_state,
+    )
+
+
 async def public_event_handler(request: Request):
     # for validating your URL with slack
     json_data = await request.json()
@@ -165,34 +196,23 @@ async def public_event_handler(request: Request):
     ]:
         return Response()
 
-    patt = re.compile('archive\s"(.*?)"')
-    matches = patt.findall(event.get("text", "").replace("“", '"').replace("”", '"'))
-    if matches:
-        issue_body = "## Archived from the [Prefect Public Slack Community](https://join.slack.com/t/prefect-public/shared_invite/enQtNzE5OTU3OTQwNzc1LTQ5M2FkZmQzZjI0ODg1ZTBmOTc0ZjVjYWFjMWExZDAyYzBmYjVmMTE1NTQ1Y2IxZTllOTc4MmI3NzYxMDlhYWU)\n\n"
-        thread = get_public_thread(channel=event["channel"], ts=event["thread_ts"])
-        for msg in thread:
-            issue_body += "**{}**: ".format(get_user_info(user=msg["user"]))
-            text = msg["text"].replace(
-                "```", "\n```\n"
-            )  # for guranteed code formatting in github
-            issue_body += text + "\n\n"
+    message_body = event.get("text", "").replace("“", '"').replace("”", '"')
+    close_patt = re.compile('archive\s"(.*?)"')
+    close_matches = close_patt.findall(message_body)
 
-        if thread:
-            original_message = thread[0]
-            permalink = get_public_message_permalink(
-                channel=event["channel"], message_ts=original_message["ts"]
-            )
-            issue_body += (
-                "Original thread can be found [here]({}).".format(permalink) + "\n\n"
-            )
+    open_patt = re.compile('open\s"(.*?)"')
+    open_matches = open_patt.findall(message_body)
 
-        out = create_issue(
-            title=matches[0],
-            body=issue_body,
-            labels=["Prefect Slack Community"],
-            issue_state="closed",
-        )
+    issue = None
+    if close_matches:
+        issue = open_issue(event, title=close_matches[0], issue_state="closed")
+    elif open_matches:
+        issue = open_issue(event, title=open_matches[0], issue_state="open")
+
+    if issue is not None:
         public_speak(
-            text=out["html_url"], channel=event["channel"], thread_ts=event["thread_ts"]
+            text=issue["html_url"],
+            channel=event["channel"],
+            thread_ts=event["thread_ts"],
         )
     return Response()
