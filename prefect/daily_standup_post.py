@@ -91,7 +91,7 @@ def post_standup(updates, channel):
 
 
 weekday_schedule = CronSchedule(
-    "0 9 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
+    "30 9 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
 )
 environment = RemoteEnvironment(executor="prefect.engine.executors.SynchronousExecutor")
 storage = Docker(
