@@ -95,6 +95,7 @@ weekday_schedule = CronSchedule(
 )
 environment = RemoteEnvironment(executor="prefect.engine.executors.SynchronousExecutor")
 storage = Docker(
+    base_url="http+docker://localhost",
     prefect_version="master",
     base_image="python:3.6",
     registry_url="gcr.io/tenant-staging-d49111/flows/",
