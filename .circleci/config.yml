@@ -124,7 +124,7 @@ jobs:
       - *configure_google_cloud
       - run:
           name: Install Prefect
-          command: pip install prefect
+          command: pip install "prefect[gcp]" google-cloud-firestore
       - run:
           name: Test
           command: python prefect/daily_standup_post.py
