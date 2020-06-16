@@ -119,14 +119,15 @@ jobs:
 
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 18.09.3
       - *install_docker
       - *configure_google_cloud
       - run:
           name: Install Prefect
           command: pip install "prefect[gcp]" google-cloud-firestore
       - run:
-          name: Test
+          name: Deploy standup flow
           command: python prefect/daily_standup_post.py
 
 workflows:
