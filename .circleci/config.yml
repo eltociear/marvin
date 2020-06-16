@@ -123,8 +123,11 @@ jobs:
       - *install_docker
       - *configure_google_cloud
       - run:
+          name: Install Prefect
+          command: pip install prefect
+      - run:
           name: Test
-          command: python ./marvin/prefect/daily_standup_post.py
+          command: echo $PWD && ls
 
 workflows:
   version: 2
