@@ -127,7 +127,7 @@ jobs:
           command: pip install prefect
       - run:
           name: Test
-          command: echo $PWD && ls
+          command: python prefect/daily_standup_post.py
 
 workflows:
   version: 2
