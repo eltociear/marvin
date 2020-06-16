@@ -121,3 +121,7 @@ with Flow(
 ) as flow:
     standup_channel = Parameter("standup_channel", default="CBH18KG8G")
     res = post_standup(get_latest_updates(get_collection_name()), standup_channel)
+
+
+if __name__ == "__main__":
+    flow.register("Marvin")

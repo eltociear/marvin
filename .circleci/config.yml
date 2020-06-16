@@ -124,7 +124,7 @@ jobs:
       - *configure_google_cloud
       - run:
           name: Test
-          command: echo $GOOGLE_APPLICATION_CREDENTIALS
+          command: python ./marvin/prefect/daily_standup_post.py
 
 workflows:
   version: 2
