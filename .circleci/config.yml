@@ -1,3 +1,22 @@
+aliases:
+  - &configure_google_cloud
+    run:
+      name: Configure Google Cloud
+      command: |
+        echo $STAGING_GOOGLE_APPLICATION_CREDENTIALS > ~/staging-credentials.json
+        echo 'export GOOGLE_APPLICATION_CREDENTIALS=~/staging-credentials.json' >> $BASH_ENV
+
+  - &install_docker
+    run:
+      name: Install Docker client
+      command: |
+        set -x
+        VER="18.09.3"
+        curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+        tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+        rm /usr/local/bin/docker
+        mv /tmp/docker/* /usr/bin
+
 setup_gcloud_sdk: &setup_gcloud_sdk
   name: Set up Google Cloud SDK
   command: |
@@ -95,8 +114,25 @@ jobs:
             sed -i  "s/\${IMAGE_TAG}/$CIRCLE_SHA1/g" kubernetes/deployment.yml
             kubectl apply -f kubernetes/deployment.yml
 
+  deploy_staging_flows:
+    docker:
+      - image: python:3.7
+
+    steps:
+      - checkout
+      - setup_remote_docker
+      - *install_docker
+      - *configure_google_cloud
+      - run:
+          name: Test
+          command: echo $GOOGLE_APPLICATION_CREDENTIALS
+
 workflows:
   version: 2
+  deploy_flows:
+    jobs:
+      - deploy_staging_flows
+
   build_and_deploy:
     jobs:
       - test
