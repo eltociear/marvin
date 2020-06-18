@@ -117,7 +117,7 @@ if __name__ == "__main__":
             "kubernetes",
         ],
         files={
-            "/Users/chris/Developer/marvin/prefect-marvin-e5f415f8d2b2.json": "/root/.prefect/prefect-marvin-credentials.json"
+            "~/firebase-credentials.json": "/root/.prefect/prefect-marvin-credentials.json"
         },
         env_vars={
             "GOOGLE_APPLICATION_CREDENTIALS": "/root/.prefect/prefect-marvin-credentials.json"
