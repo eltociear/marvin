@@ -110,7 +110,7 @@ jobs:
 
   deploy_staging_flows:
     docker:
-      - image: python:3.7
+      - image: google/cloud-sdk
 
     steps:
       - checkout
@@ -125,7 +125,6 @@ jobs:
           name: Set up Google Cloud SDK
           command: |
             echo $STAGING_GOOGLE_APPLICATION_CREDENTIALS > staging-credentials.json
-            curl -sSL https://sdk.cloud.google.com | bash
             gcloud auth activate-service-account --key-file staging-credentials.json
             gcloud config set compute/zone $GCLOUD_ZONE
             gcloud config set project $STAGING_PROJECT
@@ -135,7 +134,7 @@ jobs:
           command: pip install "prefect[gcp]" google-cloud-firestore
       - run:
           name: Deploy standup flow
-          command: python prefect/daily_standup_post.py
+          command: python3 prefect/daily_standup_post.py
 
 workflows:
   version: 2
