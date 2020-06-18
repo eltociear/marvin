@@ -1,3 +1,4 @@
+import docker
 import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
@@ -94,35 +95,33 @@ weekday_schedule = CronSchedule(
     "30 9 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
 )
 environment = RemoteEnvironment(executor="prefect.engine.executors.SynchronousExecutor")
-storage = Docker(
-    base_url="http+docker://localhost",
-    prefect_version="master",
-    base_image="python:3.6",
-    registry_url="gcr.io/tenant-staging-d49111/flows/",
-    python_dependencies=[
-        "google-cloud-firestore",
-        "requests",
-        "dask_kubernetes",
-        "kubernetes",
-    ],
-    files={
-        "/Users/chris/Developer/marvin/prefect-marvin-e5f415f8d2b2.json": "/root/.prefect/prefect-marvin-credentials.json"
-    },
-    env_vars={
-        "GOOGLE_APPLICATION_CREDENTIALS": "/root/.prefect/prefect-marvin-credentials.json"
-    },
-)
 
 
-with Flow(
-    "Daily Standup",
-    schedule=weekday_schedule,
-    environment=environment,
-    storage=storage,
-) as flow:
+with Flow("Daily Standup", schedule=weekday_schedule, environment=environment,) as flow:
     standup_channel = Parameter("standup_channel", default="CBH18KG8G")
     res = post_standup(get_latest_updates(get_collection_name()), standup_channel)
 
 
 if __name__ == "__main__":
+    default_client = docker.from_env()
+    storage = Docker(
+        base_url=default_client.api.base_url,
+        tls_config=docker.TLSConfig(default_client.api.cert),
+        prefect_version="master",
+        base_image="python:3.6",
+        registry_url="gcr.io/tenant-staging-d49111/flows/",
+        python_dependencies=[
+            "google-cloud-firestore",
+            "requests",
+            "dask_kubernetes",
+            "kubernetes",
+        ],
+        files={
+            "/Users/chris/Developer/marvin/prefect-marvin-e5f415f8d2b2.json": "/root/.prefect/prefect-marvin-credentials.json"
+        },
+        env_vars={
+            "GOOGLE_APPLICATION_CREDENTIALS": "/root/.prefect/prefect-marvin-credentials.json"
+        },
+    )
+    flow.storage = storage
     flow.register("Marvin")
