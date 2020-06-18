@@ -135,7 +135,6 @@ with Flow(
     "SF Standup Reminder",
     schedule=weekday_schedule,
     environment=environment,
-    storage=storage,
     result_handler=JSONResultHandler(),
 ) as flow:
     updates = get_latest_updates(get_standup_date)
