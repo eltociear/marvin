@@ -125,6 +125,7 @@ jobs:
           name: Set up Google Cloud SDK
           command: |
             echo $STAGING_GOOGLE_APPLICATION_CREDENTIALS > staging-credentials.json
+            curl -sSL https://sdk.cloud.google.com | bash
             gcloud auth activate-service-account --key-file staging-credentials.json
             gcloud config set compute/zone $GCLOUD_ZONE
             gcloud config set project $STAGING_PROJECT
