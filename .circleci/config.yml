@@ -5,7 +5,7 @@ aliases:
       command: |
         echo $STAGING_GOOGLE_APPLICATION_CREDENTIALS > ~/staging-credentials.json
         echo 'export GOOGLE_APPLICATION_CREDENTIALS=~/staging-credentials.json' >> $BASH_ENV
-        echo $MARVIN_FIREBASE_CREDS > ~/firebase-credentials.json
+        echo $MARVIN_FIREBASE_CREDS > /firebase-credentials.json
 
   - &install_docker
     run:

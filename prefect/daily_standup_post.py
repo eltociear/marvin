@@ -118,9 +118,7 @@ if __name__ == "__main__":
             "kubernetes",
         ],
         files={
-            os.path.abspath(
-                "~/firebase-credentials.json"
-            ): "/root/.prefect/prefect-marvin-credentials.json"
+            "/firebase-credentials.json": "/root/.prefect/prefect-marvin-credentials.json"
         },
         env_vars={
             "GOOGLE_APPLICATION_CREDENTIALS": "/root/.prefect/prefect-marvin-credentials.json"
