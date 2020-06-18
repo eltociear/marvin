@@ -1,11 +1,5 @@
 aliases:
   - &configure_google_cloud
-    run:
-      name: Configure Google Cloud
-      command: |
-        echo $STAGING_GOOGLE_APPLICATION_CREDENTIALS > ~/staging-credentials.json
-        echo 'export GOOGLE_APPLICATION_CREDENTIALS=~/staging-credentials.json' >> $BASH_ENV
-        echo $MARVIN_FIREBASE_CREDS > /firebase-credentials.json
 
   - &install_docker
     run:
@@ -123,7 +117,18 @@ jobs:
       - setup_remote_docker:
           version: 18.09.3
       - *install_docker
-      - *configure_google_cloud
+      - run:
+          name: Persist Firebase credentials
+          command: |
+            echo $MARVIN_FIREBASE_CREDS > /firebase-credentials.json
+      - run:
+          name: Set up Google Cloud SDK
+          command: |
+            echo $STAGING_GOOGLE_APPLICATION_CREDENTIALS > staging-credentials.json
+            gcloud auth activate-service-account --key-file staging-credentials.json
+            gcloud config set compute/zone $GCLOUD_ZONE
+            gcloud config set project $STAGING_PROJECT
+            gcloud --quiet auth configure-docker
       - run:
           name: Install Prefect
           command: pip install "prefect[gcp]" google-cloud-firestore
