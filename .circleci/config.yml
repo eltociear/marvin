@@ -143,7 +143,10 @@ workflows:
   version: 2
   deploy_flows:
     jobs:
-      - deploy_staging_flows
+      - deploy_staging_flows:
+          filters:
+            branches:
+              only: master
 
   build_and_deploy:
     jobs:
