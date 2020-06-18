@@ -1,4 +1,8 @@
 ## Marvin
+<p align="center">
+<a href=https://circleci.com/gh/PrefectHQ/marvin/tree/master>
+    <img src="https://circleci.com/gh/PrefectHQ/master/tree/master.svg?style=shield&circle-token=28689a55edc3c373486aaa5f11a1af3e5fc53344">
+</a>
 
 Don’t pretend you want to talk to me, I know you hate me.
 
