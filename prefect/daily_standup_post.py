@@ -1,4 +1,5 @@
 import docker
+import os
 import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
@@ -117,7 +118,9 @@ if __name__ == "__main__":
             "kubernetes",
         ],
         files={
-            "~/firebase-credentials.json": "/root/.prefect/prefect-marvin-credentials.json"
+            os.path.abspath(
+                "~/firebase-credentials.json"
+            ): "/root/.prefect/prefect-marvin-credentials.json"
         },
         env_vars={
             "GOOGLE_APPLICATION_CREDENTIALS": "/root/.prefect/prefect-marvin-credentials.json"
