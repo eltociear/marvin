@@ -133,8 +133,11 @@ jobs:
           name: Install Prefect
           command: pip install "prefect[gcp]" google-cloud-firestore
       - run:
-          name: Deploy standup flow
-          command: python3 prefect/daily_standup_post.py
+          name: Deploy Standup Flows
+          command: |
+            python3 prefect/daily_standup_post.py
+            python3 prefect/dc_daily_reminder.py
+            python3 prefect/sf_daily_reminder.py
 
 workflows:
   version: 2
