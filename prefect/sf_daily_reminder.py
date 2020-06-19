@@ -128,7 +128,7 @@ def report(users):
 weekday_schedule = CronSchedule(
     "0 20 * * 0-4", start_date=pendulum.parse("2017-03-24", tz="US/Pacific")
 )
-environment = RemoteEnvironment(executor="prefect.engine.executors.SynchronousExecutor")
+environment = RemoteEnvironment(executor="prefect.engine.executors.LocalExecutor")
 
 
 with Flow(
