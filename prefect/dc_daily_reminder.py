@@ -17,14 +17,6 @@ import pendulum
 import requests
 
 
-def notify_chris(task, state):
-    url = Secret("MARVIN_WEBHOOK_URL").get()
-    message = f"@chris, a reminder Task failed; here is everything I know: ```{state.serialize()}```"
-    r = requests.post(
-        url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
-    )
-
-
 @task
 def get_standup_date():
     date_format = "%Y-%m-%d"
@@ -83,7 +75,7 @@ def is_reminder_needed(user_info, current_updates):
         return user_info
 
 
-@task(on_failure=notify_chris)
+@task()
 def send_reminder(user_info):
     user_name, user_id = user_info
     TOKEN = Secret("MARVIN_TOKEN").get()
@@ -113,18 +105,6 @@ def send_reminder(user_info):
     return user_name
 
 
-@task(skip_on_upstream_skip=False)
-def report(users):
-    url = Secret("MARVIN_WEBHOOK_URL").get()
-    user_string = ", ".join([user for user in users if user != NoResult])
-    if user_string.strip() == "":
-        user_string = ":marvin-parrot:"
-    message = f"Reminders sent via Prefect `v{prefect.__version__}`: {user_string}"
-    r = requests.post(
-        url, json={"text": message, "mrkdwn": "true", "link_names": "true"}
-    )
-
-
 weekday_schedule = CronSchedule(
     "30 8 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
 )
@@ -139,7 +119,6 @@ with Flow(
 ) as flow:
     updates = get_latest_updates(get_standup_date)
     res = send_reminder.map(is_reminder_needed.map(get_team, unmapped(updates)))
-    final = report(res)
 
 flow.set_reference_tasks([res])
 
