@@ -13,7 +13,7 @@ async def google_meet_handler(request: Request) -> JSONResponse:
     user_name = payload.get("user_name")
     text = payload.get("text")
 
-    room_name = (user_name or text or "").replace(" ", "-")
+    room_name = (text or user_name).replace(" ", "-")
 
     return JSONResponse(
         {
