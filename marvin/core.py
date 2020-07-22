@@ -17,6 +17,7 @@ from .loop_policy import ping_staging, run_scheduler
 from .responses import event_handler, public_event_handler, version_handler
 from .standup import standup_handler
 from .team import roundtable_order_handler
+from .meet import google_meet_handler
 from .monday import monday_handler
 
 GITHUB_VALIDATION_TOKEN = os.environ.get("GITHUB_VALIDATION_TOKEN", "").encode()
@@ -70,6 +71,7 @@ def check_token(fn):
 
 MarvinApp = Starlette()
 
+MarvinApp.add_route("/meet", check_token(google_meet_handler), methods=["POST"])
 MarvinApp.add_route("/monday", check_token(monday_handler), methods=["POST"])
 MarvinApp.add_route(
     "/github/cloud", check_token(cloud_github_handler), methods=["POST"]
