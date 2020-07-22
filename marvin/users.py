@@ -40,8 +40,7 @@ def create_user(
             office=office,
             standup=standup,
             github=github,
-            notion=notion,
-            google_meet_url=None
+            notion=notion
         )
     )
 
