@@ -41,6 +41,7 @@ def create_user(
             standup=standup,
             github=github,
             notion=notion,
+            google_meet_url=None
         )
     )
 
