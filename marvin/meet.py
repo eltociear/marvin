@@ -18,6 +18,6 @@ async def google_meet_handler(request: Request) -> JSONResponse:
     return JSONResponse(
         {
             "response_type": "in_channel",
-            "text": f"It’s the people you meet in this job that really get you down. g.co/meet/{room_name}",
+            "text": f"g.co/meet/{room_name}",
         }
     )
