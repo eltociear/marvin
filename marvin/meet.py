@@ -22,6 +22,6 @@ async def google_meet_handler(request: Request) -> Response:
     user = next((u for u in users if u.get("slack") == user_id), {})
     meet_url = user.get("google_meet_url")
     if not meet_url:
-        return Response()
+        return Response("No meet URL found, please generate one.")
 
     return JSONResponse({"response_type": "in_channel", "text": meet_url})
