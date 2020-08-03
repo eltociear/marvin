@@ -40,7 +40,7 @@ def create_user(
             office=office,
             standup=standup,
             github=github,
-            notion=notion
+            notion=notion,
         )
     )
 
