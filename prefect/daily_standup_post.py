@@ -17,11 +17,11 @@ from google.oauth2 import service_account
 
 
 SUPPORT_ROTATIONS = {
-    "Monday": "<@UUSSRB4G7>",
-    "Tuesday": "<@U0116UYJFGT> and <@UH8RAUN1Y>",
-    "Wednesday": "<@UBE4N2LG1>",
-    "Thursday": "<@UDKF9U8UC> and <@UTTUXQVN0>",
-    "Friday": "<@ULWS8CZ47> and <@UM8K2HFQC>",
+    "Monday": "<@UUSSRB4G7>",  # Kyle MW
+    "Tuesday": "<@U0116UYJFGT> and <@ULWS8CZ47>",  # Jim and Jenny
+    "Wednesday": "<@UBE4N2LG1>",  # Josh
+    "Thursday": "<@UDKF9U8UC>",  # dylan
+    "Friday": "<@UM8K2HFQC>",  # nicholas
 }
 
 
