@@ -98,7 +98,7 @@ weekday_schedule = CronSchedule(
 environment = RemoteEnvironment(executor="prefect.engine.executors.SynchronousExecutor")
 
 
-with Flow("Daily Standup", schedule=weekday_schedule, environment=environment,) as flow:
+with Flow("Daily Standup", schedule=weekday_schedule, environment=environment) as flow:
     standup_channel = Parameter("standup_channel", default="CBH18KG8G")
     res = post_standup(get_latest_updates(get_collection_name()), standup_channel)
 

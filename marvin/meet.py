@@ -16,5 +16,5 @@ async def google_meet_handler(request: Request) -> JSONResponse:
     room_name = (text or user_name).replace(" ", "-")
 
     return JSONResponse(
-        {"response_type": "in_channel", "text": f"g.co/meet/{room_name}",}
+        {"response_type": "in_channel", "text": f"g.co/meet/{room_name}"}
     )
