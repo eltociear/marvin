@@ -122,8 +122,8 @@ def get_dm_channel_id(userid):
     Returns:
         - a string of the Slack Channel ID
     """
-    params = {"token": TOKEN, "user": userid}
-    r = requests.post("https://slack.com/api/im.open", data=params)
+    params = {"token": TOKEN, "users": userid}
+    r = requests.post("https://slack.com/api/conversations.open", data=params)
     if r.ok:
         return json.loads(r.text)["channel"]["id"]
 

@@ -81,8 +81,8 @@ def send_reminder(user_info):
     TOKEN = Secret("MARVIN_TOKEN").get()
 
     ## get private channel ID for this user
-    params = {"token": TOKEN, "user": user_id}
-    r = requests.post("https://slack.com/api/im.open", data=params)
+    params = {"token": TOKEN, "users": user_id}
+    r = requests.post("https://slack.com/api/conversations.open", data=params)
     channel_id = json.loads(r.text)["channel"]["id"]
 
     params.pop("user")
