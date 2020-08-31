@@ -85,7 +85,7 @@ def send_reminder(user_info):
     r = requests.post("https://slack.com/api/conversations.open", data=params)
     channel_id = json.loads(r.text)["channel"]["id"]
 
-    params.pop("user")
+    params.pop("users")
     text = (
         f"Hi {user_name}! I haven't heard from you yet; what updates do you have for the team today? Please respond by using the slash command `/standup`,  and remember: your response will be shared!",
     )
