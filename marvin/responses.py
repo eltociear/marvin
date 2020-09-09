@@ -148,7 +148,7 @@ def open_issue(event, title, issue_state="closed"):
         header="Archived" if issue_state == "closed" else "Opened"
     )
 
-    thread = get_public_thread(channel=event["channel"], ts=event["thread_ts"])
+    thread = get_public_thread(channel=event["channel"], ts=event.get("thread_ts"))
     for msg in thread:
         issue_body += "**{}**: ".format(get_user_info(user=msg["user"]))
         text = msg["text"].replace(
@@ -202,7 +202,7 @@ async def public_event_handler(request: Request):
         public_speak(
             text=f"Thank you for participating in our promotion!",
             channel=event["channel"],
-            thread_ts=event["thread_ts"],
+            thread_ts=event.get("thread_ts"),
         )
         return Response()
 
@@ -223,6 +223,6 @@ async def public_event_handler(request: Request):
         public_speak(
             text=issue["html_url"],
             channel=event["channel"],
-            thread_ts=event["thread_ts"],
+            thread_ts=event.get("thread_ts"),
         )
     return Response()
