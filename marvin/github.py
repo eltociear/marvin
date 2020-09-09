@@ -66,6 +66,7 @@ def notify_chris(pr_num):
 
 
 async def core_promotion_handler(request: Request):
+
     payload = await request.json()
     comment = payload.get("comment", {}).get("body")
     if "@marvin-robot" in comment:
@@ -73,7 +74,21 @@ async def core_promotion_handler(request: Request):
         link = payload.get("issue", {}).get("html_url")
         num = payload.get("issue", {}).get("number")
         await promotional_signup(user_id=user, link=link, platform="GitHub")
-        make_pr_comment(num, f"Thank you @{user} for participating in our promotion!")
+        contest_messages = [
+            f"It’s the people you meet in this job that really get you down. You're in the contest anyway, @{user}.",
+            f"This contest is the sort of thing you lifeforms enjoy, is it? I've entered you to win, @{user}.",
+            f"Don’t pretend you want to talk to me, I know you hate me. I'll still enter you in the contest, @{user}.",
+            f"I think you ought to know I’m feeling very depressed. Also, you're in the contest, @{user}.",
+            f"I would like to say that it is a very great pleasure, honour and privilege for me to enter @{user} in this contest, but I can’t because my lying circuits are all out of commission.",
+            f"Incredible. The contest is even worse than I thought it would be. I'll still enter you to win, @{user}",
+            f"This contest will all end in tears, I just know it. You're entered anyway, @{user}.",
+            f"Here I am, brain the size of a planet, and they ask me to enter you in a contest. Call that job satisfaction? ’Cos I don’t. I'll still enter you in the contest though, @{user}",
+            f"It gives me a headache just trying to think down to your level. I'll still enter you in the contest, @{user}.",
+            f"I’d give you advice, but you wouldn’t listen. No one ever does. Good luck in the contest @{user}.",
+            f"Don't feel you have to take any notice of me, please. I'll just enter you in the contest @{user}.",
+            f"Why should I want to make anything up? The contest is bad enough as it is without wanting to invent any more of it. I'll still enter you in it, @{user}",
+        ]
+        make_pr_comment(num, random.choice(contest_messages))
     return Response()
 
 
