@@ -5,12 +5,25 @@ import requests
 
 from functools import lru_cache
 
+from .firestore import client
+
 
 MARVIN_ACCESS_TOKEN = os.environ.get("MARVIN_ACCESS_TOKEN")
 OAUTH_TOKEN = os.environ.get("MARVIN_OAUTH_TOKEN")
 PUBLIC_OAUTH_TOKEN = os.environ.get("MARVIN_PUBLIC_OAUTH_TOKEN")
 TOKEN = os.environ.get("MARVIN_TOKEN")
 PUBLIC_TOKEN = os.environ.get("MARVIN_PUBLIC_TOKEN")
+
+
+async def promotional_signup(
+    user_id: str = None, email: str = None, platform: str = None, link: str = None
+):
+    collection = client.collection(f"promotion")
+    doc = dict(user_id=user_id, email=email, platform=platform, link=link)
+    try:
+        collection.add(document_data=doc, document_id=user_id)
+    except:
+        pass
 
 
 def get_repo_labels(repo="cloud"):

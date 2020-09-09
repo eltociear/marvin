@@ -11,7 +11,7 @@ from starlette.requests import Request
 from starlette.routing import Route
 
 from .defcon import defcon_handler
-from .github import cloud_github_handler, core_github_handler
+from .github import cloud_github_handler, core_github_handler, core_promotion_handler
 from .leaderboard import leaderboard_handler
 from .loop_policy import ping_staging, run_scheduler
 from .responses import event_handler, public_event_handler, version_handler
@@ -77,6 +77,9 @@ MarvinApp.add_route(
     "/github/cloud", check_token(cloud_github_handler), methods=["POST"]
 )
 MarvinApp.add_route("/github/core", check_token(core_github_handler), methods=["POST"])
+MarvinApp.add_route(
+    "/github/promotion", check_token(core_promotion_handler), methods=["POST"]
+)
 MarvinApp.add_route("/defcon", check_token(defcon_handler), methods=["POST"])
 MarvinApp.add_route("/leaderboard", check_token(leaderboard_handler), methods=["POST"])
 MarvinApp.add_route(

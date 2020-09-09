@@ -9,12 +9,12 @@ import schedule
 from starlette.requests import Request
 from starlette.responses import Response
 
-from .firestore import client
 from .users import USERS
 from .github import create_issue
 from .karma import update_karma
 from .utilities import (
     get_dm_channel_id,
+    promotional_signup,
     get_public_thread,
     get_public_message_permalink,
     get_user_info,
@@ -171,15 +171,6 @@ def open_issue(event, title, issue_state="closed"):
         labels=["Prefect Slack Community"],
         issue_state=issue_state,
     )
-
-
-async def promotional_signup(user_id: str, email: str, platform: str):
-    collection = client.collection(f"promotion")
-    doc = dict(user_id=user_id, email=email, platform=platform)
-    try:
-        collection.add(document_data=doc, document_id=user_id)
-    except:
-        pass
 
 
 async def public_event_handler(request: Request):

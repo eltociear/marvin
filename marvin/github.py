@@ -9,7 +9,7 @@ import requests
 from starlette.requests import Request
 from starlette.responses import Response
 
-from marvin.utilities import get_dm_channel_id, get_users, say
+from marvin.utilities import get_dm_channel_id, get_users, say, promotional_signup
 
 MARVIN_ACCESS_TOKEN = os.environ.get("MARVIN_ACCESS_TOKEN")
 
@@ -63,6 +63,18 @@ def notify_chris(pr_num):
     txt = f":tada: :tada: NEW CONTRIBUTOR PR: {url} :tada: :tada:"
     channel = get_dm_channel_id(get_users().get("chris"))
     say(txt, channel=channel)
+
+
+async def core_promotion_handler(request: Request):
+    payload = await request.json()
+    comment = payload.get("comment", {}).get("body")
+    if "@marvin-robot" in comment:
+        user = payload.get("sender", {}).get("login")
+        link = payload.get("issue", {}).get("html_url")
+        num = payload.get("issue", {}).get("number")
+        await promotional_signup(user_id=user, link=link, platform="GitHub")
+        make_pr_comment(num, f"Thank you @{user} for participating in our promotion!")
+    return Response()
 
 
 async def core_github_handler(request: Request):
