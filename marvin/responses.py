@@ -14,6 +14,7 @@ from .github import create_issue
 from .karma import update_karma
 from .utilities import (
     get_dm_channel_id,
+    promotional_signup,
     get_public_thread,
     get_public_message_permalink,
     get_user_info,
@@ -195,6 +196,14 @@ async def public_event_handler(request: Request):
         "UKVFX6N3B",
         "UUY8XPC21",
     ]:
+        user_info = get_user_info(who_spoke, name_only=False)
+        email = user_info.get("user", {}).get("profile", {}).get("email")
+        await promotional_signup(user_id=who_spoke, email=email, platform="Slack")
+        public_speak(
+            text=f"Thank you for participating in our promotion!",
+            channel=event["channel"],
+            thread_ts=event["thread_ts"],
+        )
         return Response()
 
     message_body = event.get("text", "").replace("“", '"').replace("”", '"')

@@ -5,12 +5,25 @@ import requests
 
 from functools import lru_cache
 
+from .firestore import client
+
 
 MARVIN_ACCESS_TOKEN = os.environ.get("MARVIN_ACCESS_TOKEN")
 OAUTH_TOKEN = os.environ.get("MARVIN_OAUTH_TOKEN")
 PUBLIC_OAUTH_TOKEN = os.environ.get("MARVIN_PUBLIC_OAUTH_TOKEN")
 TOKEN = os.environ.get("MARVIN_TOKEN")
 PUBLIC_TOKEN = os.environ.get("MARVIN_PUBLIC_TOKEN")
+
+
+async def promotional_signup(
+    user_id: str = None, email: str = None, platform: str = None, link: str = None
+):
+    collection = client.collection(f"promotion")
+    doc = dict(user_id=user_id, email=email, platform=platform, link=link)
+    try:
+        collection.add(document_data=doc, document_id=user_id)
+    except:
+        pass
 
 
 def get_repo_labels(repo="cloud"):
@@ -211,10 +224,13 @@ def get_public_message_permalink(channel, message_ts):
 
 
 @lru_cache(maxsize=1024)
-def get_user_info(user):
+def get_user_info(user, name_only=True):
     params = {"token": PUBLIC_OAUTH_TOKEN, "user": user}
     r = requests.post("https://slack.com/api/users.info", data=params)
     if r.ok:
-        return r.json()["user"].get("name", "unknown")
+        if name_only:
+            return r.json()["user"].get("name", "unknown")
+        else:
+            return r.json()
     else:
         raise ValueError(f"Request failed with status code {r.status_code}")
