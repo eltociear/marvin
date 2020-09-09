@@ -211,10 +211,13 @@ def get_public_message_permalink(channel, message_ts):
 
 
 @lru_cache(maxsize=1024)
-def get_user_info(user):
+def get_user_info(user, name_only=True):
     params = {"token": PUBLIC_OAUTH_TOKEN, "user": user}
     r = requests.post("https://slack.com/api/users.info", data=params)
     if r.ok:
-        return r.json()["user"].get("name", "unknown")
+        if name_only:
+            return r.json()["user"].get("name", "unknown")
+        else:
+            return r.json()
     else:
         raise ValueError(f"Request failed with status code {r.status_code}")

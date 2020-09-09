@@ -9,6 +9,7 @@ import schedule
 from starlette.requests import Request
 from starlette.responses import Response
 
+from .firestore import client
 from .users import USERS
 from .github import create_issue
 from .karma import update_karma
@@ -172,6 +173,15 @@ def open_issue(event, title, issue_state="closed"):
     )
 
 
+async def promotional_signup(user_id: str, email: str, platform: str):
+    collection = client.collection(f"promotion")
+    doc = dict(user_id=user_id, email=email, platform=platform)
+    try:
+        collection.add(document_data=doc, document_id=user_id)
+    except:
+        pass
+
+
 async def public_event_handler(request: Request):
     # for validating your URL with slack
     json_data = await request.json()
@@ -195,6 +205,14 @@ async def public_event_handler(request: Request):
         "UKVFX6N3B",
         "UUY8XPC21",
     ]:
+        user_info = get_user_info(who_spoke, name_only=False)
+        email = user_info.get("user", {}).get("profile", {}).get("email")
+        await promotional_signup(user_id=who_spoke, email=email, platform="Slack")
+        public_speak(
+            text=f"Thank you for participating in our promotion!",
+            channel=event["channel"],
+            thread_ts=event["thread_ts"],
+        )
         return Response()
 
     message_body = event.get("text", "").replace("“", '"').replace("”", '"')
