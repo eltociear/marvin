@@ -176,7 +176,7 @@ if __name__ == "__main__":
         base_url=default_client.api.base_url,
         tls_config=docker.TLSConfig(default_client.api.cert),
         registry_url="gcr.io/tenant-staging-d49111/flows/",
-        python_dependencies=[],
+        python_dependencies=["statusio-python"],
         env_vars={"STATUSIO_API_KEY": API_KEY, "STATUSIO_API_ID": API_ID},
     )
     flow.storage = storage
