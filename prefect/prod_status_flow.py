@@ -18,6 +18,7 @@ import urllib.request
 
 API_ID = os.getenv("STATUSIO_API_ID")
 API_KEY = os.getenv("STATUSIO_API_KEY")
+PROD_TOKEN = os.getenv("PROD_TOKEN")
 
 
 class ProdAPIError(Exception):
@@ -33,7 +34,7 @@ def query(query: str, variables: dict = None):
 
     req = urllib.request.Request("https://api.prefect.io/graphql", data=data)
     req.add_header("Content-Type", "application/json")
-    req.add_header("Authorization", "Bearer {}".format(os.getenv("PROD_TOKEN")))
+    req.add_header("Authorization", "Bearer {}".format(PROD_TOKEN))
 
     # make request
     try:
@@ -43,6 +44,8 @@ def query(query: str, variables: dict = None):
             raise ValueError(resp_data["errors"])
         return resp_data
     except Exception as exc:
+        if "AuthenticationError" in str(exc):
+            raise exc
         raise ProdAPIError(f"Possible issue with Prod: {repr(exc)}")
 
 
@@ -157,8 +160,8 @@ def update_status_io(payload):
 
         raise FAIL(f"StatusIO updated: {resp}")
     else:
-        prefect.context.logger.info(
-            f"Received {repr(payload)} for payload, assuming success!"
+        prefect.context.logger.warning(
+            f"Received {repr(payload)} for payload - I won't assume the worst but someone should check."
         )
         # still fail to trigger an alert
         raise FAIL(
@@ -180,7 +183,11 @@ if __name__ == "__main__":
         tls_config=docker.TLSConfig(default_client.api.cert),
         registry_url="gcr.io/tenant-staging-d49111/flows/",
         python_dependencies=["statusio-python"],
-        env_vars={"STATUSIO_API_KEY": API_KEY, "STATUSIO_API_ID": API_ID},
+        env_vars={
+            "STATUSIO_API_KEY": API_KEY,
+            "STATUSIO_API_ID": API_ID,
+            "PROD_TOKEN": PROD_TOKEN,
+        },
     )
     flow.storage = storage
     flow.register("Marvin")
