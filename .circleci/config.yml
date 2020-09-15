@@ -138,6 +138,10 @@ jobs:
             python3 prefect/daily_standup_post.py
             python3 prefect/dc_daily_reminder.py
             python3 prefect/sf_daily_reminder.py
+      - run:
+          name: Deploy Prod Alert Flow
+          command: |
+            python3 prefect/prod_status_flow.py
 
 workflows:
   version: 2
