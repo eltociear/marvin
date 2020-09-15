@@ -17,8 +17,8 @@ import urllib.parse
 import urllib.request
 
 
-API_ID=os.getenv("STATUSIO_API_ID")
-API_KEY=os.getenv("STATUSIO_API_KEY")
+API_ID = os.getenv("STATUSIO_API_ID")
+API_KEY = os.getenv("STATUSIO_API_KEY")
 
 
 class ProdAPIError(Exception):
@@ -115,7 +115,6 @@ def interact_with_api(flow_id):
     query(set_flow_run_state, variables=variables)
 
 
-
 set_schedule_inactive = """
 mutation($input: set_schedule_inactive_input!){
     set_schedule_inactive(input: $input){
@@ -132,10 +131,7 @@ def update_status_io(payload):
         return
     if isinstance(payload, ProdAPIError):
         prefect.context.logger.error(f"Possible issue with Prod: {repr(payload)}")
-        api = statusio.Api(
-            api_id=API_ID,
-            api_key=API_KEY,
-        )
+        api = statusio.Api(api_id=API_ID, api_key=API_KEY,)
         resp = api.IncidentCreate(
             statuspage_id="5f33ff702715c204c20d6da1",
             infrastructure_affected=[
@@ -148,8 +144,13 @@ def update_status_io(payload):
         )
 
         # pause the schedule for this flow
-        from prefect import Client; c = Client()
-        c.graphql(set_schedule_inactive, variables=dict(input={"flow_id": prefect.context.get("flow_id")}))
+        from prefect import Client
+
+        c = Client()
+        c.graphql(
+            set_schedule_inactive,
+            variables=dict(input={"flow_id": prefect.context.get("flow_id")}),
+        )
 
         raise FAIL(f"StatusIO updated: {resp}")
     else:
@@ -160,7 +161,6 @@ def update_status_io(payload):
         raise FAIL(
             f"Unexpectedly received {repr(payload)} response from previous task."
         )
-
 
 
 schedule = IntervalSchedule(interval=datetime.timedelta(minutes=1.25))
@@ -177,6 +177,7 @@ if __name__ == "__main__":
         tls_config=docker.TLSConfig(default_client.api.cert),
         registry_url="gcr.io/tenant-staging-d49111/flows/",
         python_dependencies=[],
+        env_vars={"STATUSIO_API_KEY": API_KEY, "STATUSIO_API_ID": API_ID},
     )
     flow.storage = storage
     flow.register("Marvin")
