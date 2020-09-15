@@ -12,7 +12,6 @@ import datetime
 import json
 import pendulum
 import requests
-import statusio
 import urllib.parse
 import urllib.request
 
@@ -126,6 +125,10 @@ mutation($input: set_schedule_inactive_input!){
 
 @task(trigger=always_run)
 def update_status_io(payload):
+    # deferred import so that the registering environment doesn't need to install
+    # this package
+    import statusio
+
     if not payload:
         prefect.context.logger.info("Received None for payload, assuming success!")
         return
