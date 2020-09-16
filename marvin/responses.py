@@ -3,6 +3,7 @@ import json
 import os
 import random
 import re
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
 import schedule
@@ -24,6 +25,7 @@ from .utilities import (
 
 executor = ThreadPoolExecutor(max_workers=3)
 
+DOUBLE_BLIND_RESPONSES = defaultdict(dict)
 GIT_SHA = os.environ.get("GIT_SHA")
 MARVIN_ID = "UBEEMJZFX"
 quotes = [
@@ -72,8 +74,6 @@ async def event_handler(request: Request):
         response = emoji_added(event)
     elif event_type == "message" and event.get("bot_id") == "BBGMPFDHQ":
         response = github_mention(event)
-    elif event_type == "message" and event.get("bot_id") == "BDUBG9WAD":
-        response = notion_mention(event)
     elif event_type == "message" and event.get("bot_id") is None:
         positive_match = karma_regex.match(event.get("text", ""))
         if positive_match:
@@ -114,27 +114,28 @@ def github_mention(event):
             say(msg, channel=get_dm_channel_id(slack_id))
 
 
-def notion_mention(event):
-    text = "\n".join(d.get("text", "") for d in event.get("attachments", [{}]))
-
-    was_mentioned = {u["slack"]: (f"@{u['notion']}" in text) for u in USERS.values()}
-    for slack_id, mentioned in was_mentioned.items():
-        if not mentioned:
-            continue
-        else:
-            link_pattern = re.compile("\*<(.*)\|.*\*")
-            link = link_pattern.findall(event.get("text", ""))
-            if link:
-                formatted_link = link[0].lstrip("\"'").rstrip("\"'")  # remove quotes
-                msg = f"You were mentioned on Notion @ {formatted_link}"
-            else:
-                msg = f"You were mentioned on Notion, but I don't have the link available..."
-            say(msg, channel=get_dm_channel_id(slack_id))
-
-
 async def version_handler(request: Request):
     base_url = "https://github.com/PrefectHQ/marvin/commit/"
     return Response(f"{base_url}{GIT_SHA}")
+
+
+async def double_blind_handler(request: Request):
+    payload = await request.form()
+    channel = payload["channel_id"]
+    user = payload["user_name"]
+    text = payload["text"]
+    if text.strip() == "publish":
+        msgs = []
+        for user, resp in DOUBLE_BLIND_RESPONSES.get(channel, {}).items():
+            msgs.append(f"*{user}*: {resp}")
+
+        say("\n".join(msgs), channel=channel)
+        DOUBLE_BLIND_RESPONSES.get(channel, {}).clear()
+        return Response()
+
+    DOUBLE_BLIND_RESPONSES[channel][user] = text
+    say(f"Received a response from *{user}* :white_check_mark:", channel=channel)
+    return Response()
 
 
 def karma_handler(regex_match, event):
