@@ -3,6 +3,7 @@ import json
 import os
 import random
 import re
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
 import schedule
@@ -24,6 +25,7 @@ from .utilities import (
 
 executor = ThreadPoolExecutor(max_workers=3)
 
+DOUBLE_BLIND_RESPONSES = defaultdict(dict)
 GIT_SHA = os.environ.get("GIT_SHA")
 MARVIN_ID = "UBEEMJZFX"
 quotes = [
@@ -115,6 +117,25 @@ def github_mention(event):
 async def version_handler(request: Request):
     base_url = "https://github.com/PrefectHQ/marvin/commit/"
     return Response(f"{base_url}{GIT_SHA}")
+
+
+async def double_blind_handler(request: Request):
+    payload = await request.form()
+    channel = payload["channel_id"]
+    user = payload["user_name"]
+    text = payload["text"]
+    if text.strip() == "publish":
+        msgs = []
+        for user, resp in DOUBLE_BLIND_RESPONSES.get(channel, {}).items():
+            msgs.append(f"*{user}*: {resp}")
+
+        say("\n".join(msgs), channel=channel)
+        DOUBLE_BLIND_RESPONSES.get(channel, {}).clear()
+        return Response()
+
+    DOUBLE_BLIND_RESPONSES[channel][user] = text
+    say(f"Received a response from *{user}* :white_check_mark:", channel=channel)
+    return Response()
 
 
 def karma_handler(regex_match, event):

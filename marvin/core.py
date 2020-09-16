@@ -14,7 +14,12 @@ from .defcon import defcon_handler
 from .github import cloud_github_handler, core_github_handler, core_promotion_handler
 from .leaderboard import leaderboard_handler
 from .loop_policy import ping_staging, run_scheduler
-from .responses import event_handler, public_event_handler, version_handler
+from .responses import (
+    double_blind_handler,
+    event_handler,
+    public_event_handler,
+    version_handler,
+)
 from .standup import standup_handler
 from .team import roundtable_order_handler
 from .meet import google_meet_handler
@@ -86,6 +91,9 @@ MarvinApp.add_route(
     "/roundtable-order", check_token(roundtable_order_handler), methods=["POST"]
 )
 MarvinApp.add_route("/standup", check_token(standup_handler), methods=["POST"])
+MarvinApp.add_route(
+    "/double-blind", check_token(double_blind_handler), methods=["POST"]
+)
 MarvinApp.add_route("/version", check_token(version_handler), methods=["POST"])
 MarvinApp.add_route("/public", check_token(public_event_handler), methods=["POST"])
 MarvinApp.add_route("/", check_token(event_handler), methods=["POST"])
