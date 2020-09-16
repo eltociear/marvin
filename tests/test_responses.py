@@ -14,13 +14,11 @@ def set_users():
                 "name": "Chris",
                 "email": "chris@prefect.io",
                 "slack": "UBBE1SC8L",
-                "notion": "Chris",
                 "github": "cicdw",
             },
             "rvFokTPSoHca1pyGJpL8": {
                 "email": "josh@prefect.io",
                 "slack": "UBE4N2LG1",
-                "notion": "Josh",
                 "github": "joshmeek",
                 "name": "Josh",
             },
@@ -29,7 +27,6 @@ def set_users():
                 "email": "jeremiah@prefect.io",
                 "slack": "UAPLR5SHL",
                 "github": "jlowin",
-                "notion": "Jeremiah",
             },
         }
     )
@@ -192,73 +189,3 @@ async def test_github_mentions_tells_everyone(app, token, monkeypatch):
     r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 3
-
-
-async def test_notion_mentions_works(app, token, monkeypatch):
-    post_event = {
-        "text": "Chris White commented in *<https://foo.bar/baz/page|This is not real ignore this>*",
-        "bot_id": "BDUBG9WAD",
-        "channel": "foo",
-        "type": "message",
-        "attachments": [{"text": "hey @Chris White you need to fix marvin"}],
-    }
-    say = MagicMock()
-    monkeypatch.setattr(
-        marvin.responses, "get_dm_channel_id", lambda *args, **kwargs: "dm_chris"
-    )
-    monkeypatch.setattr(marvin.responses, "say", say)
-    r = await app.post("/", json={"event": post_event, "token": token})
-    assert r.ok
-    assert say.call_count == 1
-    assert say.call_args[0] == (
-        "You were mentioned on Notion @ https://foo.bar/baz/page",
-    )
-    assert say.call_args[1]["channel"] == "dm_chris"
-
-
-async def test_notion_mentions_works_with_multiple_attachments(app, token, monkeypatch):
-    post_event = {
-        "text": "Chris White commented in *<https://foo.bar/baz/page|This is not real ignore this>*",
-        "bot_id": "BDUBG9WAD",
-        "channel": "foo",
-        "type": "message",
-        "attachments": [
-            {"text": "hey @Chris White you need to fix marvin"},
-            {"text": "hey @Josh this is random"},
-            {"text": "hey @Nobody this shouldn't notify at all"},
-        ],
-    }
-    say = MagicMock()
-    monkeypatch.setattr(
-        marvin.responses, "get_dm_channel_id", lambda *args, **kwargs: "dm_chris"
-    )
-    monkeypatch.setattr(marvin.responses, "say", say)
-    r = await app.post("/", json={"event": post_event, "token": token})
-    assert r.ok
-    assert say.call_count == 2
-    assert say.call_args[0] == (
-        "You were mentioned on Notion @ https://foo.bar/baz/page",
-    )
-    assert say.call_args[1]["channel"] == "dm_chris"
-
-
-async def test_notion_mentions_tells_everyone(app, token, monkeypatch):
-    post_event = {
-        "text": "Billy Bob commented in *<https://foo.bar/baz/page|This is not real ignore this>*",
-        "bot_id": "BDUBG9WAD",
-        "channel": "foo",
-        "type": "message",
-        "attachments": [
-            {
-                "text": "hey @Chris White you need to fix marvin and @Josh Meek keep up the good work"
-            }
-        ],
-    }
-    say = MagicMock()
-    monkeypatch.setattr(
-        marvin.responses, "get_dm_channel_id", lambda *args, **kwargs: "dm_id"
-    )
-    monkeypatch.setattr(marvin.responses, "say", say)
-    r = await app.post("/", json={"event": post_event, "token": token})
-    assert r.ok
-    assert say.call_count == 2

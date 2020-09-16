@@ -72,8 +72,6 @@ async def event_handler(request: Request):
         response = emoji_added(event)
     elif event_type == "message" and event.get("bot_id") == "BBGMPFDHQ":
         response = github_mention(event)
-    elif event_type == "message" and event.get("bot_id") == "BDUBG9WAD":
-        response = notion_mention(event)
     elif event_type == "message" and event.get("bot_id") is None:
         positive_match = karma_regex.match(event.get("text", ""))
         if positive_match:
@@ -111,24 +109,6 @@ def github_mention(event):
         else:
             link = data.get("title_link", "link unavailable")
             msg = f"You were mentioned on GitHub @ {link}"
-            say(msg, channel=get_dm_channel_id(slack_id))
-
-
-def notion_mention(event):
-    text = "\n".join(d.get("text", "") for d in event.get("attachments", [{}]))
-
-    was_mentioned = {u["slack"]: (f"@{u['notion']}" in text) for u in USERS.values()}
-    for slack_id, mentioned in was_mentioned.items():
-        if not mentioned:
-            continue
-        else:
-            link_pattern = re.compile("\*<(.*)\|.*\*")
-            link = link_pattern.findall(event.get("text", ""))
-            if link:
-                formatted_link = link[0].lstrip("\"'").rstrip("\"'")  # remove quotes
-                msg = f"You were mentioned on Notion @ {formatted_link}"
-            else:
-                msg = f"You were mentioned on Notion, but I don't have the link available..."
             say(msg, channel=get_dm_channel_id(slack_id))
 
 
