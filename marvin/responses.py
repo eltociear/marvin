@@ -25,7 +25,7 @@ from .utilities import (
 
 executor = ThreadPoolExecutor(max_workers=3)
 
-DOUBLE_BLIND_RESPONSES = defaultdict(dict)
+SURVEY_SAYS_RESPONSES = defaultdict(dict)
 GIT_SHA = os.environ.get("GIT_SHA")
 MARVIN_ID = "UBEEMJZFX"
 quotes = [
@@ -119,21 +119,21 @@ async def version_handler(request: Request):
     return Response(f"{base_url}{GIT_SHA}")
 
 
-async def double_blind_handler(request: Request):
+async def survey_says_handler(request: Request):
     payload = await request.form()
     channel = payload["channel_id"]
     user = payload["user_name"]
     text = payload["text"]
     if text.strip() == "publish":
         msgs = []
-        for user, resp in DOUBLE_BLIND_RESPONSES.get(channel, {}).items():
+        for user, resp in SURVEY_SAYS_RESPONSES.get(channel, {}).items():
             msgs.append(f"*{user}*: {resp}")
 
         say("\n".join(msgs), channel=channel)
-        DOUBLE_BLIND_RESPONSES.get(channel, {}).clear()
+        SURVEY_SAYS_RESPONSES.get(channel, {}).clear()
         return Response()
 
-    DOUBLE_BLIND_RESPONSES[channel][user] = text
+    SURVEY_SAYS_RESPONSES[channel][user] = text
     say(f"Received a response from *{user}* :white_check_mark:", channel=channel)
     return Response()
 

@@ -15,7 +15,7 @@ from .github import cloud_github_handler, core_github_handler, core_promotion_ha
 from .leaderboard import leaderboard_handler
 from .loop_policy import ping_staging, run_scheduler
 from .responses import (
-    double_blind_handler,
+    survey_says_handler,
     event_handler,
     public_event_handler,
     version_handler,
@@ -91,9 +91,7 @@ MarvinApp.add_route(
     "/roundtable-order", check_token(roundtable_order_handler), methods=["POST"]
 )
 MarvinApp.add_route("/standup", check_token(standup_handler), methods=["POST"])
-MarvinApp.add_route(
-    "/double-blind", check_token(double_blind_handler), methods=["POST"]
-)
+MarvinApp.add_route("/survey-says", check_token(survey_says_handler), methods=["POST"])
 MarvinApp.add_route("/version", check_token(version_handler), methods=["POST"])
 MarvinApp.add_route("/public", check_token(public_event_handler), methods=["POST"])
 MarvinApp.add_route("/", check_token(event_handler), methods=["POST"])
