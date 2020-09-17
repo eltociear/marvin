@@ -128,7 +128,7 @@ if __name__ == "__main__":
     storage = Docker(
         base_url=default_client.api.base_url,
         tls_config=docker.TLSConfig(default_client.api.cert),
-        registry_url="gcr.io/tenant-staging-d49111/flows/",
+        registry_url="gcr.io/prefect-tenant-0c5400/flows/",
         python_dependencies=[
             "google-cloud-firestore",
             "requests",
