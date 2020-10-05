@@ -6,32 +6,82 @@ from starlette.responses import Response
 from .utilities import say
 
 headers = {"Authorization": os.getenv("MONDAY_API_TOKEN")}
-MONDAY_BOARD_ID = 517793474
-MONDAY_GROUP_ID = "topics"
 
 
-async def monday_handler(request: Request):
-    payload = await request.form()
-    text = payload.get("text")
-    username = payload.get("user_name")
-    channel = payload.get("channel_name")
-    result = create_item()
-    get_id_result = get_create_item_id(result)
-    create_update(get_id_result, text, username, channel)
-    notify_engineering(text, username)
+async def monday_handler_roadmap(request: Request):
+    board_id = 517793474
+    group_id = "topics"
+    notify_channel_text = (
+        f"[username] just added '[text]' to the product laundry basket in Monday"
+    )
+    channel_to_notify = "CBH18KG8G"
+    monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
 
 
-def notify_engineering(text, username):
-    txt = f"{username} just added '{text}' to the product laundry basket in Monday"
-    engineering_channel = "CBH18KG8G"
-    say(txt, channel=engineering_channel)
+async def monday_handler_blogs(request: Request):
+    board_id = 774900963
+    group_id = "topics"
+    notify_channel_text = f"[username] just added '[text]' to the blog list in Monday"
+    channel_to_notify = "CBH18KG8G"
+    monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
+    return Response(
+        "It gives me a headache just trying to think down to your level, but I have added this to Monday."
+    )
 
 
-def create_item():
-    variables = {"MONDAY_BOARD_ID": MONDAY_BOARD_ID, "MONDAY_GROUP_ID": MONDAY_GROUP_ID}
+async def monday_handler_customer_feedback(request: Request):
+    board_id = 585522431
+    group_id = "new_group93191"
+    notify_channel_text = (
+        f"[username] just added '[text]' to the customer feedback in Monday"
+    )
+    channel_to_notify = "CBH18KG8G"
+    monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
+    return Response(
+        "It gives me a headache just trying to think down to your level, but I have added this to Monday."
+    )
+
+
+async def monday_handler_any_board(request: Request):
+    # provide the board id followed by a ' ' and then the text you want added to the board
+    # for example "585522431 a new item to add to the monday board"
+    # by default the first group created in any board is called 'topics' and will automatically add items to that group
+    payload = await request.form()
+    text = payload.get("text")
+    board_id = int(text.split(" ", 1)[0])
+    group_id = "topics"
+    notify_channel_text = f"[username] just added '[text]' to your board in Monday"
+    channel_to_notify = payload.get("channel_id")
+    monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
+    return Response(
+        "It gives me a headache just trying to think down to your level, but I have added this to Monday."
+    )
+
+
+def monday_handler(
+    request: Request, board_id, group_id, notify_channel_text, channel_to_notify
+):
+    payload = await request.form()
+    text = payload.get("text")
+    username = payload.get("user_name")
+    channel = payload.get("channel_name")
+    result = create_item(board_id, group_id)
+    get_id_result = get_create_item_id(result)
+    create_update(get_id_result, text, username, channel)
+    notify_channel_text.replace("[username]", "{username}")
+    notify_channel_text.replace("[text]", "{text}")
+    notify_channel(notify_channel_text, channel_to_notify)
+
+
+def notify_channel(notify_channel_text, channel_to_notify):
+    say(notify_channel_text, channel=channel_to_notify)
+
+
+def create_item(board_id, group_id):
+    variables = {"MONDAY_BOARD_ID": board_id, "MONDAY_GROUP_ID": group_id}
 
     query = """
         mutation ($MONDAY_BOARD_ID:Int!, $MONDAY_GROUP_ID:String!) {
