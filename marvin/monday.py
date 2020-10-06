@@ -11,7 +11,7 @@ headers = {"Authorization": os.getenv("MONDAY_API_TOKEN")}
 async def monday_handler_roadmap(request: Request):
     board_id = 517793474
     group_id = "topics"
-    slack_data = extract_data(request)
+    slack_data = await extract_data(request)
     await monday_handler(slack_data, board_id, group_id)
     username = slack_data["username"]
     text = slack_data["text"]
@@ -27,7 +27,7 @@ async def monday_handler_roadmap(request: Request):
 async def monday_handler_blogs(request: Request):
     board_id = 774900963
     group_id = "topics"
-    slack_data = extract_data(request)
+    slack_data = await extract_data(request)
     await monday_handler(slack_data, board_id, group_id)
     username = slack_data["username"]
     text = slack_data["text"]
@@ -41,7 +41,7 @@ async def monday_handler_blogs(request: Request):
 async def monday_handler_customer_feedback(request: Request):
     board_id = 585522431
     group_id = "new_group93191"
-    slack_data = extract_data(request)
+    slack_data = await extract_data(request)
     await monday_handler(slack_data, board_id, group_id)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
@@ -52,7 +52,7 @@ async def monday_handler_any_board(request: Request):
     # provide the board id followed by a ' ' and then the text you want added to the board
     # for example "585522431 a new item to add to the monday board"
     # by default the first group created in any board is called 'topics' and will automatically add items to that group
-    slack_data = extract_data(request)
+    slack_data = await extract_data(request)
     text = slack_data["text"] or ""
     try:
         board_id = int(text.split(" ", 1)[0])
@@ -75,7 +75,7 @@ async def monday_handler(slack_data, board_id, group_id):
     )
 
 
-def extract_data(request: Request):
+async def extract_data(request: Request):
     payload = await request.form()
     text = payload.get("text")
     username = payload.get("user_name")
