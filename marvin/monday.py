@@ -65,7 +65,7 @@ async def monday_handler_any_board(request: Request):
 
 
 async def monday_handler(
-    request: Request, board_id, group_id, notify_channel_text, channel_to_notify
+    request: Request, board_id, group_id, notify_channel_text=None, channel_to_notify=None
 ):
     payload = await request.form()
     text = payload.get("text")
