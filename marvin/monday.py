@@ -63,7 +63,9 @@ async def monday_handler_any_board(request: Request):
     group_id = "topics"
     new_text = text.split(" ", 1)[1]
     slack_data["text"] = new_text
-    slack_data["summary_text"] = ((new_text[:60] + '...') if len(new_text) > 60 else new_text)
+    slack_data["summary_text"] = (
+        (new_text[:60] + "...") if len(new_text) > 60 else new_text
+    )
     monday_handler(slack_data, board_id, group_id)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
@@ -81,14 +83,23 @@ def monday_handler(slack_data, board_id, group_id):
 async def extract_data(request: Request):
     payload = await request.form()
     text = payload.get("text")
-    text_summary = ((text[:60] + '...') if len(text) > 60 else text)
+    text_summary = (text[:60] + "...") if len(text) > 60 else text
     username = payload.get("user_name")
     channel = payload.get("channel_name")
-    return {"text": text, "text_summary": text_summary, "username": username, "channel": channel}
+    return {
+        "text": text,
+        "text_summary": text_summary,
+        "username": username,
+        "channel": channel,
+    }
 
 
 def create_item(board_id, group_id, text_summary):
-    variables = {"MONDAY_BOARD_ID": board_id, "MONDAY_GROUP_ID": group_id, "TEXT_SUMMARY": text_summary}
+    variables = {
+        "MONDAY_BOARD_ID": board_id,
+        "MONDAY_GROUP_ID": group_id,
+        "TEXT_SUMMARY": text_summary,
+    }
 
     query = """
         mutation ($MONDAY_BOARD_ID:Int!, $MONDAY_GROUP_ID:String!) {
