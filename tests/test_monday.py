@@ -64,7 +64,7 @@ async def test_slash_monday_any_board_responds(app, token, monkeypatch):
     monkeypatch.setattr(marvin.utilities.requests, "post", MagicMock(), raising=False)
     r = await app.post(
         "/monday-any-board",
-        json={
+        data={
             "channel_name": "foo",
             "user_name": "bar",
             "text": "585522431 some text",
