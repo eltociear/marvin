@@ -67,7 +67,7 @@ async def test_slash_monday_any_board_responds(app, token, monkeypatch):
         json={
             "channel_name": "foo",
             "user_name": "bar",
-            "text": "some text",
+            "text": "585522431 some text",
             "token": token,
         },
     )
@@ -76,3 +76,23 @@ async def test_slash_monday_any_board_responds(app, token, monkeypatch):
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
         in r.text
     )
+
+
+async def test_slash_monday_any_board_responds_invalid_board_id(app, token, monkeypatch):
+    monkeypatch.setattr("marvin.monday.requests", MagicMock())
+    monkeypatch.setattr(marvin.utilities.requests, "post", MagicMock(), raising=False)
+    r = await app.post(
+        "/monday-any-board",
+        json={
+            "channel_name": "foo",
+            "user_name": "bar",
+            "text": "some text",
+            "token": token,
+        },
+    )
+    assert r.ok
+    assert (
+        "A valid board id has not been provided. Try again with the board id followed by a space."
+        in r.text
+    )
+
