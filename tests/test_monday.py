@@ -7,7 +7,7 @@ async def test_slash_monday_roadmap_responds(app, token, monkeypatch):
     monkeypatch.setattr(marvin.utilities.requests, "post", MagicMock(), raising=False)
     r = await app.post(
         "/monday-roadmap",
-        json={
+        data={
             "channel_name": "foo",
             "user_name": "bar",
             "text": "some text",
@@ -26,7 +26,7 @@ async def test_slash_monday_blogs_responds(app, token, monkeypatch):
     monkeypatch.setattr(marvin.utilities.requests, "post", MagicMock(), raising=False)
     r = await app.post(
         "/monday-blogs",
-        json={
+        data={
             "channel_name": "foo",
             "user_name": "bar",
             "text": "some text",
@@ -45,7 +45,7 @@ async def test_slash_monday_customer_feedback_responds(app, token, monkeypatch):
     monkeypatch.setattr(marvin.utilities.requests, "post", MagicMock(), raising=False)
     r = await app.post(
         "/monday-customer-feedback",
-        json={
+        data={
             "channel_name": "foo",
             "user_name": "bar",
             "text": "some text",
@@ -83,7 +83,7 @@ async def test_slash_monday_any_board_responds_invalid_board_id(app, token, monk
     monkeypatch.setattr(marvin.utilities.requests, "post", MagicMock(), raising=False)
     r = await app.post(
         "/monday-any-board",
-        json={
+        data={
             "channel_name": "foo",
             "user_name": "bar",
             "text": "some text",
