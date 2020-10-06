@@ -50,7 +50,7 @@ async def monday_handler_any_board(request: Request):
     # for example "585522431 a new item to add to the monday board"
     # by default the first group created in any board is called 'topics' and will automatically add items to that group
     payload = await request.form()
-    text = payload.get("text")
+    text = payload.get("text") or ""
     try:
         board_id = int(text.split(" ", 1)[0])
     except ValueError:
