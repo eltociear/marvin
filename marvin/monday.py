@@ -12,7 +12,7 @@ async def monday_handler_roadmap(request: Request):
     board_id = 517793474
     group_id = "topics"
     slack_data = await extract_data(request)
-    await monday_handler(slack_data, board_id, group_id)
+    monday_handler(slack_data, board_id, group_id)
     username = slack_data["username"]
     text = slack_data["text"]
     notify_channel_text = (
@@ -28,7 +28,7 @@ async def monday_handler_blogs(request: Request):
     board_id = 774900963
     group_id = "topics"
     slack_data = await extract_data(request)
-    await monday_handler(slack_data, board_id, group_id)
+    monday_handler(slack_data, board_id, group_id)
     username = slack_data["username"]
     text = slack_data["text"]
     notify_channel_text = f"{username} just added '{text}' to the blog list in Monday"
@@ -42,7 +42,7 @@ async def monday_handler_customer_feedback(request: Request):
     board_id = 585522431
     group_id = "new_group93191"
     slack_data = await extract_data(request)
-    await monday_handler(slack_data, board_id, group_id)
+    monday_handler(slack_data, board_id, group_id)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
@@ -64,13 +64,13 @@ async def monday_handler_any_board(request: Request):
     new_text = text.split(" ", 1)[1]
     slack_data["text"] = new_text
     slack_data["summary_text"] = ((new_text[:60] + '...') if len(new_text) > 60 else new_text)
-    await monday_handler(slack_data, board_id, group_id)
+    monday_handler(slack_data, board_id, group_id)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
 
 
-async def monday_handler(slack_data, board_id, group_id):
+def monday_handler(slack_data, board_id, group_id):
     result = create_item(board_id, group_id, slack_data["text_summary"])
     get_id_result = get_create_item_id(result)
     create_update(
@@ -85,10 +85,6 @@ async def extract_data(request: Request):
     username = payload.get("user_name")
     channel = payload.get("channel_name")
     return {"text": text, "text_summary": text_summary, "username": username, "channel": channel}
-
-
-def notify_channel(notify_channel_text, channel_to_notify):
-    say(notify_channel_text, channel=channel_to_notify)
 
 
 def create_item(board_id, group_id, text_summary):
