@@ -58,9 +58,7 @@ async def monday_handler_any_board(request: Request):
             "A valid board id has not been provided. Try again with the board id followed by a space."
         )
     group_id = "topics"
-    notify_channel_text = f"[username] just added '[text]' to your board in Monday"
-    channel_to_notify = payload.get("channel_id")
-    await monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
+    await monday_handler(request, board_id, group_id)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
@@ -76,9 +74,10 @@ async def monday_handler(
     result = create_item(board_id, group_id)
     get_id_result = get_create_item_id(result)
     create_update(get_id_result, text, username, channel)
-    notify_channel_text.replace("[username]", "{username}")
-    notify_channel_text.replace("[text]", "{text}")
-    notify_channel(notify_channel_text, channel_to_notify)
+    if notify_channel_text and channel_to_notify:
+        notify_channel_text.replace("[username]", "{username}")
+        notify_channel_text.replace("[text]", "{text}")
+        notify_channel(notify_channel_text, channel_to_notify)
 
 
 def notify_channel(notify_channel_text, channel_to_notify):
