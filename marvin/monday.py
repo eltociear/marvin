@@ -15,7 +15,7 @@ async def monday_handler_roadmap(request: Request):
         f"[username] just added '[text]' to the product laundry basket in Monday"
     )
     channel_to_notify = "CBH18KG8G"
-    monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
+    await monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
@@ -26,7 +26,7 @@ async def monday_handler_blogs(request: Request):
     group_id = "topics"
     notify_channel_text = f"[username] just added '[text]' to the blog list in Monday"
     channel_to_notify = "CBH18KG8G"
-    monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
+    await monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
@@ -39,7 +39,7 @@ async def monday_handler_customer_feedback(request: Request):
         f"[username] just added '[text]' to the customer feedback in Monday"
     )
     channel_to_notify = "CBH18KG8G"
-    monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
+    await monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
@@ -51,17 +51,22 @@ async def monday_handler_any_board(request: Request):
     # by default the first group created in any board is called 'topics' and will automatically add items to that group
     payload = await request.form()
     text = payload.get("text")
-    board_id = int(text.split(" ", 1)[0])
+    try:
+        board_id = int(text.split(" ", 1)[0])
+    except ValueError:
+        return Response(
+            "A valid board id has not been provided. Try again with the board id followed by a space."
+        )
     group_id = "topics"
     notify_channel_text = f"[username] just added '[text]' to your board in Monday"
     channel_to_notify = payload.get("channel_id")
-    monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
+    await monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
 
 
-def monday_handler(
+async def monday_handler(
     request: Request, board_id, group_id, notify_channel_text, channel_to_notify
 ):
     payload = await request.form()
