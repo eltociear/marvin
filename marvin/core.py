@@ -23,7 +23,12 @@ from .responses import (
 from .standup import standup_handler
 from .team import roundtable_order_handler
 from .meet import google_meet_handler
-from .monday import monday_handler
+from .monday import (
+    monday_handler_roadmap,
+    monday_handler_blogs,
+    monday_handler_customer_feedback,
+    monday_handler_any_board,
+)
 
 GITHUB_VALIDATION_TOKEN = os.environ.get("GITHUB_VALIDATION_TOKEN", "").encode()
 SLACK_VALIDATION_TOKEN = os.environ.get("SLACK_VALIDATION_TOKEN")
@@ -77,7 +82,20 @@ def check_token(fn):
 MarvinApp = Starlette()
 
 MarvinApp.add_route("/meet", check_token(google_meet_handler), methods=["POST"])
-MarvinApp.add_route("/monday", check_token(monday_handler), methods=["POST"])
+MarvinApp.add_route(
+    "/monday-roadmap", check_token(monday_handler_roadmap), methods=["POST"]
+)
+MarvinApp.add_route(
+    "/monday-blogs", check_token(monday_handler_blogs), methods=["POST"]
+)
+MarvinApp.add_route(
+    "/monday-customer-feedback",
+    check_token(monday_handler_customer_feedback),
+    methods=["POST"],
+)
+MarvinApp.add_route(
+    "/monday-any-board", check_token(monday_handler_any_board), methods=["POST"]
+)
 MarvinApp.add_route(
     "/github/cloud", check_token(cloud_github_handler), methods=["POST"]
 )
