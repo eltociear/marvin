@@ -102,7 +102,7 @@ def create_item(board_id, group_id, text_summary):
     }
 
     query = """
-        mutation ($MONDAY_BOARD_ID:Int!, $MONDAY_GROUP_ID:String!) {
+        mutation ($MONDAY_BOARD_ID:Int!, $MONDAY_GROUP_ID:String!, $TEXT_SUMMARY:String!) {
             create_item (board_id: $MONDAY_BOARD_ID, group_id: $MONDAY_GROUP_ID, item_name: $TEXT_SUMMARY)
             {
                 id
