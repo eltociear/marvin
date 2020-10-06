@@ -61,6 +61,9 @@ async def monday_handler_any_board(request: Request):
             "A valid board id has not been provided. Try again with the board id followed by a space."
         )
     group_id = "topics"
+    new_text = text.split(" ", 1)[1]
+    slack_data["text"] = new_text
+    slack_data["summary_text"] = ((new_text[:60] + '...') if len(new_text) > 60 else new_text)
     await monday_handler(slack_data, board_id, group_id)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
@@ -68,7 +71,7 @@ async def monday_handler_any_board(request: Request):
 
 
 async def monday_handler(slack_data, board_id, group_id):
-    result = create_item(board_id, group_id)
+    result = create_item(board_id, group_id, slack_data["text_summary"])
     get_id_result = get_create_item_id(result)
     create_update(
         get_id_result, slack_data["text"], slack_data["username"], slack_data["channel"]
@@ -78,21 +81,22 @@ async def monday_handler(slack_data, board_id, group_id):
 async def extract_data(request: Request):
     payload = await request.form()
     text = payload.get("text")
+    text_summary = ((text[:60] + '...') if len(text) > 60 else text)
     username = payload.get("user_name")
     channel = payload.get("channel_name")
-    return {"text": text, "username": username, "channel": channel}
+    return {"text": text, "text_summary": text_summary, "username": username, "channel": channel}
 
 
 def notify_channel(notify_channel_text, channel_to_notify):
     say(notify_channel_text, channel=channel_to_notify)
 
 
-def create_item(board_id, group_id):
-    variables = {"MONDAY_BOARD_ID": board_id, "MONDAY_GROUP_ID": group_id}
+def create_item(board_id, group_id, text_summary):
+    variables = {"MONDAY_BOARD_ID": board_id, "MONDAY_GROUP_ID": group_id, "TEXT_SUMMARY": text_summary}
 
     query = """
         mutation ($MONDAY_BOARD_ID:Int!, $MONDAY_GROUP_ID:String!) {
-            create_item (board_id: $MONDAY_BOARD_ID, group_id: $MONDAY_GROUP_ID, item_name: "Item added from slack")
+            create_item (board_id: $MONDAY_BOARD_ID, group_id: $MONDAY_GROUP_ID, item_name: $TEXT_SUMMARY)
             {
                 id
             }
