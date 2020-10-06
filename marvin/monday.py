@@ -11,11 +11,14 @@ headers = {"Authorization": os.getenv("MONDAY_API_TOKEN")}
 async def monday_handler_roadmap(request: Request):
     board_id = 517793474
     group_id = "topics"
+    slack_data = extract_data(request)
+    await monday_handler(slack_data, board_id, group_id)
+    username = slack_data["username"]
+    text = slack_data["text"]
     notify_channel_text = (
-        f"[username] just added '[text]' to the product laundry basket in Monday"
+        f"{username} just added '{text}' to the product laundry basket in Monday"
     )
-    channel_to_notify = "CBH18KG8G"
-    await monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
+    say(notify_channel_text, channel="CBH18KG8G")
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
@@ -24,9 +27,12 @@ async def monday_handler_roadmap(request: Request):
 async def monday_handler_blogs(request: Request):
     board_id = 774900963
     group_id = "topics"
-    notify_channel_text = f"[username] just added '[text]' to the blog list in Monday"
-    channel_to_notify = "CBH18KG8G"
-    await monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
+    slack_data = extract_data(request)
+    await monday_handler(slack_data, board_id, group_id)
+    username = slack_data["username"]
+    text = slack_data["text"]
+    notify_channel_text = f"{username} just added '{text}' to the blog list in Monday"
+    say(notify_channel_text, channel="CBH18KG8G")
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
@@ -35,11 +41,8 @@ async def monday_handler_blogs(request: Request):
 async def monday_handler_customer_feedback(request: Request):
     board_id = 585522431
     group_id = "new_group93191"
-    notify_channel_text = (
-        f"[username] just added '[text]' to the customer feedback in Monday"
-    )
-    channel_to_notify = "CBH18KG8G"
-    await monday_handler(request, board_id, group_id, notify_channel_text, channel_to_notify)
+    slack_data = extract_data(request)
+    await monday_handler(slack_data, board_id, group_id)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
@@ -49,8 +52,8 @@ async def monday_handler_any_board(request: Request):
     # provide the board id followed by a ' ' and then the text you want added to the board
     # for example "585522431 a new item to add to the monday board"
     # by default the first group created in any board is called 'topics' and will automatically add items to that group
-    payload = await request.form()
-    text = payload.get("text") or ""
+    slack_data = extract_data(request)
+    text = slack_data["text"] or ""
     try:
         board_id = int(text.split(" ", 1)[0])
     except ValueError:
@@ -58,26 +61,26 @@ async def monday_handler_any_board(request: Request):
             "A valid board id has not been provided. Try again with the board id followed by a space."
         )
     group_id = "topics"
-    await monday_handler(request, board_id, group_id)
+    await monday_handler(slack_data, board_id, group_id)
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
 
 
-async def monday_handler(
-    request: Request, board_id, group_id, notify_channel_text=None, channel_to_notify=None
-):
+async def monday_handler(slack_data, board_id, group_id):
+    result = create_item(board_id, group_id)
+    get_id_result = get_create_item_id(result)
+    create_update(
+        get_id_result, slack_data["text"], slack_data["username"], slack_data["channel"]
+    )
+
+
+def extract_data(request: Request):
     payload = await request.form()
     text = payload.get("text")
     username = payload.get("user_name")
     channel = payload.get("channel_name")
-    result = create_item(board_id, group_id)
-    get_id_result = get_create_item_id(result)
-    create_update(get_id_result, text, username, channel)
-    if notify_channel_text and channel_to_notify:
-        notify_channel_text.replace("[username]", "{username}")
-        notify_channel_text.replace("[text]", "{text}")
-        notify_channel(notify_channel_text, channel_to_notify)
+    return {"text": text, "username": username, "channel": channel}
 
 
 def notify_channel(notify_channel_text, channel_to_notify):

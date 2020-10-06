@@ -78,7 +78,9 @@ async def test_slash_monday_any_board_responds(app, token, monkeypatch):
     )
 
 
-async def test_slash_monday_any_board_responds_invalid_board_id(app, token, monkeypatch):
+async def test_slash_monday_any_board_responds_invalid_board_id(
+    app, token, monkeypatch
+):
     monkeypatch.setattr("marvin.monday.requests", MagicMock())
     monkeypatch.setattr(marvin.utilities.requests, "post", MagicMock(), raising=False)
     r = await app.post(
@@ -95,4 +97,3 @@ async def test_slash_monday_any_board_responds_invalid_board_id(app, token, monk
         "A valid board id has not been provided. Try again with the board id followed by a space."
         in r.text
     )
-
