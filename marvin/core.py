@@ -90,11 +90,11 @@ MarvinApp.add_route(
 )
 MarvinApp.add_route(
     "/monday-customer-feedback",
-    check_token(monday_handler_customer_feedback()),
+    check_token(monday_handler_customer_feedback),
     methods=["POST"],
 )
 MarvinApp.add_route(
-    "/monday-any-board", check_token(monday_handler_any_board()), methods=["POST"]
+    "/monday-any-board", check_token(monday_handler_any_board), methods=["POST"]
 )
 MarvinApp.add_route(
     "/github/cloud", check_token(cloud_github_handler), methods=["POST"]
