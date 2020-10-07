@@ -63,7 +63,7 @@ async def monday_handler_any_board(request: Request):
     group_id = "topics"
     new_text = text.split(" ", 1)[1]
     slack_data["text"] = new_text
-    slack_data["summary_text"] = (
+    slack_data["text_summary"] = (
         (new_text[:60] + "...") if len(new_text) > 60 else new_text
     )
     monday_handler(slack_data, board_id, group_id)
