@@ -52,7 +52,7 @@ def query(query: str, variables: dict = None):
 flow_id = Parameter("flow_id", default="bc9495b5-368b-4ba4-b238-cfaee534b11e")
 
 
-@task
+@task(max_retries=1, retry_delay=datetime.timedelta(seconds=5))
 def interact_with_api(flow_id):
     # create a flow run in prod
     create_mutation = """
@@ -62,7 +62,12 @@ def interact_with_api(flow_id):
         }
     }
     """
-    flow_run = query(create_mutation, variables=dict(input=dict(flow_id=flow_id)))
+    running_id = prefect.context.get("flow_run_id", "unknown")
+
+    flow_run = query(
+        create_mutation,
+        variables=dict(input=dict(flow_id=flow_id, idempotency_key=running_id)),
+    )
     flow_run_id = flow_run["data"]["create_flow_run"]["id"]
 
     set_flow_run_state = """
@@ -72,8 +77,6 @@ def interact_with_api(flow_id):
         }
     }
     """
-
-    running_id = prefect.context.get("flow_run_id", "unknown")
 
     # submit flow run
     variables = dict(
@@ -176,7 +179,8 @@ schedule = IntervalSchedule(interval=datetime.timedelta(minutes=1.25))
 
 
 with Flow("Prod Status", schedule=schedule) as flow:
-    uptime_check = update_status_io(interact_with_api(flow_id))
+    interact_with_api(flow_id)
+#    uptime_check = update_status_io(interact_with_api(flow_id))
 
 
 if __name__ == "__main__":
