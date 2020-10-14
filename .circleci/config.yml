@@ -136,8 +136,7 @@ jobs:
           name: Deploy Standup Flows
           command: |
             python3 prefect/daily_standup_post.py
-            python3 prefect/dc_daily_reminder.py
-            python3 prefect/sf_daily_reminder.py
+            python3 prefect/standup_reminder.py
       - run:
           name: Deploy Prod Alert Flow
           command: |

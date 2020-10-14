@@ -4,8 +4,7 @@ from prefect import Flow, Parameter, task
 from prefect.client import Secret
 from prefect.environments.execution.remote import RemoteEnvironment
 from prefect.environments.storage import Docker
-from prefect.schedules import CronSchedule
-from prefect.engine.result import NoResult
+from prefect.schedules import clocks, Schedule
 from prefect.engine.result_handlers import JSONResultHandler
 from prefect.engine.signals import SKIP
 from prefect.utilities.tasks import unmapped
@@ -49,7 +48,7 @@ def get_latest_updates(date):
 
 
 @task
-def get_team():
+def get_team(office):
     """
     Retrieve all current full-time Slack users.
 
@@ -62,7 +61,7 @@ def get_team():
     return [
         (u["name"], u["slack"])
         for u in users
-        if u["office"] == "DC" and u.get("standup") is True
+        if u["office"] == office and u.get("standup") is True
     ]
 
 
@@ -105,20 +104,27 @@ def send_reminder(user_info):
     return user_name
 
 
-weekday_schedule = CronSchedule(
-    "30 8 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
+dc_clock = clocks.CronClock(
+    "30 8 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern"), parameter_defaults={"office": "DC"}
 )
+sf_clock = clocks.CronClock(
+    "0 20 * * 0-4", start_date=pendulum.parse("2017-03-24", tz="US/Pacific"), parameter_defaults={"office": "SF"}
+)
+
+weekday_schedule = Schedule(clocks=[dc_clock, sf_clock])
 environment = RemoteEnvironment(executor="prefect.engine.executors.LocalExecutor")
 
 
 with Flow(
-    "DC Standup Reminder",
+    "Standup Reminder",
     schedule=weekday_schedule,
     environment=environment,
     result_handler=JSONResultHandler(),
 ) as flow:
+    office = Parameter("office")
     updates = get_latest_updates(get_standup_date)
-    res = send_reminder.map(is_reminder_needed.map(get_team, unmapped(updates)))
+    team = get_team(office)
+    res = send_reminder.map(is_reminder_needed.map(team, unmapped(updates)))
 
 flow.set_reference_tasks([res])
 
