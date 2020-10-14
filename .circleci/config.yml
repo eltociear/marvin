@@ -131,7 +131,7 @@ jobs:
             gcloud --quiet auth configure-docker
       - run:
           name: Install Prefect
-          command: pip install "prefect[gcp]" google-cloud-firestore
+          command: pip3 install "prefect[gcp]" google-cloud-firestore
       - run:
           name: Deploy Standup Flows
           command: |
