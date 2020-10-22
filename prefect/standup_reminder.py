@@ -105,10 +105,14 @@ def send_reminder(user_info):
 
 
 dc_clock = clocks.CronClock(
-    "30 8 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern"), parameter_defaults={"office": "DC"}
+    "30 8 * * 1-5",
+    start_date=pendulum.parse("2017-03-24", tz="US/Eastern"),
+    parameter_defaults={"office": "DC"},
 )
 sf_clock = clocks.CronClock(
-    "0 20 * * 0-4", start_date=pendulum.parse("2017-03-24", tz="US/Pacific"), parameter_defaults={"office": "SF"}
+    "30 17 * * 0-4",
+    start_date=pendulum.parse("2017-03-24", tz="US/Pacific"),
+    parameter_defaults={"office": "SF"},
 )
 
 weekday_schedule = Schedule(clocks=[dc_clock, sf_clock])
