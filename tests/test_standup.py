@@ -12,15 +12,17 @@ from marvin import loop_policy, standup
 @pytest.mark.parametrize(
     "now,collection",
     [
-        (datetime.datetime(2018, 7, 13, 0), "2018-07-13"),
-        (datetime.datetime(2018, 7, 13, 14, 5), "2018-07-16"),
+        (datetime.datetime(2018, 7, 13, 0), "2018-07-13"),  # friday
+        (datetime.datetime(2018, 7, 13, 14, 5), "2018-07-13"),  # friday 9:05
+        (datetime.datetime(2018, 7, 13, 14, 35), "2018-07-16"),  # friday 9:35
         (datetime.datetime(2018, 7, 14, 0), "2018-07-16"),
         (datetime.datetime(2018, 7, 15, 0), "2018-07-16"),
         (datetime.datetime(2018, 7, 16, 0), "2018-07-16"),
-        (datetime.datetime(2018, 7, 16, 14, 5), "2018-07-17"),
+        (datetime.datetime(2018, 7, 16, 14, 5), "2018-07-16"),
+        (datetime.datetime(2018, 7, 16, 14, 35), "2018-07-17"),
         (datetime.datetime(2018, 7, 17, 14, 0), "2018-07-17"),
-        (datetime.datetime(2018, 7, 17, 14, 1), "2018-07-17"),
-        (datetime.datetime(2018, 7, 17, 14, 2), "2018-07-18"),
+        (datetime.datetime(2018, 7, 17, 14, 2), "2018-07-17"),
+        (datetime.datetime(2018, 7, 17, 14, 32), "2018-07-18"),
         (datetime.datetime(2018, 12, 25, 5, 20, 55, 592853), "2018-12-25"),
     ],
 )
