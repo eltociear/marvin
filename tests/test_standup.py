@@ -9,39 +9,6 @@ import schedule
 from marvin import loop_policy, standup
 
 
-@pytest.fixture(autouse=True)
-async def set_up_schedules():
-    "Fixture for setting and clearing the global schedule after every test."
-    asyncio.ensure_future(
-        loop_policy.run_scheduler(ignore_google=True, ignore_standup=False)
-    )
-    # sleep to allow the future to start running
-    await asyncio.sleep(0.001)
-    try:
-        yield
-    finally:
-        schedule.clear()
-
-
-def get_pre_post_jobs():
-    "Utility for retrieveing the _pre_standup and _post_standup jobs"
-    pre = next(j for j in schedule.jobs if j.job_func.__name__ == "_pre_standup")
-    post = next(j for j in schedule.jobs if j.job_func.__name__ == "_post_standup")
-    return pre, post
-
-
-async def test_standup_is_scheduled(app, token):
-    await app.post(
-        "/",
-        data={"token": token},
-        headers={"Content-type": "application/x-www-form-urlencoded"},
-    )
-
-    pre, post = get_pre_post_jobs()
-    assert pre.next_run.hour == 13
-    assert post.next_run.hour == 14
-
-
 @pytest.mark.parametrize(
     "now,collection",
     [
@@ -67,57 +34,6 @@ async def test_standup_identifies_the_right_date_an_update_belongs_to(
 
     monkeypatch.setattr(datetime, "datetime", date)
     assert standup.get_collection_name() == collection
-
-
-@pytest.mark.parametrize(
-    "now", [datetime.datetime(2018, 7, 14), datetime.datetime(2018, 7, 15)]
-)
-async def test_standup_takes_the_weekend_off(app, monkeypatch, token, now):
-
-    await app.post(
-        "/",
-        data={"token": token},
-        headers={"Content-type": "application/x-www-form-urlencoded"},
-    )
-    say = MagicMock()
-    monkeypatch.setattr(standup, "say", say)
-
-    pre, post = get_pre_post_jobs()
-    pre.next_run = now
-    post.next_run = now
-
-    class date:
-        @classmethod
-        def now(cls):
-            return now
-
-    monkeypatch.setattr(datetime, "datetime", date)
-    schedule.run_all()
-
-    assert say.call_count == 0
-
-
-async def test_standup_queries_users(app, monkeypatch, token):
-    monkeypatch.setattr(standup, "get_users", lambda *args, **kwargs: {"chris": "999"})
-    monkeypatch.setattr(
-        standup, "get_dm_channel_id", lambda *args, **kwargs: "dm_chris"
-    )
-
-    await app.post("/", data={"token": token})
-
-    say = MagicMock()
-    monkeypatch.setattr(standup, "say", say)
-    monkeypatch.setattr(standup, "_is_weekday", lambda: True)
-
-    pre, post = get_pre_post_jobs()
-    pre.next_run = datetime.datetime.now()
-    schedule.run_all()
-    assert say.call_count == 2
-
-    dm_msg = "Hi chris! I haven't heard from you yet; what updates do you have for the team today? Please respond by using the slash command `/standup`,  and remember: your response will be shared!"
-    pub_msg = "<!here> are today's standup updates"
-    assert say.call_args_list[0][0][0] == dm_msg
-    assert pub_msg in say.call_args_list[1][0][0]
 
 
 async def test_standup_stores_updates(app, monkeypatch, token):

@@ -140,10 +140,7 @@ def update_status_io(payload):
         return
     if isinstance(payload, ProdAPIError):
         prefect.context.logger.error(f"Possible issue with Prod: {repr(payload)}")
-        api = statusio.Api(
-            api_id=API_ID,
-            api_key=API_KEY,
-        )
+        api = statusio.Api(api_id=API_ID, api_key=API_KEY,)
         resp = api.IncidentCreate(
             statuspage_id="5f33ff702715c204c20d6da1",
             infrastructure_affected=[
