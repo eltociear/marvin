@@ -2,7 +2,6 @@ import asyncio
 import datetime
 import re
 
-import schedule
 from starlette.requests import Request
 from starlette.responses import Response
 
@@ -10,12 +9,6 @@ from .firestore import client
 from .utilities import get_dm_channel_id, get_users, say
 
 standup_channel = "CANLZB1L3"  # "CBH18KG8G"
-
-
-# schedule standup
-async def schedule_standup():
-    schedule.every().day.at("13:30").do(_pre_standup)
-    schedule.every().day.at("14:00").do(_post_standup)
 
 
 def get_collection_name():
@@ -26,7 +19,7 @@ def get_collection_name():
     day_offset = weekend_offsets.get(day_name, 1)
 
     if day_name not in ["Saturday", "Sunday"]:
-        if (now.hour < 14) or (now.hour == 14 and now.minute <= 1):
+        if (now.hour < 14) or (now.hour == 14 and now.minute <= 31):
             return now.strftime(date_format)
         else:
             return (now + datetime.timedelta(days=day_offset)).strftime(date_format)
@@ -92,36 +85,3 @@ async def standup_handler(request: Request):
 
     update_user_updates(user, update)
     return Response(f"Thanks {user}!")
-
-
-def _pre_standup():
-    if not _is_weekday():
-        return
-    users = get_users()
-    current_updates = get_latest_updates()
-    for name, uid in users.items():
-        if current_updates.get(name) is None:
-            say(
-                f"Hi {name}! I haven't heard from you yet; what updates do you have for the team today? Please respond by using the slash command `/standup`,  and remember: your response will be shared!",
-                channel=get_dm_channel_id(uid),
-                mrkdwn="true",
-            )
-
-
-def _post_standup():
-    if not _is_weekday():
-        return
-    public_msg = "<!here> are today's standup updates:\n" + "=" * 30
-    current_updates = get_latest_updates()
-    for user, update in current_updates.items():
-        public_msg += f"\n*{user}*: {update}"
-    say(public_msg, channel=standup_channel)
-
-
-def _is_weekday():
-    now = datetime.datetime.now()
-    day = now.strftime("%A")
-    if day in ["Saturday", "Sunday"]:
-        return False
-    else:
-        return True
