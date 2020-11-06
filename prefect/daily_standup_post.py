@@ -36,7 +36,7 @@ def get_collection_name():
     day_offset = weekend_offsets.get(day_name, 1)
 
     if day_name not in ["Saturday", "Sunday"]:
-        if (now.hour < 14) or (now.hour == 14 and now.minute <= 2):
+        if (now.hour < 14) or (now.hour == 14 and now.minute <= 33):
             return now.strftime(date_format)
         else:
             return (now + datetime.timedelta(days=day_offset)).strftime(date_format)
