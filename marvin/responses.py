@@ -196,6 +196,7 @@ async def public_event_handler(request: Request):
         "UN6FTLFAS",
         "UKVFX6N3B",
         "UUY8XPC21",
+        "U011EKN35PT",  # Jim
     ]:
         #        user_info = get_user_info(who_spoke, name_only=False)
         #        email = user_info.get("user", {}).get("profile", {}).get("email")
