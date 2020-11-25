@@ -48,7 +48,7 @@ quotes = [
 ]
 
 
-karma_regex = re.compile("^(.+[^\s])(\+{2}|\-{2})(\s*|$)$")
+karma_regex = re.compile(r"^(.+[^\s])(\+{2}|\-{2})(\s*|$)$")
 
 
 async def event_handler(request: Request):
@@ -143,11 +143,11 @@ def karma_handler(regex_match, event):
     say(response_text, channel=event.get("channel"), thread_ts=event.get("thread_ts"))
 
 
-def open_issue(event, title, issue_state="closed"):
+def build_issue_body(event, issue_state="open"):
+    """Collect and format a slack thread to be archived as an issue"""
 
-    issue_body = "## {header} from the [Prefect Public Slack Community](https://join.slack.com/t/prefect-public/shared_invite/enQtNzE5OTU3OTQwNzc1LTQ5M2FkZmQzZjI0ODg1ZTBmOTc0ZjVjYWFjMWExZDAyYzBmYjVmMTE1NTQ1Y2IxZTllOTc4MmI3NzYxMDlhYWU)\n\n".format(
-        header="Archived" if issue_state == "closed" else "Opened"
-    )
+    header = "Archived" if issue_state == "closed" else "Opened"
+    issue_body = f"## {header} from the [Prefect Public Slack Community](https://join.slack.com/t/prefect-public/shared_invite/enQtNzE5OTU3OTQwNzc1LTQ5M2FkZmQzZjI0ODg1ZTBmOTc0ZjVjYWFjMWExZDAyYzBmYjVmMTE1NTQ1Y2IxZTllOTc4MmI3NzYxMDlhYWU)\n\n"
 
     thread = get_public_thread(channel=event["channel"], ts=event.get("thread_ts"))
     for msg in thread:
@@ -165,13 +165,52 @@ def open_issue(event, title, issue_state="closed"):
         issue_body += (
             "Original thread can be found [here]({}).".format(permalink) + "\n\n"
         )
+    return issue_body
 
-    return create_issue(
-        title=title,
-        body=issue_body,
-        labels=["Prefect Slack Community"],
-        issue_state=issue_state,
-    )
+
+def get_create_issue_kwargs(event):
+    """Get args to pass to `create_issue`. Returns `None` if no issue should be created
+
+    Responds to:
+
+    - 'archive "issue title"'
+    - 'open "issue title"'
+    - 'open "issue title" in repo' (where repo is one of {core, prefect, server, ui})
+    """
+    body = event.get("text", "").replace("“", '"').replace("”", '"').strip()
+    message_types = [
+        (r'archive\s+"(.*?)"', "closed", "prefect"),
+        (r'open\s+"(.*?)"\s+in\s+(.*)', "open", None),
+        (r'open\s+"(.*?)"', "open", "prefect"),
+    ]
+    for pattern, issue_state, repo in message_types:
+        matches = re.findall(pattern, body)
+        if matches:
+            if repo is None:
+                title, repo = matches[0]
+            else:
+                title = matches[0]
+            break
+    else:
+        # No pattern matches
+        return None
+
+    repo = repo.lower().strip()
+    if repo == "core":
+        repo = "prefect"
+    if repo not in {"prefect", "ui", "server"}:
+        # Not a valid repo
+        return None
+
+    issue_body = build_issue_body(event, issue_state=issue_state)
+
+    return {
+        "title": title,
+        "body": issue_body,
+        "issue_state": issue_state,
+        "labels": ["Prefect Slack Community"],
+        "repo": repo
+    }
 
 
 async def public_event_handler(request: Request):
@@ -223,23 +262,13 @@ async def public_event_handler(request: Request):
         #        )
         return Response()
 
-    message_body = event.get("text", "").replace("“", '"').replace("”", '"')
-    close_patt = re.compile('archive\s"(.*?)"')
-    close_matches = close_patt.findall(message_body)
-
-    open_patt = re.compile('open\s"(.*?)"')
-    open_matches = open_patt.findall(message_body)
-
-    issue = None
-    if close_matches:
-        issue = open_issue(event, title=close_matches[0], issue_state="closed")
-    elif open_matches:
-        issue = open_issue(event, title=open_matches[0], issue_state="open")
-
-    if issue is not None:
-        public_speak(
-            text=issue["html_url"],
-            channel=event["channel"],
-            thread_ts=event.get("thread_ts"),
-        )
+    kwargs = get_create_issue_kwargs(event)
+    if kwargs is not None:
+        issue = create_issue(**kwargs)
+        if issue is not None:
+            public_speak(
+                text=issue["html_url"],
+                channel=event["channel"],
+                thread_ts=event.get("thread_ts"),
+            )
     return Response()
