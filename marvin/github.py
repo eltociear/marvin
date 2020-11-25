@@ -14,8 +14,8 @@ from marvin.utilities import get_dm_channel_id, get_users, say, promotional_sign
 MARVIN_ACCESS_TOKEN = os.environ.get("MARVIN_ACCESS_TOKEN")
 
 
-def create_issue(title, body, labels=None, issue_state="open"):
-    url = "https://api.github.com/repos/PrefectHQ/prefect/issues"
+def create_issue(title, body, labels=None, issue_state="open", repo="prefect"):
+    url = f"https://api.github.com/repos/PrefectHQ/{repo}/issues"
     headers = {"AUTHORIZATION": f"token {MARVIN_ACCESS_TOKEN}"}
     issue = {"title": title, "body": body, "labels": labels or []}
     resp = requests.post(url, data=json.dumps(issue), headers=headers)

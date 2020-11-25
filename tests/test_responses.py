@@ -189,3 +189,35 @@ async def test_github_mentions_tells_everyone(app, token, monkeypatch):
     r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 3
+
+
+@pytest.mark.parametrize(
+    "message, ok, repo, issue_state",
+    [
+        (' archive  "some title"  ', True, "prefect", "closed"),
+        (' open  "some title"  ', True, "prefect", "open"),
+        (' open  "some title"  in core  ', True, "prefect", "open"),
+        (' open  "some title"  in prefect  ', True, "prefect", "open"),
+        (' open  "some title"  in   UI  ', True, "ui", "open"),
+        (' open  "some title"  in  server  ', True, "server", "open"),
+        (' open "some title" in unknown', False, None, None),
+        (' other "some title"', False, None, None),
+    ]
+)
+async def test_marvin_create_issue_event_parsing(message, ok, repo, issue_state, monkeypatch):
+    build_issue_body = MagicMock(return_value="the issue body")
+    monkeypatch.setattr("marvin.responses.build_issue_body", build_issue_body)
+
+    post_event = {"text": message}
+    kwargs = marvin.responses.get_create_issue_kwargs(post_event)
+    if ok:
+        assert kwargs == {
+            "title": "some title",
+            "body": "the issue body",
+            "issue_state": issue_state,
+            "labels": ["Prefect Slack Community"],
+            "repo": repo,
+        }
+    else:
+        assert kwargs is None
+        assert not build_issue_body.called
