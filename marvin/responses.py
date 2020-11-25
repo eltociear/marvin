@@ -265,7 +265,7 @@ async def public_event_handler(request: Request):
     kwargs = get_create_issue_kwargs(event)
     if kwargs is not None:
         issue = create_issue(**kwargs)
-        if create_issue is not None:
+        if issue is not None:
             public_speak(
                 text=issue["html_url"],
                 channel=event["channel"],
