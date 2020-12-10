@@ -112,7 +112,9 @@ MarvinApp.add_route(
 MarvinApp.add_route("/standup", check_token(standup_handler), methods=["POST"])
 MarvinApp.add_route("/survey-says", check_token(survey_says_handler), methods=["POST"])
 MarvinApp.add_route("/version", check_token(version_handler), methods=["POST"])
-MarvinApp.add_route("/post-as-marvin", check_token(post_as_marvin_handler), methods=["POST"])
+MarvinApp.add_route(
+    "/post-as-marvin", check_token(post_as_marvin_handler), methods=["POST"]
+)
 MarvinApp.add_route("/public", check_token(public_event_handler), methods=["POST"])
 MarvinApp.add_route("/", check_token(event_handler), methods=["POST"])
 
