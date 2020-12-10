@@ -3,9 +3,6 @@ from starlette.responses import Response
 from .utilities import say
 
 
-from .users import get_all_users
-
-
 async def post_as_marvin_handler(request: Request) -> JSONResponse:
     """
     Posts a message to any channel as Marvin
