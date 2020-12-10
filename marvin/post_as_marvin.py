@@ -1,5 +1,5 @@
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import JSONResponse
 from .utilities import say
 
 
@@ -31,13 +31,15 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
     ].strip()  # Removes the preposition (which are all 2 characters atm)
 
     if not message:
-        return Response(
-            "response_type": "ephemeral",
-            "text": f"Don’t pretend you want to talk to me, I know you hate me... or at least tell me what you want to post by including a message. {command_template}"
+        return JSONResponse(
+            {
+                "response_type": "ephemeral",
+                "text": f"Don’t pretend you want to talk to me, I know you hate me... or at least tell me what you want to post by including a message. {command_template}",
+            }
         )
 
     if not channel or last_index == -1:
-        return Response(
+        return JSONResponse(
             {
                 "response_type": "ephemeral",
                 "text": f"Incredible. It’s even worse than I thought it would be... Tell me where you want to post your message by including the channel in your message. {command_template}",
@@ -48,7 +50,7 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
     say(message, channel=channel)
 
     # Respond (ephemerally) to the user to confirm that the message was sent
-    return Response(
+    return JSONResponse(
         {
             "response_type": "ephemeral",
             "text": f"This is the sort of thing you lifeforms enjoy, is it? Fine, I've posted \"{message}\" to {channel}. I hope you're happy.",
