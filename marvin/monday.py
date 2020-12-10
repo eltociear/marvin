@@ -48,6 +48,21 @@ async def monday_handler_customer_feedback(request: Request):
     )
 
 
+async def monday_handler_prefect_on_prefect(request: Request):
+    board_id = 907275859
+    group_id = "topics"
+    slack_data = await extract_data(request)
+    monday_handler(slack_data, board_id, group_id)
+    username = slack_data["username"]
+    text = slack_data["text"]
+    notify_channel_text = f"{username} just added '{text}' to the Prefect-on-Prefect laundry basket in Monday"
+    # notifies the general channel
+    say(notify_channel_text, channel="CANLZB1L3")
+    return Response(
+        "It gives me a headache just trying to think down to your level, but I have added this to Monday."
+    )
+
+
 async def monday_handler_any_board(request: Request):
     # provide the board id followed by a ' ' and then the text you want added to the board
     # for example "585522431 a new item to add to the monday board"
