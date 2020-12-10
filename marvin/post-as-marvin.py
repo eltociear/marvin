@@ -10,6 +10,9 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
     """
     Posts a message to any channel as Marvin
     """
+
+    command_template = "/post-as-marvin <message> in #<channel>"
+
     try:
         payload = await request.json()
     except:
@@ -30,11 +33,17 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
         last_index + 2 :
     ].strip()  # Removes the preposition (which are all 2 characters atm)
 
+    if not message:
+        return Response(
+            "response_type": "ephemeral",
+            "text": f"Don’t pretend you want to talk to me, I know you hate me... or at least tell me what you want to post by including a message. {command_template}"
+        )
+
     if not channel or last_index == -1:
         return Response(
             {
                 "response_type": "ephemeral",
-                "text": f"Incredible. It’s even worse than I thought it would be... Tell me where you want to post your message by including the channel in your message. /post-as-marvin <message> in #<channel>",
+                "text": f"Incredible. It’s even worse than I thought it would be... Tell me where you want to post your message by including the channel in your message. {command_template}",
             }
         )
 
