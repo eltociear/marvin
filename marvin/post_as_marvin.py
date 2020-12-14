@@ -1,6 +1,7 @@
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from .utilities import say
+import logging
 
 
 async def post_as_marvin_handler(request: Request) -> JSONResponse:
@@ -16,6 +17,7 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
         payload = await request.form()
 
     text = payload.get("text")
+    user = payload.get("user_name")
 
     channel_capture_prepositions = ["in", "to"]
     last_index = -1
@@ -45,6 +47,10 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
                 "text": f"Incredible. It’s even worse than I thought it would be... Tell me where you want to post your message by including the channel in your message. {command_template}",
             }
         )
+
+    logging.info(
+        f"{user} posted the following message to {channel} as Marvin: '{message}'"
+    )
 
     # Post the message to the described channel
     say(message, channel=channel)
