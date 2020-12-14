@@ -28,6 +28,7 @@ from .monday import (
     monday_handler_roadmap,
     monday_handler_blogs,
     monday_handler_customer_feedback,
+    monday_handler_prefect_on_prefect,
     monday_handler_any_board,
 )
 
@@ -85,6 +86,11 @@ MarvinApp = Starlette()
 MarvinApp.add_route("/meet", check_token(google_meet_handler), methods=["POST"])
 MarvinApp.add_route(
     "/monday-roadmap", check_token(monday_handler_roadmap), methods=["POST"]
+)
+MarvinApp.add_route(
+    "/monday-prefect-on-prefect",
+    check_token(monday_handler_prefect_on_prefect),
+    methods=["POST"],
 )
 MarvinApp.add_route(
     "/monday-blogs", check_token(monday_handler_blogs), methods=["POST"]

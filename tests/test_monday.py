@@ -21,6 +21,25 @@ async def test_slash_monday_roadmap_responds(app, token, monkeypatch):
     )
 
 
+async def test_slash_monday_prefect_on_prefect_responds(app, token, monkeypatch):
+    monkeypatch.setattr("marvin.monday.requests", MagicMock())
+    monkeypatch.setattr(marvin.utilities.requests, "post", MagicMock(), raising=False)
+    r = await app.post(
+        "/monday-prefect-on-prefect",
+        data={
+            "channel_name": "foo",
+            "user_name": "bar",
+            "text": "some text",
+            "token": token,
+        },
+    )
+    assert r.ok
+    assert (
+        "It gives me a headache just trying to think down to your level, but I have added this to Monday."
+        in r.text
+    )
+
+
 async def test_slash_monday_blogs_responds(app, token, monkeypatch):
     monkeypatch.setattr("marvin.monday.requests", MagicMock())
     monkeypatch.setattr(marvin.utilities.requests, "post", MagicMock(), raising=False)
