@@ -16,6 +16,8 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
     except:
         payload = await request.form()
 
+    logging.info(payload)
+
     text = payload.get("text")
     user = payload.get("user_name")
 
