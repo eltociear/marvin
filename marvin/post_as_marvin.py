@@ -1,6 +1,6 @@
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from .utilities import say
+from .utilities import say, get_channel_id_by_name
 import logging
 
 
@@ -29,10 +29,10 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
 
         last_index = index if index > last_index else last_index
 
-    message = text[0:last_index].strip()
-    channel = message[
-        last_index + 2 :
-    ].strip()  # Removes the preposition (which are all 2 characters atm)
+    message = text[:last_index].strip()
+    channel = get_channel_id_by_name(
+        text[last_index + 2 :].strip()
+    )  # Removes the preposition (which are all 2 characters atm)
 
     if not message:
         return JSONResponse(

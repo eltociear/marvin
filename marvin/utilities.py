@@ -104,6 +104,15 @@ def get_channels():
         return dict()
 
 
+def get_channel_id_by_name(name):
+    """
+    Gets the id of a channel by its
+    name (with or without the #)
+    """
+    channels = get_channels()
+    return channels[name.replace('#', '')]
+
+
 def get_users():
     """
     Retrieve all current full-time Slack users.
