@@ -30,8 +30,9 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
         last_index = index if index > last_index else last_index
 
     message = text[:last_index].strip()
+    channel_name = text[last_index + 2 :].strip()
     channel = get_channel_id_by_name(
-        text[last_index + 2 :].strip()
+        channel_name
     )  # Removes the preposition (which are all 2 characters atm)
 
     if not message:
