@@ -52,7 +52,7 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
         )
 
     logging.info(
-        f"{user} posted the following message to {channel} as Marvin: '{message}'"
+        f"{user} posted the following message to {channel_name} as Marvin: '{message}'"
     )
 
     # Post the message to the described channel
@@ -62,6 +62,6 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
     return JSONResponse(
         {
             "response_type": "ephemeral",
-            "text": f"This is the sort of thing you lifeforms enjoy, is it? Fine, I've posted \"{message}\" to {channel}. I hope you're happy.",
+            "text": f"This is the sort of thing you lifeforms enjoy, is it? Fine, I've posted \"{message}\" to {channel_name}. I hope you're happy.",
         }
     )
