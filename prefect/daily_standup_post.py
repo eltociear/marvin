@@ -1,15 +1,13 @@
 import docker
-import os
 import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
-from prefect.environments.execution.remote import RemoteEnvironment
+from prefect.environments.execution.local import LocalEnvironment
 from prefect.environments.storage import Docker
 from prefect.schedules import CronSchedule
 
 import datetime
 import google.cloud.firestore
-import json
 import pendulum
 import random
 import requests
@@ -95,7 +93,7 @@ def post_standup(updates, channel):
 weekday_schedule = CronSchedule(
     "30 9 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
 )
-environment = RemoteEnvironment(executor="prefect.engine.executors.SynchronousExecutor")
+environment = LocalEnvironment(executor="prefect.engine.executors.LocalExecutor")
 
 
 with Flow("Daily Standup", schedule=weekday_schedule, environment=environment) as flow:

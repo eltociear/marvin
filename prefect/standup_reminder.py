@@ -2,7 +2,7 @@ import docker
 import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
-from prefect.environments.execution.remote import RemoteEnvironment
+from prefect.environments.execution.local import LocalEnvironment
 from prefect.environments.storage import Docker
 from prefect.schedules import clocks, Schedule
 from prefect.engine.result_handlers import JSONResultHandler
@@ -116,7 +116,7 @@ sf_clock = clocks.CronClock(
 )
 
 weekday_schedule = Schedule(clocks=[dc_clock, sf_clock])
-environment = RemoteEnvironment(executor="prefect.engine.executors.LocalExecutor")
+environment = LocalEnvironment(executor="prefect.engine.executors.LocalExecutor")
 
 
 with Flow(
