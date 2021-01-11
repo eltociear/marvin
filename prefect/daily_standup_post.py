@@ -2,7 +2,7 @@ import docker
 import prefect
 from prefect import Flow, Parameter, task
 from prefect.client import Secret
-from prefect.environments.execution.local import LocalEnvironment
+from prefect.executors import LocalExecutor
 from prefect.environments.storage import Docker
 from prefect.schedules import CronSchedule
 
@@ -93,10 +93,9 @@ def post_standup(updates, channel):
 weekday_schedule = CronSchedule(
     "30 9 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
 )
-environment = LocalEnvironment(executor="prefect.engine.executors.LocalExecutor")
 
 
-with Flow("Daily Standup", schedule=weekday_schedule, environment=environment) as flow:
+with Flow("Daily Standup", schedule=weekday_schedule, executor=LocalExecutor()) as flow:
     standup_channel = Parameter("standup_channel", default="CBH18KG8G")
     res = post_standup(get_latest_updates(get_collection_name()), standup_channel)
 
