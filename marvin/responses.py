@@ -147,7 +147,7 @@ def build_issue_body(event, issue_state="open"):
     """Collect and format a slack thread to be archived as an issue"""
 
     header = "Archived" if issue_state == "closed" else "Opened"
-    issue_body = f"## {header} from the [Prefect Public Slack Community](https://join.slack.com/t/prefect-public/shared_invite/enQtNzE5OTU3OTQwNzc1LTQ5M2FkZmQzZjI0ODg1ZTBmOTc0ZjVjYWFjMWExZDAyYzBmYjVmMTE1NTQ1Y2IxZTllOTc4MmI3NzYxMDlhYWU)\n\n"
+    issue_body = f"## {header} from the [Prefect Public Slack Community](https://prefect-slackin.herokuapp.com/)\n\n"
 
     thread = get_public_thread(channel=event["channel"], ts=event.get("thread_ts"))
     for msg in thread:
