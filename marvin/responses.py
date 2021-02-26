@@ -209,7 +209,7 @@ def get_create_issue_kwargs(event):
         "body": issue_body,
         "issue_state": issue_state,
         "labels": ["Prefect Slack Community"],
-        "repo": repo
+        "repo": repo,
     }
 
 
@@ -229,14 +229,13 @@ async def public_event_handler(request: Request):
     # narrator: it wasn't just chris and jeremiah anymore
     who_spoke = event.get("user", "")
     if who_spoke not in [
-        "UKNSNMUE6",
-        "UKTUC906M",
-        "UL2EX9Y8N",
-        "UN6FTLFAS",
+        "UKNSNMUE6",  # Chris
+        "UKTUC906M",  # Jeremiah
+        "UN6FTLFAS",  # Nicholas
         "UKVFX6N3B",
         "UUY8XPC21",
         "U011EKN35PT",  # Jim
-        "ULXMV9SD7" #Jenny
+        "ULXMV9SD7",  # Jenny
     ]:
         #        user_info = get_user_info(who_spoke, name_only=False)
         #        email = user_info.get("user", {}).get("profile", {}).get("email")
