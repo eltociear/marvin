@@ -5,7 +5,6 @@ from prefect.client import Secret
 from prefect.executors import LocalExecutor
 from prefect.environments.storage import Docker
 from prefect.schedules import clocks, Schedule
-from prefect.engine.result_handlers import JSONResultHandler
 from prefect.engine.signals import SKIP
 from prefect.utilities.tasks import unmapped
 
@@ -65,7 +64,7 @@ def get_team(office):
     ]
 
 
-@task
+@task(task_run_name=lambda **kwargs: kwargs["user_info"][0])
 def is_reminder_needed(user_info, current_updates):
     user_name, user_id = user_info
     if current_updates.get(user_name.lower()) is not None:
@@ -119,10 +118,7 @@ weekday_schedule = Schedule(clocks=[dc_clock, sf_clock])
 
 
 with Flow(
-    "Standup Reminder",
-    schedule=weekday_schedule,
-    executor=LocalExecutor(),
-    result_handler=JSONResultHandler(),
+    "Standup Reminder", schedule=weekday_schedule, executor=LocalExecutor(),
 ) as flow:
     office = Parameter("office")
     updates = get_latest_updates(get_standup_date)
