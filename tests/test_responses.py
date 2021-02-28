@@ -202,9 +202,11 @@ async def test_github_mentions_tells_everyone(app, token, monkeypatch):
         (' open  "some title"  in  server  ', True, "server", "open"),
         (' open "some title" in unknown', False, None, None),
         (' other "some title"', False, None, None),
-    ]
+    ],
 )
-async def test_marvin_create_issue_event_parsing(message, ok, repo, issue_state, monkeypatch):
+async def test_marvin_create_issue_event_parsing(
+    message, ok, repo, issue_state, monkeypatch
+):
     build_issue_body = MagicMock(return_value="the issue body")
     monkeypatch.setattr("marvin.responses.build_issue_body", build_issue_body)
 
