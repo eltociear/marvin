@@ -106,6 +106,8 @@ if __name__ == "__main__":
         base_url=default_client.api.base_url,
         tls_config=docker.TLSConfig(default_client.api.cert),
         registry_url="gcr.io/prefect-tenant-0c5400/flows/",
+        image_name="standup-flow",
+        image_tag="latest",
         python_dependencies=[
             "google-cloud-firestore",
             "requests",
@@ -120,4 +122,4 @@ if __name__ == "__main__":
         },
     )
     flow.storage = storage
-    flow.register("Marvin")
+    flow.register("Marvin", idempotency_key=flow.serialized_hash())
