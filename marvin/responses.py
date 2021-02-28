@@ -220,16 +220,24 @@ async def public_event_handler(request: Request):
     if is_challenge:
         return Response(json_data["challenge"])
 
+    event = json_data.get("event", {})
+    event_type = event.get("type")
+
     # TODO: send a thorough welcome message
     # for now, sending Chris a DM to test the hook
-    new_user = json_data.get("type") == "team_join"
-    if new_user:
-        msg = "*New user signup:*```{}```".format(str(json_data))
+    if event_type == "team_join":
+        user_info = event.get("user", {})
+        msg = "*New user signup:*```{}```".format(
+            str(
+                {
+                    "name": user_info.get("name", "unknown"),
+                    "real_name": user_info.get("real_name", "unknown"),
+                }
+            )
+        )
         public_speak(msg, channel="DM1LRQH96")
         return Response()
 
-    event = json_data.get("event", {})
-    event_type = event.get("type")
     if event_type != "app_mention":
         return Response()
 
