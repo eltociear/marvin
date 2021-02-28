@@ -110,7 +110,7 @@ def get_channel_id_by_name(name):
     name (with or without the #)
     """
     channels = get_channels()
-    return channels[name.replace('#', '')]
+    return channels[name.replace("#", "")]
 
 
 def get_users():
@@ -133,18 +133,20 @@ def get_users():
         return dict()
 
 
-def get_dm_channel_id(userid):
+def get_dm_channel_id(userid, token=TOKEN):
     """
     Get the Slack Channel ID for Marvin's DM channel with a provided user.
 
     Args:
         - userid (str): the Slack User ID of the user you wish to retrieve the
             private channel for
+        - token (str): the token to use; can be either the internal token or the
+            public community token
 
     Returns:
         - a string of the Slack Channel ID
     """
-    params = {"token": TOKEN, "users": userid}
+    params = {"token": token, "users": userid}
     r = requests.post("https://slack.com/api/conversations.open", data=params)
     if r.ok:
         return json.loads(r.text)["channel"]["id"]
