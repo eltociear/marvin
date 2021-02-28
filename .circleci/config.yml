@@ -16,8 +16,8 @@ setup_gcloud_sdk: &setup_gcloud_sdk
   command: |
     echo "$GOOGLE_SERVICE_ACCOUNT_KEY" > key.json
     gcloud auth activate-service-account --key-file key.json
-    gcloud config set compute/zone $GCLOUD_ZONE
     gcloud config set project $GCLOUD_PROJECT
+    gcloud config set compute/zone $GCLOUD_ZONE
 
 version: 2
 jobs:
