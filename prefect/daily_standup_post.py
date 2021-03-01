@@ -16,8 +16,8 @@ from google.oauth2 import service_account
 
 SUPPORT_ROTATIONS = {
     "Monday": "<@UDKF9U8UC> and <@UUSSRB4G7>",  # Dylan and  Kyle MW
-    "Tuesday": "<@U0116UYJFGT> and <@ULWS8CZ47>",  # Jim and Jenny
-    "Wednesday": "<@U01CB54HF8R>",  # Mariia
+    "Tuesday": "<@ULWS8CZ47> and <@U01CB54HF8R>",  # Mariia and Jenny
+    "Wednesday": "<@U0116UYJFGT>",  # Jim
     "Thursday": "<@U01D3K2GALQ>",  # Michael
     "Friday": "<@UM8K2HFQC>, <@U01BYG1165Q> and <@U01CE0D1XEX>",  # nicholas, Allyson and Natalie
 }
