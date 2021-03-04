@@ -250,6 +250,7 @@ async def public_event_handler(request: Request):
         "UN6FTLFAS",  # Nicholas
         "UKVFX6N3B",
         "UUY8XPC21",
+        "U01CEUST9B5",  # Michael
         "U011EKN35PT",  # Jim
         "ULXMV9SD7",  # Jenny
     ]:
