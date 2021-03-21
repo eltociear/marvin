@@ -15,6 +15,17 @@ TOKEN = os.environ.get("MARVIN_TOKEN")
 PUBLIC_TOKEN = os.environ.get("MARVIN_PUBLIC_TOKEN")
 
 
+## configure a logger
+logging.basicConfig(
+    level=2,
+    format="%(asctime)s %(levelname)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger("Marvin")
+logger.addHandler(logging.StreamHandler())
+logger.setLevel("INFO")
+
+
 async def promotional_signup(
     user_id: str = None, email: str = None, platform: str = None, link: str = None
 ):
@@ -231,7 +242,7 @@ def get_public_message_permalink(channel, message_ts):
     if r.ok:
         return r.json()["permalink"]
     else:
-        logging.error(f"Request failed with status code {r.status_code}")
+        logger.error(f"Request failed with status code {r.status_code}")
 
 
 @lru_cache(maxsize=1024)

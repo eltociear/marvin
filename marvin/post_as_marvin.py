@@ -1,7 +1,6 @@
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from .utilities import say, get_channel_id_by_name
-import logging
+from .utilities import logger, say, get_channel_id_by_name
 
 
 async def post_as_marvin_handler(request: Request) -> JSONResponse:
@@ -16,7 +15,7 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
     except:
         payload = await request.form()
 
-    logging.info(payload)
+    logger.info(payload)
 
     text = payload.get("text")
     user = payload.get("user_name")
@@ -51,7 +50,7 @@ async def post_as_marvin_handler(request: Request) -> JSONResponse:
             }
         )
 
-    logging.info(
+    logger.info(
         f"{user} posted the following message to {channel_name} as Marvin: '{message}'"
     )
 

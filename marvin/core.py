@@ -1,7 +1,6 @@
 import asyncio
 import hmac
 import json
-import logging
 import os
 import urllib
 
@@ -36,18 +35,13 @@ GITHUB_VALIDATION_TOKEN = os.environ.get("GITHUB_VALIDATION_TOKEN", "").encode()
 SLACK_VALIDATION_TOKEN = os.environ.get("SLACK_VALIDATION_TOKEN")
 PUBLIC_VALIDATION_TOKEN = os.environ.get("PUBLIC_VALIDATION_TOKEN")
 
-logging.basicConfig(
-    level=2,
-    format="%(asctime)s %(levelname)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
-
 
 def slack_validation(data):
     try:
         payload = json.loads(data)
         token = payload.get("token", "")
     except json.JSONDecodeError:
+        logger.error(f"Slack payload failed token validation: {data}")
         data = urllib.parse.parse_qs(data.decode())
         token = data.get("token")[0]
     assert token in [
