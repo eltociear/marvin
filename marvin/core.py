@@ -30,6 +30,8 @@ from .monday import (
     monday_handler_prefect_on_prefect,
     monday_handler_any_board,
 )
+from .utilities import logger
+
 
 GITHUB_VALIDATION_TOKEN = os.environ.get("GITHUB_VALIDATION_TOKEN", "").encode()
 SLACK_VALIDATION_TOKEN = os.environ.get("SLACK_VALIDATION_TOKEN")
