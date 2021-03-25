@@ -224,7 +224,7 @@ async def public_event_handler(request: Request):
     event_type = event.get("type")
 
     # TODO: send a thorough welcome message
-    # for now, sending Chris a DM to test the hook
+    # for now, sending Chris and Kevin a DM to test the hook
     if event_type == "team_join":
         user_info = event.get("user", {})
         msg = "*New user signup:*```{}```".format(
@@ -235,7 +235,8 @@ async def public_event_handler(request: Request):
                 }
             )
         )
-        public_speak(msg, channel="DM1LRQH96")
+        public_speak(msg, channel="DM1LRQH96")  # Chris DM
+        public_speak(msg, channel="D01RXPH5NP9")  # Kevin DM
         return Response()
 
     if event_type != "app_mention":
