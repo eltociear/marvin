@@ -14,15 +14,6 @@ import requests
 from google.oauth2 import service_account
 
 
-SUPPORT_ROTATIONS = {
-    "Monday": "<@UDKF9U8UC> and <@UUSSRB4G7>",  # Dylan and  Kyle MW
-    "Tuesday": "<@ULWS8CZ47> and <@U01CB54HF8R>",  # Mariia and Jenny
-    "Wednesday": "<@U0116UYJFGT>",  # Jim
-    "Thursday": "<@U01D3K2GALQ>",  # Michael
-    "Friday": "<@UM8K2HFQC>",  # nicholas
-}
-
-
 @task
 def get_collection_name():
     date_format = "%Y-%m-%d"
@@ -58,7 +49,7 @@ def get_latest_updates(date):
 def post_standup(updates, channel):
     if updates:
         public_msg = (
-            f"<!here> are today's standup updates, brought to you by Prefect `v{prefect.__version__}`:\n"
+            f"<!here>'s the midweek update, brought to you by Prefect `v{prefect.__version__}`:\n"
             + "=" * 30
         )
         items = list(updates.items())
@@ -69,9 +60,6 @@ def post_standup(updates, channel):
         public_msg = (
             f"<!here> No one told me anything, so I have no updates to share.\n"
         )
-
-    on_call = SUPPORT_ROTATIONS[pendulum.now("utc").strftime("%A")]
-    public_msg += f"\n\n{on_call} will be covering Slack support for the day."
 
     TOKEN = Secret("MARVIN_TOKEN")
 
@@ -90,8 +78,9 @@ def post_standup(updates, channel):
     return r
 
 
+# Post the midweek update on Wednesday morning
 weekday_schedule = CronSchedule(
-    "30 9 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
+    "30 9 * * 3", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
 )
 
 
