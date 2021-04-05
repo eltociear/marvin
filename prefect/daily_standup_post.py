@@ -58,7 +58,7 @@ def get_latest_updates(date):
 def post_standup(updates, channel):
     if updates:
         public_msg = (
-            f"<!here> are today's standup updates, brought to you by Prefect `v{prefect.__version__}`:\n"
+            f"<!here>'s the midweek update, brought to you by Prefect `v{prefect.__version__}`:\n"
             + "=" * 30
         )
         items = list(updates.items())
@@ -90,8 +90,9 @@ def post_standup(updates, channel):
     return r
 
 
+# Post the midweek update on Wednesday morning
 weekday_schedule = CronSchedule(
-    "30 9 * * 1-5", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
+    "30 9 * * 3", start_date=pendulum.parse("2017-03-24", tz="US/Eastern")
 )
 
 

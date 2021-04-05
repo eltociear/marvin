@@ -47,7 +47,7 @@ def get_latest_updates(date):
 
 
 @task
-def get_team(office):
+def get_team(zone):
     """
     Retrieve all current full-time Slack users.
 
@@ -60,7 +60,7 @@ def get_team(office):
     return [
         (u["name"], u["slack"])
         for u in users
-        if u["office"] == office and u.get("standup") is True
+        if u["zone"] == zone and u.get("standup") is True
     ]
 
 
@@ -85,7 +85,7 @@ def send_reminder(user_info):
 
     params.pop("users")
     text = (
-        f"Hi {user_name}! I haven't heard from you yet; what updates do you have for the team today? Please respond by using the slash command `/standup`,  and remember: your response will be shared!",
+        f"Hi {user_name}! I haven't gotten your midweek update yet; what updates do you have for the team? Please respond by using the slash command `/standup`, and remember: your response will be shared!",
     )
     params.update(
         {
@@ -103,26 +103,38 @@ def send_reminder(user_info):
     return user_name
 
 
-dc_clock = clocks.CronClock(
-    "30 8 * * 1-5",
-    start_date=pendulum.parse("2017-03-24", tz="US/Eastern"),
-    parameter_defaults={"office": "DC"},
-)
-sf_clock = clocks.CronClock(
-    "30 17 * * 0-4",
-    start_date=pendulum.parse("2017-03-24", tz="US/Pacific"),
-    parameter_defaults={"office": "SF"},
-)
+zones = {
+    "Eastern": "US/Eastern",
+    "Central": "US/Central",
+    "Mountain": "US/Mountain",
+    "Pacific": "US/Pacific",
+    "Alaska": "US/Alaska",
+    "Hawaii": "US/Hawaii",
+}
+clocks = []
 
-weekday_schedule = Schedule(clocks=[dc_clock, sf_clock])
+# We use the same cron string with a start date in different
+# timezones for each coast
+for key, value in zones.items():
+    clocks.append(
+        clocks.CronClock(
+            "30 17 * * 2",
+            start_date=pendulum.parse("2017-03-24", tz=value),
+            parameter_defaults={"zone": key},
+        )
+    )
+
+weekday_schedule = Schedule(clocks=clocks)
 
 
 with Flow(
-    "Standup Reminder", schedule=weekday_schedule, executor=LocalExecutor(),
+    "Standup Reminder",
+    schedule=weekday_schedule,
+    executor=LocalExecutor(),
 ) as flow:
-    office = Parameter("office")
+    zone = Parameter("zone")
     updates = get_latest_updates(get_standup_date)
-    team = get_team(office)
+    team = get_team(zone)
     res = send_reminder.map(is_reminder_needed.map(team, unmapped(updates)))
 
 flow.set_reference_tasks([res])
