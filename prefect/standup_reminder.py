@@ -111,12 +111,12 @@ zones = {
     "Alaska": "US/Alaska",
     "Hawaii": "US/Hawaii",
 }
-clocks = []
+schedule_clocks = []
 
 # We use the same cron string with a start date in different
 # timezones for each coast
 for key, value in zones.items():
-    clocks.append(
+    schedule_clocks.append(
         clocks.CronClock(
             "30 17 * * 2",
             start_date=pendulum.parse("2017-03-24", tz=value),
@@ -124,7 +124,7 @@ for key, value in zones.items():
         )
     )
 
-weekday_schedule = Schedule(clocks=clocks)
+weekday_schedule = Schedule(clocks=schedule_clocks)
 
 
 with Flow(
