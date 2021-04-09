@@ -21,6 +21,7 @@ from .utilities import (
     get_user_info,
     public_speak,
     say,
+    PUBLIC_TOKEN
 )
 
 executor = ThreadPoolExecutor(max_workers=3)
@@ -46,6 +47,7 @@ quotes = [
     "Don't feel you have to take any notice of me, please.",
     "Why should I want to make anything up? Life’s bad enough as it is without wanting to invent any more of it.",
 ]
+WELCOME_MESSAGE = "HEY"
 
 
 karma_regex = re.compile(r"^(.+[^\s])(\+{2}|\-{2})(\s*|$)$")
@@ -147,7 +149,7 @@ def build_issue_body(event, issue_state="open"):
     """Collect and format a slack thread to be archived as an issue"""
 
     header = "Archived" if issue_state == "closed" else "Opened"
-    issue_body = f"## {header} from the [Prefect Public Slack Community](https://prefect-slackin.herokuapp.com/)\n\n"
+    issue_body = f"## {header} from the [Prefect Public Slack Community](https://prefect.io/slack)\n\n"
 
     thread = get_public_thread(channel=event["channel"], ts=event.get("thread_ts"))
     for msg in thread:
@@ -212,7 +214,6 @@ def get_create_issue_kwargs(event):
         "repo": repo,
     }
 
-
 async def public_event_handler(request: Request):
     # for validating your URL with slack
     json_data = await request.json()
@@ -223,7 +224,6 @@ async def public_event_handler(request: Request):
     event = json_data.get("event", {})
     event_type = event.get("type")
 
-    # TODO: send a thorough welcome message
     # for now, sending Chris and Kevin a DM to test the hook
     if event_type == "team_join":
         user_info = event.get("user", {})
@@ -237,6 +237,13 @@ async def public_event_handler(request: Request):
         )
         public_speak(msg, channel="DM1LRQH96")  # Chris DM
         public_speak(msg, channel="D01RXPH5NP9")  # Kevin DM
+
+        # Welcome message to user
+        block = []  # The block layout allows buttons
+        user_id = event.get("id")
+        channel = get_dm_channel_id(user_id, PUBLIC_TOKEN)
+        public_speak(WELCOME_MESSAGE, channel=channel, block=block)
+
         return Response()
 
     if event_type != "app_mention":
@@ -253,8 +260,9 @@ async def public_event_handler(request: Request):
         "UUY8XPC21",
         "U01CEUST9B5",  # Michael
         "U011EKN35PT",  # Jim
-        "ULXMV9SD7",  # Jenny,
-        "U01SRTRJC0Y" # Zach
+        "ULXMV9SD7",  # Jenny
+        "U01SRTRJC0Y", # Zach
+        "U01QEJ9PP53", # Kevin
     ]:
         return Response()
 
