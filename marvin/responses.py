@@ -47,7 +47,8 @@ quotes = [
     "Don't feel you have to take any notice of me, please.",
     "Why should I want to make anything up? Life’s bad enough as it is without wanting to invent any more of it.",
 ]
-
+with open("welcome.md") as f:
+    WELCOME_MSG = f.read()
 
 karma_regex = re.compile(r"^(.+[^\s])(\+{2}|\-{2})(\s*|$)$")
 
@@ -241,8 +242,7 @@ async def public_event_handler(request: Request):
         user_id = user_info.get("id")
         name = user_info.get("name", "unknown")
         channel = get_dm_channel_id(user_id, PUBLIC_TOKEN)
-        msg = open("welcome.md").read()
-        msg = msg.replace("@user", f"@{name}")
+        msg = WELCOME_MSG.replace("@user!", f"@{name}!")
         public_speak(msg, channel=channel)
 
         return Response()
