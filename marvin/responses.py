@@ -47,7 +47,6 @@ quotes = [
     "Don't feel you have to take any notice of me, please.",
     "Why should I want to make anything up? Life’s bad enough as it is without wanting to invent any more of it.",
 ]
-WELCOME_MESSAGE = "HEY"
 
 
 karma_regex = re.compile(r"^(.+[^\s])(\+{2}|\-{2})(\s*|$)$")
@@ -239,10 +238,12 @@ async def public_event_handler(request: Request):
         public_speak(msg, channel="D01RXPH5NP9")  # Kevin DM
 
         # Welcome message to user
-        block = []  # The block layout allows buttons
-        user_id = event.get("id")
+        user_id = user_info.get("id")
+        name = user_info.get("name", "unknown")
         channel = get_dm_channel_id(user_id, PUBLIC_TOKEN)
-        public_speak(WELCOME_MESSAGE, channel=channel, block=block)
+        msg = open("welcome.md").read()
+        msg = msg.replace("@user", f"@{name}")
+        public_speak(msg, channel=channel)
 
         return Response()
 
