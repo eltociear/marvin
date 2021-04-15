@@ -1,18 +1,27 @@
-Hi @user! :wave:
+Here I am, brain the size of a planet, and they ask me to welcome you to the community.
 
-Welcome to the Prefect community! We suggest you introduce yourself in the #introductions channel and fill out your profile information. Before posting, please review our community rules <https://docs.prefect.io/core/community.html|more information can be read here:>
+So hi, @user! :wave:
+
+I'm Marvin. I'm here to make sure the community is always a positive and supportive place. This is the sort of thing you lifeforms enjoy, is it?
+
+The best way to get started is by saying hello in the #introductions channel. Before posting, please review our <https://docs.prefect.io/core/community.html|community rules>:
 
 • Be respectful; we assume positive intent from you and we ask the same in return
-• Avoid posting large walls of text by using threads, especially for large code blocks
+• Use threads when possible to keep conversations contained
+• Avoid posting large walls of text or code blocks (you can use threads for this, too!)
 • Avoid posting sensitive information
-• Don't abuse tagging users
+• Don't abuse tagging other users
 • Avoid using DMs to ask for help
 • Don't advertise material unrelated to Prefect
 
-It’s possible your question has been asked before, so please take a moment to peruse our other searchable resources:
+It’s possible your question has been asked before, so please take a moment to review the Slack history and our other searchable resources:
 
-• <https://docs.prefect.io/core/development/documentation.html|Prefect's documentation>
-• <https://github.com/PrefectHQ/prefect|The Core, Server and UI GitHub repositories>
+• <https://docs.prefect.io|Prefect's documentation>
+• <https://github.com/PrefectHQ/prefect|The Prefect GitHub repositories>
 • <https://stackoverflow.com/questions/tagged/prefect|StackOverflow>
 
+When possible, I will automatically <https://github.com/PrefectHQ/prefect/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22Prefect+Slack+Community%22|archive helpful Slack threads> to GitHub to help other users.
+
 You may also want to follow us on <https://twitter.com/prefectio|Twitter> or <https://www.linkedin.com/company/prefect/|LinkedIn>.
+
+See you out there!
