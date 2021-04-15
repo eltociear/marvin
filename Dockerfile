@@ -4,6 +4,6 @@ ADD . marvin
 
 EXPOSE 8080
 
-RUN pip install ./marvin
+RUN pip install -e ./marvin
 
 CMD marvin

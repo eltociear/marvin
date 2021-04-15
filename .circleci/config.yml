@@ -35,7 +35,7 @@ jobs:
       - run:
           name: Install Marvin
           command: |
-            pip install .
+            pip install -e .
       - run:
           name: Test Marvin
           command: |
