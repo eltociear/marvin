@@ -59,8 +59,20 @@ connectors = [
     ", or as their enemies call them,",
     ", or as their frenemies call them,",
     ", or as their colleagues call them,",
+    ", or as their college roommates call them,",
     ", or as their book club calls them,",
     ", or as their weekend kickball league calls them,",
+    ", alias",
+    ", better known as",
+    ", who spent the better part of last month as",
+    ", who went through high school as",
+    ", who actually prefers to be called ",
+    ", known throughout Mexico as",
+    ", known throughout the South of France as",
+    ", known throughout Burlington, VT as",
+    ", rumored to be",
+    ", sometimes whispered to be",
+    ", sometimes believed to be",
 ]
 connectors.extend([""] * int(0.6 * len(connectors)))
 
