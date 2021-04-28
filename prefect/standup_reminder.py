@@ -60,7 +60,7 @@ def get_team(zone):
     return [
         (u["name"], u["slack"])
         for u in users
-        if u["zone"] == zone and u.get("standup") is True
+        if u.get("zone", "Eastern") == zone and u.get("standup") is True
     ]
 
 
