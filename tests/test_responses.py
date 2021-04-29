@@ -17,10 +17,10 @@ def set_users():
                 "github": "cicdw",
             },
             "rvFokTPSoHca1pyGJpL8": {
-                "email": "josh@prefect.io",
+                "email": "michael@prefect.io",
                 "slack": "UBE4N2LG1",
-                "github": "joshmeek",
-                "name": "Josh",
+                "github": "madkinsz",
+                "name": "Michael",
             },
             "IVHJCBIxbLHA3iQniVUQ": {
                 "name": "Jeremiah",
@@ -131,10 +131,13 @@ async def test_github_mentions_works(app, token, monkeypatch):
     post_event = {
         "text": "",
         "bot_id": "BBGMPFDHQ",
-        "channel": "foo",
+        "channel": "CCASU5P2R",
         "type": "message",
         "attachments": [
-            {"text": "hey @cicdw you need to fix marvin", "title_link": "foo://bar"}
+            {
+                "text": "hey @cicdw you need to fix marvin",
+                "title": "<foo://bar|actual title>",
+            }
         ],
     }
     say = MagicMock()
@@ -145,7 +148,8 @@ async def test_github_mentions_works(app, token, monkeypatch):
     r = await app.post("/", json={"event": post_event, "token": token})
     assert r.ok
     assert say.call_count == 1
-    assert say.call_args[0] == ("You were mentioned on GitHub @ foo://bar",)
+    assert "You were mentioned on GitHub" in say.call_args[0][0]
+    assert "foo://bar" in say.call_args[0][0]
     assert say.call_args[1]["channel"] == "dm_chris"
 
 
@@ -172,12 +176,12 @@ async def test_github_mentions_tells_everyone(app, token, monkeypatch):
     post_event = {
         "text": "",
         "bot_id": "BBGMPFDHQ",
-        "channel": "foo",
+        "channel": "CCASU5P2R",
         "type": "message",
         "attachments": [
             {
-                "text": "hey @cicdw @jlowin @joshmeek you need to fix marvin",
-                "title_link": "foo://bar",
+                "text": "hey @cicdw @jlowin @madkinsz you need to fix marvin",
+                "title": "<foo://bar|actual title>",
             }
         ],
     }

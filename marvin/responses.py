@@ -21,7 +21,7 @@ from .utilities import (
     get_user_info,
     public_speak,
     say,
-    PUBLIC_TOKEN
+    PUBLIC_TOKEN,
 )
 
 executor = ThreadPoolExecutor(max_workers=3)
@@ -48,7 +48,7 @@ quotes = [
     "Why should I want to make anything up? Life’s bad enough as it is without wanting to invent any more of it.",
 ]
 here = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(here,"welcome.md"), 'r') as f:
+with open(os.path.join(here, "welcome.md"), "r") as f:
     WELCOME_MSG = f.read()
 
 karma_regex = re.compile(r"^(.+[^\s])(\+{2}|\-{2})(\s*|$)$")
@@ -75,7 +75,7 @@ async def event_handler(request: Request):
         response = app_mention(event)
     elif event_type == "emoji_changed" and event.get("subtype") == "add":
         response = emoji_added(event)
-    elif event_type == "message" and event.get("bot_id") == "BBGMPFDHQ":
+    elif event_type == "message" and event.get("channel") == "CCASU5P2R":
         response = github_mention(event)
     elif event_type == "message" and event.get("bot_id") is None:
         positive_match = karma_regex.match(event.get("text", ""))
@@ -112,8 +112,9 @@ def github_mention(event):
         if not mentioned:
             continue
         else:
-            link = data.get("title_link", "link unavailable")
-            msg = f"You were mentioned on GitHub @ {link}"
+            link = data.get("title", "<https://github.com/PrefectHQ|").split("|", 1)[0]
+            first_line = text.split("\n")[0] + " ..."
+            msg = f"{link}|You were mentioned on GitHub> (preview):\n\n> {first_line}"
             say(msg, channel=get_dm_channel_id(slack_id))
 
 
@@ -215,6 +216,7 @@ def get_create_issue_kwargs(event):
         "repo": repo,
     }
 
+
 async def public_event_handler(request: Request):
     # for validating your URL with slack
     json_data = await request.json()
@@ -263,8 +265,8 @@ async def public_event_handler(request: Request):
         "U01CEUST9B5",  # Michael
         "U011EKN35PT",  # Jim
         "ULXMV9SD7",  # Jenny
-        "U01SRTRJC0Y", # Zach
-        "U01QEJ9PP53", # Kevin
+        "U01SRTRJC0Y",  # Zach
+        "U01QEJ9PP53",  # Kevin
     ]:
         return Response()
 
