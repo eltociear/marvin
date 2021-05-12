@@ -24,4 +24,4 @@ When possible, I will automatically <https://github.com/PrefectHQ/prefect/issues
 
 You may also want to follow us on <https://twitter.com/prefectio|Twitter> or <https://www.linkedin.com/company/prefect/|LinkedIn>.
 
-See you out there!
+Happy Engineering!
