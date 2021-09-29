@@ -10,7 +10,7 @@ headers = {"Authorization": os.getenv("MONDAY_API_TOKEN")}
 
 async def monday_handler_backlog(request: Request):
     board_id = 517793474
-    group_id = "inbox"
+    group_id = "new_group38685"
     slack_data = await extract_data(request)
     monday_handler(slack_data, board_id, group_id)
     username = slack_data["username"]
