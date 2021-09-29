@@ -8,19 +8,19 @@ from .utilities import say
 headers = {"Authorization": os.getenv("MONDAY_API_TOKEN")}
 
 
-async def monday_handler_roadmap(request: Request):
+async def monday_handler_backlog(request: Request):
     board_id = 517793474
-    group_id = "topics"
+    group_id = "inbox"
     slack_data = await extract_data(request)
     monday_handler(slack_data, board_id, group_id)
     username = slack_data["username"]
     text = slack_data["text"]
     notify_channel_text = (
-        f"{username} just added '{text}' to the product laundry basket in Monday"
+        f"{username} just added '{text}' to the product backlog in Monday"
     )
     say(notify_channel_text, channel="CBH18KG8G")
     return Response(
-        "It gives me a headache just trying to think down to your level, but I have added this to Monday."
+        "It gives me a headache just trying to think down to your level, but I have added this to the product backlog."
     )
 
 

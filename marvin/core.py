@@ -24,7 +24,7 @@ from .team import roundtable_order_handler
 from .meet import google_meet_handler
 from .post_as_marvin import post_as_marvin_handler
 from .monday import (
-    monday_handler_roadmap,
+    monday_handler_backlog,
     monday_handler_blogs,
     monday_handler_customer_feedback,
     monday_handler_prefect_on_prefect,
@@ -81,7 +81,7 @@ MarvinApp = Starlette()
 
 MarvinApp.add_route("/meet", check_token(google_meet_handler), methods=["POST"])
 MarvinApp.add_route(
-    "/monday-roadmap", check_token(monday_handler_roadmap), methods=["POST"]
+    "/backlog", check_token(monday_handler_backlog), methods=["POST"]
 )
 MarvinApp.add_route(
     "/monday-prefect-on-prefect",
