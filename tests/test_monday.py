@@ -6,7 +6,7 @@ async def test_slash_monday_roadmap_responds(app, token, monkeypatch):
     monkeypatch.setattr("marvin.monday.requests", MagicMock())
     monkeypatch.setattr(marvin.utilities.requests, "post", MagicMock(), raising=False)
     r = await app.post(
-        "/monday-roadmap",
+        "/backlog",
         data={
             "channel_name": "foo",
             "user_name": "bar",
@@ -16,7 +16,7 @@ async def test_slash_monday_roadmap_responds(app, token, monkeypatch):
     )
     assert r.ok
     assert (
-        "It gives me a headache just trying to think down to your level, but I have added this to Monday."
+        "It gives me a headache just trying to think down to your level, but I have added this to the product backlog."
         in r.text
     )
 
