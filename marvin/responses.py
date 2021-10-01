@@ -268,6 +268,7 @@ async def public_event_handler(request: Request):
         "U01SRTRJC0Y",  # Zach
         "U01QEJ9PP53",  # Kevin
         "U01BK3J080P", # Allyson
+        "U02EJ7FVCR5", # Evan
     ]:
         return Response()
 
