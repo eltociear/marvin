@@ -269,7 +269,7 @@ async def public_event_handler(request: Request):
         "U01QEJ9PP53",  # Kevin
         "U02EJ7FVCR5", # Evan
         "U02FNMJB05N", # Craig
-        "U02GADJLAJE", # Anna
+        "U02H1A95XDW", # Anna
         "U02GDE5EQ68", # Josh
         "U02H0TR3HQQ", # Nate
         "U02GG396GN8", # George
