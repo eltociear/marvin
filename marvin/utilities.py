@@ -104,7 +104,7 @@ def get_channels():
         - a dictionary of channel name -> Slack Channel ID
     """
     params = {"token": TOKEN}
-    r = requests.post("https://slack.com/api/channels.list", data=params)
+    r = requests.post("https://slack.com/api/conversations.list", data=params)
     if r.ok:
         channel_dict = {}
         channel_data = json.loads(r.text)["channels"]
