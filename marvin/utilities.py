@@ -56,7 +56,7 @@ def get_pins(channel="CBH18KG8G"):
     Returns:
         - a list of channel "items" (see https://api.slack.com/methods/pins.list)
     """
-    params = {"token": OAUTH_TOKEN, "channel": channel}
+    params = {"token": TOKEN, "channel": channel}
     r = requests.post("https://slack.com/api/pins.list", data=params)
     if r.ok:
         return json.loads(r.text)["items"]
@@ -75,7 +75,7 @@ def add_pin(channel, timestamp):
     Returns:
         - the requests.Request object of the POST
     """
-    params = {"token": OAUTH_TOKEN, "channel": channel, "timestamp": timestamp}
+    params = {"token": TOKEN, "channel": channel, "timestamp": timestamp}
     r = requests.post("https://slack.com/api/pins.add", data=params)
     return r
 
@@ -91,7 +91,7 @@ def remove_pin(channel, timestamp):
     Returns:
         - the requests.Request object of the POST
     """
-    params = {"token": OAUTH_TOKEN, "channel": channel, "timestamp": timestamp}
+    params = {"token": TOKEN, "channel": channel, "timestamp": timestamp}
     r = requests.post("https://slack.com/api/pins.remove", data=params)
     return r
 
@@ -104,7 +104,7 @@ def get_channels():
         - a dictionary of channel name -> Slack Channel ID
     """
     params = {"token": TOKEN}
-    r = requests.post("https://slack.com/api/channels.list", data=params)
+    r = requests.post("https://slack.com/api/conversations.list", data=params)
     if r.ok:
         channel_dict = {}
         channel_data = json.loads(r.text)["channels"]
