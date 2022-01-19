@@ -22,6 +22,7 @@ pip install -e marvin
 
 Then watch the magic:
 ```
+cd marvin
 marvin
 ```
 
@@ -39,12 +40,12 @@ Because Marvin's subscribed events are sent to a fixed IP address, local develop
 2018-08-20 09:22:11 INFO: Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
 ```
 - using [`ngrok`](https://ngrok.com/), create a temporary web address that forwards to Marvin (e.g., `ngrok http 8080`)
-- update the [event subscriptions address](https://api.slack.com/apps/ABE7E2927/event-subscriptions?) to point to your local installation (**Note:** Doing this will effectively take Marvin offline, do it sparingly and make sure to update the address when you're done!)
+- update the [event subscriptions address](https://api.slack.com/apps/ABE7E2927/event-subscriptions?) to point to your local installation 
+- **Note:** Doing this will effectively take Marvin offline, do it sparingly and make sure to update the address when you're done!
+- Marvin's static public IP address is `http://35.194.67.119:80`, **set it back when you are finished**
 
 #### Deployment
 
-Marvin is deployed via Google Cloud Platform, Kubernetes and Docker.
+Marvin is deployed via Google Cloud Platform, Kubernetes, and Docker.
 
 ### Contributing to Marvin
-
-
