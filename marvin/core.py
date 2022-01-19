@@ -12,7 +12,7 @@ from starlette.routing import Route
 from .defcon import defcon_handler
 from .github import cloud_github_handler, core_github_handler, core_promotion_handler
 from .leaderboard import leaderboard_handler
-from .loop_policy import ping_staging, run_scheduler
+from .loop_policy import run_scheduler
 from .responses import (
     survey_says_handler,
     event_handler,
@@ -80,9 +80,7 @@ def check_token(fn):
 MarvinApp = Starlette()
 
 MarvinApp.add_route("/meet", check_token(google_meet_handler), methods=["POST"])
-MarvinApp.add_route(
-    "/backlog", check_token(monday_handler_backlog), methods=["POST"]
-)
+MarvinApp.add_route("/backlog", check_token(monday_handler_backlog), methods=["POST"])
 MarvinApp.add_route(
     "/monday-prefect-on-prefect",
     check_token(monday_handler_prefect_on_prefect),
@@ -129,7 +127,13 @@ async def run_scheduled_events():
 
 
 def run():
-    uvicorn.run(MarvinApp, host="0.0.0.0", port=8080, log_level="debug", loop="asyncio")
+    uvicorn.run(
+        MarvinApp,
+        host="0.0.0.0",
+        port=8080,
+        log_level="debug",
+        loop="asyncio",
+    )
 
 
 if __name__ == "__main__":
