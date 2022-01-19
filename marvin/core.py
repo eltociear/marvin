@@ -42,10 +42,12 @@ def slack_validation(data):
     try:
         payload = json.loads(data)
         token = payload.get("token", "")
-    except json.JSONDecodeError:
-        logger.error(f"Slack payload failed token validation: {data}")
+    except json.JSONDecodeError or TypeError:
+        logger.debug(f"Slack payload failed JSON token validation: {data}")
+        logger.debug("Attempting to parse query string")
         data = urllib.parse.parse_qs(data.decode())
         token = data.get("token")[0]
+        logger.debug("Query String parsed successfuly")
     assert token in [
         PUBLIC_VALIDATION_TOKEN,
         SLACK_VALIDATION_TOKEN,
