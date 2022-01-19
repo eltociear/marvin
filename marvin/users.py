@@ -27,7 +27,12 @@ USERS = {}
 
 
 def create_user(
-    email, name, slack, office="DC", standup=False, github=None,
+    email,
+    name,
+    slack,
+    office="DC",
+    standup=False,
+    github=None,
 ):
     """
     Convenience function for adding Prefect users to firestore
