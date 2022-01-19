@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import schedule
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import Response, JSONResponse
 
 from .users import USERS
 from .github import create_issue
@@ -67,7 +67,7 @@ async def event_handler(request: Request):
     is_challenge = json_data.get("type") == "url_verification"
 
     if is_challenge:
-        return Response(json_data["challenge"])
+        return JSONResponse({"challenge": json_data["challenge"]})
 
     event = json_data.get("event", {})
     event_type = event.get("type")
@@ -222,7 +222,7 @@ async def public_event_handler(request: Request):
     json_data = await request.json()
     is_challenge = json_data.get("type") == "url_verification"
     if is_challenge:
-        return Response(json_data["challenge"])
+        return JSONResponse({"challenge": json_data["challenge"]})
 
     event = json_data.get("event", {})
     event_type = event.get("type")
@@ -267,16 +267,16 @@ async def public_event_handler(request: Request):
         "ULXMV9SD7",  # Jenny
         "U01SRTRJC0Y",  # Zach
         "U01QEJ9PP53",  # Kevin
-        "U02EJ7FVCR5", # Evan
-        "U02FNMJB05N", # Craig
-        "U02H1A95XDW", # Anna
-        "U02GDE5EQ68", # Josh
-        "U02H0TR3HQQ", # Nate
-        "U02GG396GN8", # George
-        "U02GPSFNQSD", # Alex
-        "U02GDE4SK7E", # James
-        "U02GPSFVBUZ", # Jean
-        "U02GF2MP605" # Kalise
+        "U02EJ7FVCR5",  # Evan
+        "U02FNMJB05N",  # Craig
+        "U02H1A95XDW",  # Anna
+        "U02GDE5EQ68",  # Josh
+        "U02H0TR3HQQ",  # Nate
+        "U02GG396GN8",  # George
+        "U02GPSFNQSD",  # Alex
+        "U02GDE4SK7E",  # James
+        "U02GPSFVBUZ",  # Jean
+        "U02GF2MP605",  # Kalise
     ]:
         return Response()
 
