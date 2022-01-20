@@ -18,7 +18,6 @@ async def monday_handler_backlog(request: Request):
     notify_channel_text = (
         f"{username} just added '{text}' to the product backlog in Monday"
     )
-    say(notify_channel_text, channel="CBH18KG8G")
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to the product backlog."
     )
@@ -32,7 +31,6 @@ async def monday_handler_blogs(request: Request):
     username = slack_data["username"]
     text = slack_data["text"]
     notify_channel_text = f"{username} just added '{text}' to the blog list in Monday"
-    say(notify_channel_text, channel="CBH18KG8G")
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
@@ -57,7 +55,6 @@ async def monday_handler_prefect_on_prefect(request: Request):
     text = slack_data["text"]
     notify_channel_text = f"{username} just added '{text}' to the Prefect-on-Prefect laundry basket in Monday"
     # notifies the general channel
-    say(notify_channel_text, channel="CANLZB1L3")
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
