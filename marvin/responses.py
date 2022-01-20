@@ -6,7 +6,6 @@ import re
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
-import schedule
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse
 
