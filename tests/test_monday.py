@@ -97,6 +97,27 @@ async def test_slash_monday_any_board_responds(app, token, monkeypatch):
     )
 
 
+async def test_slash_monday_any_board_responds_with_query_params(
+    app, token, monkeypatch
+):
+    monkeypatch.setattr("marvin.monday.requests", MagicMock())
+    monkeypatch.setattr(marvin.utilities.requests, "post", MagicMock(), raising=False)
+    r = await app.post(
+        "/monday-any-board?board_id=12345&group_id=inbox",
+        data={
+            "channel_name": "foo",
+            "user_name": "bar",
+            "text": "some text",
+            "token": token,
+        },
+    )
+    assert r.ok
+    assert (
+        "It gives me a headache just trying to think down to your level, but I have detected the proper board and group and added this to Monday."
+        in r.text
+    )
+
+
 async def test_slash_monday_any_board_responds_invalid_board_id(
     app, token, monkeypatch
 ):
