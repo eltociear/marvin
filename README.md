@@ -28,7 +28,7 @@ marvin
 
 ### How Marvin works
 
-Marvin, at his core, is a simple webserver running on [apistar](https://github.com/encode/apistar) and [uvicorn](https://github.com/encode/uvicorn). He is subscribed to certain Slack Events and can proactively perform tasks as well by attaching them to the `asyncio` event loop the webserver is running.
+Marvin, at his core, is a simple webserver running on [starlette](https://www.starlette.io/) and [uvicorn](https://github.com/encode/uvicorn). He is subscribed to certain Slack Events and can proactively perform tasks as well by attaching them to the `asyncio` event loop the webserver is running.
 
 Because Marvin's subscribed events are sent to a fixed IP address, local development can be tricky.  Using the functions provided in `marvin.utilities`, certain proactive API endpoints can be run (such as `channels.list`), but in order to spin up a fully functioning local deployment you'll need to do a few things:
 - make sure you have Marvin's Slack tokens stored as an environment variable on your local machine
