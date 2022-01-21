@@ -3,7 +3,7 @@ import os
 
 from starlette.requests import Request
 from starlette.responses import Response
-from .utilities import say, logger
+from .utilities import logger
 
 headers = {"Authorization": os.getenv("MONDAY_API_TOKEN")}
 
@@ -13,11 +13,6 @@ async def monday_handler_backlog(request: Request):
     group_id = "new_group38685"
     slack_data = await extract_data(request)
     monday_handler(slack_data, board_id, group_id)
-    username = slack_data["username"]
-    text = slack_data["text"]
-    notify_channel_text = (
-        f"{username} just added '{text}' to the product backlog in Monday"
-    )
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to the product backlog."
     )
@@ -28,9 +23,6 @@ async def monday_handler_blogs(request: Request):
     group_id = "topics"
     slack_data = await extract_data(request)
     monday_handler(slack_data, board_id, group_id)
-    username = slack_data["username"]
-    text = slack_data["text"]
-    notify_channel_text = f"{username} just added '{text}' to the blog list in Monday"
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
@@ -51,10 +43,6 @@ async def monday_handler_prefect_on_prefect(request: Request):
     group_id = "topics"
     slack_data = await extract_data(request)
     monday_handler(slack_data, board_id, group_id)
-    username = slack_data["username"]
-    text = slack_data["text"]
-    notify_channel_text = f"{username} just added '{text}' to the Prefect-on-Prefect laundry basket in Monday"
-    # notifies the general channel
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
