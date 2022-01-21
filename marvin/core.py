@@ -40,6 +40,7 @@ PUBLIC_VALIDATION_TOKEN = os.environ.get("PUBLIC_VALIDATION_TOKEN")
 
 def slack_validation(data):
     try:
+        logger.info("verifying slack token")
         payload = json.loads(data)
         token = payload.get("token", "")
     except json.JSONDecodeError or TypeError:
@@ -71,8 +72,10 @@ def check_token(fn):
         xhub_sig = request.headers.get("x-hub-signature", "")
         body = await request.body()
         if xhub_sig.startswith("sha1"):
+            logger.info(f"initiating github validation for: {xhub_sig}")
             github_validation(body, xhub_sig)
         else:
+            logger.info(f"initiating slack token validation")
             slack_validation(body)
         return await fn(request)
 
