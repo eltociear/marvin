@@ -158,25 +158,30 @@ def karma_handler(regex_match, event):
 def build_issue_body(event, issue_state="open"):
     """Collect and format a slack thread to be archived as an issue"""
 
+    logger.info("Building issue")
+    logger.info(f"e: {event} \nstate:{issue_state}")
     header = "Archived" if issue_state == "closed" else "Opened"
     issue_body = f"## {header} from the [Prefect Public Slack Community](https://prefect.io/slack)\n\n"
-
-    thread = get_public_thread(channel=event["channel"], ts=event.get("thread_ts"))
+    thread = get_public_thread(channel=event["channel"], ts=event.get("thread_ts")).get(
+        "messages", []
+    )
+    double_newline = "\n\n"
     for msg in thread:
         issue_body += "**{}**: ".format(get_user_info(user=msg["user"]))
         text = msg["text"].replace(
             "```", "\n```\n"
         )  # for guranteed code formatting in github
-        issue_body += text + "\n\n"
+        issue_body += text + double_newline
 
     if thread:
-        original_message = thread[0]
-        permalink = get_public_message_permalink(
-            channel=event["channel"], message_ts=original_message["ts"]
-        )
-        issue_body += (
-            "Original thread can be found [here]({}).".format(permalink) + "\n\n"
-        )
+        message_to_link = thread[0]
+    else:
+        message_to_link = event
+    permalink = get_public_message_permalink(
+        channel=event["channel"], message_ts=message_to_link["ts"]
+    )
+    issue_body += f"""{double_newline if not thread else ""}Original thread can be found [here]({permalink}).{double_newline}"""
+
     return issue_body
 
 
@@ -227,6 +232,7 @@ def get_create_issue_kwargs(event):
 
 async def public_event_handler(request: Request):
     # for validating your URL with slack
+    logger.info("public event received")
     json_data = await request.json()
     is_challenge = json_data.get("type") == "url_verification"
     if is_challenge:
@@ -268,7 +274,7 @@ async def public_event_handler(request: Request):
         "UKNSNMUE6",  # Chris
         "UKTUC906M",  # Jeremiah
         "UN6FTLFAS",  # Nicholas
-        "UKVFX6N3B",
+        "UKVFX6N3B",  # Dylan
         "UUY8XPC21",
         "U01CEUST9B5",  # Michael
         "U011EKN35PT",  # Jim
