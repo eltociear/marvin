@@ -21,6 +21,7 @@ from .utilities import (
     public_speak,
     say,
     PUBLIC_TOKEN,
+    logger,
 )
 
 executor = ThreadPoolExecutor(max_workers=3)
@@ -56,29 +57,37 @@ karma_regex = re.compile(r"^(.+[^\s])(\+{2}|\-{2})(\s*|$)$")
 async def event_handler(request: Request):
     # for validating your URL with slack
     response = None
+    logger.info("event received")
 
     # not sure if events are json or form-encoded
     try:
         json_data = await request.json()
+        logger.info("json data decoded")
     except:
         json_data = await request.form()
+        logger.info("form data decoded")
 
     is_challenge = json_data.get("type") == "url_verification"
 
     if is_challenge:
+        logger.info("challenge recieved, returning")
         return JSONResponse({"challenge": json_data["challenge"]})
 
     event = json_data.get("event", {})
     event_type = event.get("type")
     if event_type == "app_mention" or MARVIN_ID in event.get("text", ""):
+        logger.info("App mention")
         response = app_mention(event)
     elif event_type == "emoji_changed" and event.get("subtype") == "add":
+        logger.info("emoji changed")
         response = emoji_added(event)
     elif event_type == "message" and event.get("channel") == "CCASU5P2R":
+        logger.info("GitHub mention")
         response = github_mention(event)
     elif event_type == "message" and event.get("bot_id") is None:
         positive_match = karma_regex.match(event.get("text", ""))
         if positive_match:
+            logger.info("Karma")
             response = karma_handler(positive_match, event)
 
     return Response(response)
