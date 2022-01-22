@@ -47,7 +47,7 @@ async def leaderboard_handler(request: Request) -> Response:
             try:
                 count = int(count_match.groups()[0].strip())
             except Exception as e:
-                logger.debug(e)
+                logger.debug(e, exc_info=True)
                 logger.debug("setting count to 10")
                 count = 10
         else:
