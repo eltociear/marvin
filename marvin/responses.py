@@ -70,7 +70,7 @@ async def event_handler(request: Request):
     is_challenge = json_data.get("type") == "url_verification"
 
     if is_challenge:
-        logger.info("challenge recieved, returning")
+        logger.info("challenge received, returning")
         return JSONResponse({"challenge": json_data["challenge"]})
 
     event = json_data.get("event", {})
