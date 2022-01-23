@@ -3,22 +3,16 @@ import os
 
 from starlette.requests import Request
 from starlette.responses import Response
-from .utilities import say
+from .utilities import logger
 
 headers = {"Authorization": os.getenv("MONDAY_API_TOKEN")}
 
 
 async def monday_handler_backlog(request: Request):
-    board_id = 517793474
-    group_id = "new_group38685"
+    board_id = 1731892148
+    group_id = "inbox"
     slack_data = await extract_data(request)
     monday_handler(slack_data, board_id, group_id)
-    username = slack_data["username"]
-    text = slack_data["text"]
-    notify_channel_text = (
-        f"{username} just added '{text}' to the product backlog in Monday"
-    )
-    say(notify_channel_text, channel="CBH18KG8G")
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to the product backlog."
     )
@@ -29,10 +23,6 @@ async def monday_handler_blogs(request: Request):
     group_id = "topics"
     slack_data = await extract_data(request)
     monday_handler(slack_data, board_id, group_id)
-    username = slack_data["username"]
-    text = slack_data["text"]
-    notify_channel_text = f"{username} just added '{text}' to the blog list in Monday"
-    say(notify_channel_text, channel="CBH18KG8G")
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
     )
@@ -53,13 +43,19 @@ async def monday_handler_prefect_on_prefect(request: Request):
     group_id = "topics"
     slack_data = await extract_data(request)
     monday_handler(slack_data, board_id, group_id)
-    username = slack_data["username"]
-    text = slack_data["text"]
-    notify_channel_text = f"{username} just added '{text}' to the Prefect-on-Prefect laundry basket in Monday"
-    # notifies the general channel
-    say(notify_channel_text, channel="CANLZB1L3")
     return Response(
         "It gives me a headache just trying to think down to your level, but I have added this to Monday."
+    )
+
+
+async def monday_handle_post_with_query_parameters(request: Request):
+    slack_data = await extract_data(request)
+    board_id = request.query_params["board_id"]
+    group_id = request.query_params["group_id"]
+    logger.info(f"board_id: {board_id} group_id: {group_id}")
+    monday_handler(slack_data, board_id, group_id)
+    return Response(
+        "It gives me a headache just trying to think down to your level, but I have detected the proper board and group and added this to Monday."
     )
 
 
@@ -67,6 +63,9 @@ async def monday_handler_any_board(request: Request):
     # provide the board id followed by a ' ' and then the text you want added to the board
     # for example "585522431 a new item to add to the monday board"
     # by default the first group created in any board is called 'topics' and will automatically add items to that group
+    if request.query_params:
+        return await monday_handle_post_with_query_parameters(request)
+
     slack_data = await extract_data(request)
     text = slack_data["text"] or ""
     try:

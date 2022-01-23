@@ -39,4 +39,4 @@ async def test_url_verification(app, token):
         "/", json={"token": token, "challenge": "yy", "type": "url_verification"}
     )
     assert r.ok
-    assert r.text == "yy"
+    assert r.json()["challenge"] == "yy"

@@ -7,7 +7,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from .firestore import client
-from .utilities import say
+from .utilities import say, logger
 
 
 async def leaderboard_handler(request: Request) -> Response:
@@ -44,7 +44,12 @@ async def leaderboard_handler(request: Request) -> Response:
         results = [(d.id, d.get("value")) for d in query.get()]
     else:
         if count_match:
-            count = int(count_match.groups()[0].strip())
+            try:
+                count = int(count_match.groups()[0].strip())
+            except Exception as e:
+                logger.debug(e, exc_info=True)
+                logger.debug("setting count to 10")
+                count = 10
         else:
             count = 10
         direction = google.cloud.firestore.Query.DESCENDING

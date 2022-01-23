@@ -14,7 +14,6 @@ from .github import create_issue
 from .karma import update_karma
 from .utilities import (
     get_dm_channel_id,
-    get_public_thread,
     get_user_info,
     public_speak,
     say,
@@ -27,7 +26,12 @@ USERS = {}
 
 
 def create_user(
-    email, name, slack, office="DC", standup=False, github=None,
+    email,
+    name,
+    slack,
+    office="DC",
+    standup=False,
+    github=None,
 ):
     """
     Convenience function for adding Prefect users to firestore

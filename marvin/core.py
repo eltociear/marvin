@@ -12,7 +12,7 @@ from starlette.routing import Route
 from .defcon import defcon_handler
 from .github import cloud_github_handler, core_github_handler, core_promotion_handler
 from .leaderboard import leaderboard_handler
-from .loop_policy import ping_staging, run_scheduler
+from .loop_policy import run_scheduler
 from .responses import (
     survey_says_handler,
     event_handler,
@@ -40,12 +40,15 @@ PUBLIC_VALIDATION_TOKEN = os.environ.get("PUBLIC_VALIDATION_TOKEN")
 
 def slack_validation(data):
     try:
+        logger.info("verifying slack token")
         payload = json.loads(data)
         token = payload.get("token", "")
-    except json.JSONDecodeError:
-        logger.error(f"Slack payload failed token validation: {data}")
+    except json.JSONDecodeError or TypeError:
+        logger.debug(f"Slack payload failed JSON token validation: {data}")
+        logger.debug("Attempting to parse query string")
         data = urllib.parse.parse_qs(data.decode())
         token = data.get("token")[0]
+        logger.debug("Query String parsed successfuly")
     assert token in [
         PUBLIC_VALIDATION_TOKEN,
         SLACK_VALIDATION_TOKEN,
@@ -69,8 +72,10 @@ def check_token(fn):
         xhub_sig = request.headers.get("x-hub-signature", "")
         body = await request.body()
         if xhub_sig.startswith("sha1"):
+            logger.info(f"initiating github validation for: {xhub_sig}")
             github_validation(body, xhub_sig)
         else:
+            logger.info(f"initiating slack token validation")
             slack_validation(body)
         return await fn(request)
 
@@ -80,9 +85,7 @@ def check_token(fn):
 MarvinApp = Starlette()
 
 MarvinApp.add_route("/meet", check_token(google_meet_handler), methods=["POST"])
-MarvinApp.add_route(
-    "/backlog", check_token(monday_handler_backlog), methods=["POST"]
-)
+MarvinApp.add_route("/backlog", check_token(monday_handler_backlog), methods=["POST"])
 MarvinApp.add_route(
     "/monday-prefect-on-prefect",
     check_token(monday_handler_prefect_on_prefect),
@@ -129,7 +132,13 @@ async def run_scheduled_events():
 
 
 def run():
-    uvicorn.run(MarvinApp, host="0.0.0.0", port=8080, log_level="debug", loop="asyncio")
+    uvicorn.run(
+        MarvinApp,
+        host="0.0.0.0",
+        port=8080,
+        log_level="debug",
+        loop="asyncio",
+    )
 
 
 if __name__ == "__main__":

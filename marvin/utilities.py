@@ -222,10 +222,12 @@ def get_public_thread(channel, ts):
     Returns:
         - a list of message "items" (see https://api.slack.com/methods/conversations.replies)
     """
+    logger.info("Fetching public thread")
+    logger.info(f"Channel: {channel}, timestamp: {ts}")
     params = {"token": PUBLIC_OAUTH_TOKEN, "channel": channel, "ts": ts, "limit": 50}
     r = requests.post("https://slack.com/api/conversations.replies", data=params)
     if r.ok:
-        return r.json()["messages"]
+        return r.json()
     else:
         raise ValueError(f"Request failed with status code {r.status_code}")
 

@@ -6,9 +6,8 @@ import re
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
-import schedule
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import Response, JSONResponse
 
 from .users import USERS
 from .github import create_issue
@@ -22,6 +21,7 @@ from .utilities import (
     public_speak,
     say,
     PUBLIC_TOKEN,
+    logger,
 )
 
 executor = ThreadPoolExecutor(max_workers=3)
@@ -57,29 +57,37 @@ karma_regex = re.compile(r"^(.+[^\s])(\+{2}|\-{2})(\s*|$)$")
 async def event_handler(request: Request):
     # for validating your URL with slack
     response = None
+    logger.info("event received")
 
     # not sure if events are json or form-encoded
     try:
         json_data = await request.json()
+        logger.info("json data decoded")
     except:
         json_data = await request.form()
+        logger.info("form data decoded")
 
     is_challenge = json_data.get("type") == "url_verification"
 
     if is_challenge:
-        return Response(json_data["challenge"])
+        logger.info("challenge received, returning")
+        return JSONResponse({"challenge": json_data["challenge"]})
 
     event = json_data.get("event", {})
     event_type = event.get("type")
     if event_type == "app_mention" or MARVIN_ID in event.get("text", ""):
+        logger.info("App mention")
         response = app_mention(event)
     elif event_type == "emoji_changed" and event.get("subtype") == "add":
+        logger.info("emoji changed")
         response = emoji_added(event)
     elif event_type == "message" and event.get("channel") == "CCASU5P2R":
+        logger.info("GitHub mention")
         response = github_mention(event)
     elif event_type == "message" and event.get("bot_id") is None:
         positive_match = karma_regex.match(event.get("text", ""))
         if positive_match:
+            logger.info("Karma")
             response = karma_handler(positive_match, event)
 
     return Response(response)
@@ -150,25 +158,30 @@ def karma_handler(regex_match, event):
 def build_issue_body(event, issue_state="open"):
     """Collect and format a slack thread to be archived as an issue"""
 
+    logger.info("Building issue")
+    logger.info(f"e: {event} \nstate:{issue_state}")
     header = "Archived" if issue_state == "closed" else "Opened"
     issue_body = f"## {header} from the [Prefect Public Slack Community](https://prefect.io/slack)\n\n"
-
-    thread = get_public_thread(channel=event["channel"], ts=event.get("thread_ts"))
+    thread = get_public_thread(channel=event["channel"], ts=event.get("thread_ts")).get(
+        "messages", []
+    )
+    double_newline = "\n\n"
     for msg in thread:
         issue_body += "**{}**: ".format(get_user_info(user=msg["user"]))
         text = msg["text"].replace(
             "```", "\n```\n"
         )  # for guranteed code formatting in github
-        issue_body += text + "\n\n"
+        issue_body += text + double_newline
 
     if thread:
-        original_message = thread[0]
-        permalink = get_public_message_permalink(
-            channel=event["channel"], message_ts=original_message["ts"]
-        )
-        issue_body += (
-            "Original thread can be found [here]({}).".format(permalink) + "\n\n"
-        )
+        message_to_link = thread[0]
+    else:
+        message_to_link = event
+    permalink = get_public_message_permalink(
+        channel=event["channel"], message_ts=message_to_link["ts"]
+    )
+    issue_body += f"""{double_newline if not thread else ""}Original thread can be found [here]({permalink}).{double_newline}"""
+
     return issue_body
 
 
@@ -219,10 +232,11 @@ def get_create_issue_kwargs(event):
 
 async def public_event_handler(request: Request):
     # for validating your URL with slack
+    logger.info("public event received")
     json_data = await request.json()
     is_challenge = json_data.get("type") == "url_verification"
     if is_challenge:
-        return Response(json_data["challenge"])
+        return JSONResponse({"challenge": json_data["challenge"]})
 
     event = json_data.get("event", {})
     event_type = event.get("type")
@@ -260,23 +274,23 @@ async def public_event_handler(request: Request):
         "UKNSNMUE6",  # Chris
         "UKTUC906M",  # Jeremiah
         "UN6FTLFAS",  # Nicholas
-        "UKVFX6N3B",
+        "UKVFX6N3B",  # Dylan
         "UUY8XPC21",
         "U01CEUST9B5",  # Michael
         "U011EKN35PT",  # Jim
         "ULXMV9SD7",  # Jenny
         "U01SRTRJC0Y",  # Zach
         "U01QEJ9PP53",  # Kevin
-        "U02EJ7FVCR5", # Evan
-        "U02FNMJB05N", # Craig
-        "U02H1A95XDW", # Anna
-        "U02GDE5EQ68", # Josh
-        "U02H0TR3HQQ", # Nate
-        "U02GG396GN8", # George
-        "U02GPSFNQSD", # Alex
-        "U02GDE4SK7E", # James
-        "U02GPSFVBUZ", # Jean
-        "U02GF2MP605" # Kalise
+        "U02EJ7FVCR5",  # Evan
+        "U02FNMJB05N",  # Craig
+        "U02H1A95XDW",  # Anna
+        "U02GDE5EQ68",  # Josh
+        "U02H0TR3HQQ",  # Nate
+        "U02GG396GN8",  # George
+        "U02GPSFNQSD",  # Alex
+        "U02GDE4SK7E",  # James
+        "U02GPSFVBUZ",  # Jean
+        "U02GF2MP605",  # Kalise
     ]:
         return Response()
 
