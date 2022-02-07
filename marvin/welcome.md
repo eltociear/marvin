@@ -22,7 +22,7 @@ It’s possible your question has been asked before, so please take a moment to 
 
 When possible, I will automatically <https://github.com/PrefectHQ/prefect/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22Prefect+Slack+Community%22|archive helpful Slack threads> to GitHub to help other users.
 
-Make sure to also join [Prefect Discourse](https://discourse.prefect.io/) - a knowledge base with plenty of tutorials, answers to frequently asked questions, code examples, blog posts, announcements, troubleshooting tips, and in-depth technical discussions.
+Make sure to join [Prefect Discourse](https://discourse.prefect.io/) - a knowledge base with plenty of tutorials, answers to frequently asked questions, code examples, blog posts, announcements, troubleshooting tips, and in-depth technical discussions.
 
 You may also want to follow us on <https://twitter.com/prefectio|Twitter> or <https://www.linkedin.com/company/prefect/|LinkedIn>.
 
