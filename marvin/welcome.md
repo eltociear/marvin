@@ -17,10 +17,13 @@ The best way to get started is by saying hello in the #introductions channel. Be
 It’s possible your question has been asked before, so please take a moment to review the Slack history and our other searchable resources:
 
 • <https://docs.prefect.io|Prefect's documentation>
+• <https://discourse.prefect.io|Prefect Discourse>
 • <https://github.com/PrefectHQ/prefect|The Prefect GitHub repositories>
 • <https://stackoverflow.com/questions/tagged/prefect|StackOverflow>
 
 When possible, I will automatically <https://github.com/PrefectHQ/prefect/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22Prefect+Slack+Community%22|archive helpful Slack threads> to GitHub to help other users.
+
+Additionally, you can join [Prefect Discourse](https://discourse.prefect.io/) - a knowledge base with plenty of tutorials, code examples, blog posts, announcements, answers to frequently asked questions, and troubleshooting tips.
 
 You may also want to follow us on <https://twitter.com/prefectio|Twitter> or <https://www.linkedin.com/company/prefect/|LinkedIn>.
 
