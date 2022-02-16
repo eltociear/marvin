@@ -73,6 +73,7 @@ async def event_handler(request: Request):
         logger.info("challenge received, returning")
         return JSONResponse({"challenge": json_data["challenge"]})
 
+    logger.info(f"""Event unpacked: {json_data}""")
     event = json_data.get("event", {})
     event_type = event.get("type")
     if event_type == "app_mention" or MARVIN_ID in event.get("text", ""):
