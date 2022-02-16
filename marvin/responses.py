@@ -14,7 +14,6 @@ from .github import create_issue
 from .karma import update_karma
 from .utilities import (
     get_dm_channel_id,
-    promotional_signup,
     get_public_thread,
     get_public_message_permalink,
     get_user_info,
@@ -28,7 +27,7 @@ executor = ThreadPoolExecutor(max_workers=3)
 
 SURVEY_SAYS_RESPONSES = defaultdict(dict)
 GIT_SHA = os.environ.get("GIT_SHA")
-MARVIN_ID = "UBEEMJZFX"
+MARVIN_ID = os.environ.get("MARVIN_ID")
 quotes = [
     '"Let’s build robots with Genuine People Personalities," they said. So they tried it out with me. I’m a personality prototype. You can tell, can’t you?',
     "It’s the people you meet in this job that really get you down.",
@@ -73,6 +72,7 @@ async def event_handler(request: Request):
         logger.info("challenge received, returning")
         return JSONResponse({"challenge": json_data["challenge"]})
 
+    logger.info(f"""Event unpacked: {json_data}""")
     event = json_data.get("event", {})
     event_type = event.get("type")
     if event_type == "app_mention" or MARVIN_ID in event.get("text", ""):
