@@ -102,6 +102,9 @@ jobs:
             echo -n "$CIRCLE_SHA1" > gitsha.txt
             kubectl delete secret gitsha --ignore-not-found
             kubectl create secret generic gitsha --from-file=./gitsha.txt
+            echo -n "$MARVIN_ID" > marvinid.txt
+            kubectl delete secret marvinid --ignore-not-found
+            kubectl create secret generic marvinid --from-file=./marvinid.txt
       - run:
           name: Deploy Marvin
           command: |

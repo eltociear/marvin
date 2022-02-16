@@ -78,4 +78,9 @@ spec:
               secretKeyRef:
                 name: gitsha
                 key: gitsha.txt
+          - name: MARVIN_ID
+            valueFrom:
+              secretKeyRef:
+                name: marvinid
+                key: marvinid.txt
 
