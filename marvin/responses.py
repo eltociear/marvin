@@ -14,7 +14,6 @@ from .github import create_issue
 from .karma import update_karma
 from .utilities import (
     get_dm_channel_id,
-    promotional_signup,
     get_public_thread,
     get_public_message_permalink,
     get_user_info,
