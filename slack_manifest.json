@@ -1,0 +1,167 @@
+{
+    "display_information": {
+        "name": "Marvin",
+        "description": "Don’t pretend you want to talk to me, I know you hate me.",
+        "background_color": "#323336"
+    },
+    "features": {
+        "bot_user": {
+            "display_name": "Marvin",
+            "always_online": true
+        },
+        "slash_commands": [
+            {
+                "command": "/standup",
+                "url": "http://35.194.67.119:80/standup",
+                "description": "Give Marvin your update!",
+                "usage_hint": "[my update]",
+                "should_escape": false
+            },
+            {
+                "command": "/version",
+                "url": "http://35.194.67.119:80/version",
+                "description": "Reports the latest git commit Marvin is running off of.",
+                "should_escape": false
+            },
+            {
+                "command": "/defcon",
+                "url": "http://35.194.67.119:80/defcon",
+                "description": "Sets, raises, or lowers defcon",
+                "usage_hint": "[5]; [raise]; [lower]",
+                "should_escape": false
+            },
+            {
+                "command": "/leaderboard",
+                "url": "http://35.194.67.119:80/leaderboard",
+                "description": "Karma leaderboard!",
+                "usage_hint": "[top 10]; [bottom 3]; [5]",
+                "should_escape": false
+            },
+            {
+                "command": "/backlog",
+                "url": "http://35.194.67.119:80/backlog",
+                "description": "Add a suggestion!",
+                "usage_hint": "[your suggestion here]",
+                "should_escape": false
+            },
+            {
+                "command": "/meet",
+                "url": "http://35.194.67.119:80/meet",
+                "description": "Sets up a private Google Meet",
+                "usage_hint": "[room name]",
+                "should_escape": false
+            },
+            {
+                "command": "/survey-says",
+                "url": "http://35.194.67.119:80/survey-says",
+                "description": ".",
+                "usage_hint": "[your response here] / [publish]",
+                "should_escape": false
+            },
+            {
+                "command": "/blog-idea",
+                "url": "http://35.194.67.119:80/monday-blogs",
+                "description": "Add an idea to our list!",
+                "usage_hint": "[your idea here]",
+                "should_escape": false
+            },
+            {
+                "command": "/customer-feedback",
+                "url": "http://35.194.67.119:80/monday-customer-feedback",
+                "description": "Feedback -> Monday.com",
+                "usage_hint": "[feedback]",
+                "should_escape": false
+            },
+            {
+                "command": "/monday",
+                "url": "http://35.194.67.119:80/monday-any-board",
+                "description": "Item -> any board",
+                "usage_hint": "/monday [board_id] [text]",
+                "should_escape": false
+            },
+            {
+                "command": "/prefect-on-prefect",
+                "url": "http://35.194.67.119:80/monday-prefect-on-prefect",
+                "description": "Your idea -> Monday.com",
+                "usage_hint": "[your idea]",
+                "should_escape": false
+            },
+            {
+                "command": "/post-as-marvin",
+                "url": "http://35.194.67.119:80/post-as-marvin",
+                "description": "Speak as Marvin!",
+                "usage_hint": "[message] in #[channel]",
+                "should_escape": false
+            }
+        ]
+    },
+    "oauth_config": {
+        "redirect_urls": [
+            "https://949ea4a7.ngrok.io"
+        ],
+        "scopes": {
+            "user": [
+                "pins:read",
+                "pins:write",
+                "users:read"
+            ],
+            "bot": [
+                "app_mentions:read",
+                "calls:read",
+                "calls:write",
+                "channels:history",
+                "channels:join",
+                "channels:read",
+                "chat:write",
+                "chat:write.customize",
+                "chat:write.public",
+                "commands",
+                "conversations.connect:read",
+                "dnd:read",
+                "emoji:read",
+                "files:read",
+                "groups:read",
+                "im:history",
+                "im:read",
+                "im:write",
+                "incoming-webhook",
+                "mpim:history",
+                "mpim:read",
+                "mpim:write",
+                "pins:read",
+                "pins:write",
+                "reactions:read",
+                "reactions:write",
+                "remote_files:read",
+                "remote_files:share",
+                "remote_files:write",
+                "team:read",
+                "usergroups:read",
+                "users:read",
+                "users:read.email",
+                "users:write",
+                "users.profile:read",
+                "groups:history"
+            ]
+        }
+    },
+    "settings": {
+        "event_subscriptions": {
+            "request_url": "http://35.194.67.119:80",
+            "bot_events": [
+                "app_mention",
+                "channel_created",
+                "channel_deleted",
+                "emoji_changed",
+                "member_joined_channel",
+                "member_left_channel",
+                "message.channels",
+                "message.groups",
+                "message.im"
+            ]
+        },
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": false,
+        "token_rotation_enabled": false
+    }
+}
