@@ -1,4 +1,5 @@
 import asyncio
+import os
 import json
 import operator
 import re
@@ -8,7 +9,7 @@ from starlette.responses import Response
 
 from .utilities import add_pin, get_pins, remove_pin, say
 
-MARVIN_ID = "UBEEMJZFX"
+MARVIN_ID = os.environ["MARVIN_ID"]
 defcon_channel = "CBH18KG8G"  # engineering
 levels = {
     1: ":matrixparrot:" * 7

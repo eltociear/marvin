@@ -1,9 +1,12 @@
+import os
 from unittest.mock import MagicMock
 
 import pytest
 
 import marvin.responses
 import marvin.users
+
+MARVIN_ID = os.environ["MARVIN_ID"]
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -33,7 +36,7 @@ def set_users():
 
 
 async def test_at_mentions_responds_privately(app, token, monkeypatch):
-    post_event = {"text": "<@UBEEMJZFX>", "channel": "foo", "type": "message.im"}
+    post_event = {"text": f"<@{MARVIN_ID}>", "channel": "foo", "type": "message.im"}
     say = MagicMock()
     monkeypatch.setattr(marvin.responses, "say", say)
     r = await app.post("/", json={"event": post_event, "token": token})
@@ -70,8 +73,8 @@ async def test_at_mentions_doesnt_respond_if_marvin_tags_himself(
     app, token, monkeypatch, event_type
 ):
     post_event = {
-        "text": "<@UBEEMJZFX>",
-        "user": "UBEEMJZFX",
+        "text": f"<@{MARVIN_ID}>",
+        "user": MARVIN_ID,
         "channel": "foo",
         "type": event_type,
     }
@@ -107,7 +110,7 @@ async def test_marvin_only_gives_psa_for_additions(app, token, monkeypatch):
 
 async def test_at_mentions_responds_within_thread(app, token, monkeypatch):
     post_event = {
-        "text": "<@UBEEMJZFX>",
+        "text": f"<@{MARVIN_ID}>",
         "channel": "foo",
         "type": "message.im",
         "thread_ts": "00834934.0704",
