@@ -26,6 +26,18 @@ logger.addHandler(logging.StreamHandler())
 logger.setLevel("INFO")
 
 
+def post_to_slack(url, data):
+    r = requests.post(url, data)
+    try:
+        logger.info(
+            f"----------START RESPONSE FROM SLACK---------\n{r.json()}\n----------END RESPONSE FROM SLACK---------\n"
+        )
+    except Exception as e:
+        logger.error("Failed to log response from slack")
+        logger.error(e)
+    return r
+
+
 async def promotional_signup(
     user_id: str = None, email: str = None, platform: str = None, link: str = None
 ):
@@ -57,7 +69,7 @@ def get_pins(channel="CBH18KG8G"):
         - a list of channel "items" (see https://api.slack.com/methods/pins.list)
     """
     params = {"token": TOKEN, "channel": channel}
-    r = requests.post("https://slack.com/api/pins.list", data=params)
+    r = post_to_slack("https://slack.com/api/pins.list", data=params)
     if r.ok:
         return json.loads(r.text)["items"]
     else:
@@ -76,7 +88,7 @@ def add_pin(channel, timestamp):
         - the requests.Request object of the POST
     """
     params = {"token": TOKEN, "channel": channel, "timestamp": timestamp}
-    r = requests.post("https://slack.com/api/pins.add", data=params)
+    r = post_to_slack("https://slack.com/api/pins.add", data=params)
     return r
 
 
@@ -92,7 +104,7 @@ def remove_pin(channel, timestamp):
         - the requests.Request object of the POST
     """
     params = {"token": TOKEN, "channel": channel, "timestamp": timestamp}
-    r = requests.post("https://slack.com/api/pins.remove", data=params)
+    r = post_to_slack("https://slack.com/api/pins.remove", data=params)
     return r
 
 
@@ -104,7 +116,7 @@ def get_channels():
         - a dictionary of channel name -> Slack Channel ID
     """
     params = {"token": TOKEN}
-    r = requests.post("https://slack.com/api/conversations.list", data=params)
+    r = post_to_slack("https://slack.com/api/conversations.list", data=params)
     if r.ok:
         channel_dict = {}
         channel_data = json.loads(r.text)["channels"]
@@ -132,7 +144,7 @@ def get_users():
         - a dictionary of user name -> Slack User ID
     """
     params = {"token": TOKEN}
-    r = requests.post("https://slack.com/api/users.list", data=params)
+    r = post_to_slack("https://slack.com/api/users.list", data=params)
     if r.ok:
         user_dict = {}
         user_data = json.loads(r.text)["members"]
@@ -158,7 +170,7 @@ def get_dm_channel_id(userid, token=TOKEN):
         - a string of the Slack Channel ID
     """
     params = {"token": token, "users": userid}
-    r = requests.post("https://slack.com/api/conversations.open", data=params)
+    r = post_to_slack("https://slack.com/api/conversations.open", data=params)
     if r.ok:
         return json.loads(r.text)["channel"]["id"]
 
@@ -185,7 +197,7 @@ def public_speak(text, channel=None, **kwargs):
         "text": text,
     }
     params.update(kwargs)
-    r = requests.post("https://slack.com/api/chat.postMessage", data=params)
+    r = post_to_slack("https://slack.com/api/chat.postMessage", data=params)
     return r
 
 
@@ -211,7 +223,7 @@ def say(text, channel=None, **kwargs):
         "text": text,
     }
     params.update(kwargs)
-    r = requests.post("https://slack.com/api/chat.postMessage", data=params)
+    r = post_to_slack("https://slack.com/api/chat.postMessage", data=params)
     return r
 
 
@@ -225,7 +237,7 @@ def get_public_thread(channel, ts):
     logger.info("Fetching public thread")
     logger.info(f"Channel: {channel}, timestamp: {ts}")
     params = {"token": PUBLIC_OAUTH_TOKEN, "channel": channel, "ts": ts, "limit": 50}
-    r = requests.post("https://slack.com/api/conversations.replies", data=params)
+    r = post_to_slack("https://slack.com/api/conversations.replies", data=params)
     if r.ok:
         return r.json()
     else:
@@ -240,7 +252,7 @@ def get_public_message_permalink(channel, message_ts):
         - a permalink string to the desired message (see https://api.slack.com/methods/chat.getPermalink)
     """
     params = {"token": PUBLIC_OAUTH_TOKEN, "channel": channel, "message_ts": message_ts}
-    r = requests.post("https://slack.com/api/chat.getPermalink", data=params)
+    r = post_to_slack("https://slack.com/api/chat.getPermalink", data=params)
     if r.ok:
         return r.json()["permalink"]
     else:
@@ -250,7 +262,7 @@ def get_public_message_permalink(channel, message_ts):
 @lru_cache(maxsize=1024)
 def get_user_info(user, name_only=True):
     params = {"token": PUBLIC_OAUTH_TOKEN, "user": user}
-    r = requests.post("https://slack.com/api/users.info", data=params)
+    r = post_to_slack("https://slack.com/api/users.info", data=params)
     if r.ok:
         if name_only:
             return r.json()["user"].get("name", "unknown")
