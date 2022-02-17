@@ -48,11 +48,17 @@ def create_user(
     )
 
 
-async def count_public_users(request: Request) -> JSONResponse:
+async def count_public_users(request: Request) -> int:
     """
     Returns a count of the number of registered users in Community Slack.
     """
-    return 13000
+    collection = client.collection("public_user_stats")
+    return (
+        collection.order_by("count", direction="DESCENDING")
+        .limit(1)
+        .get()[0]
+        .get("count")
+    )
 
 
 def get_all_users():
