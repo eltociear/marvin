@@ -27,7 +27,7 @@ logger.setLevel("INFO")
 
 
 def post_to_slack(url, data):
-    r = requests.post(url, data)
+    r = requests.post(url=url, data=data)
     try:
         logger.info(
             f"----------START RESPONSE FROM SLACK---------\n{r.json()}\n----------END RESPONSE FROM SLACK---------\n"
