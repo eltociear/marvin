@@ -30,6 +30,7 @@ from .monday import (
     monday_handler_prefect_on_prefect,
     monday_handler_any_board,
 )
+from .users import count_public_users
 from .utilities import logger
 
 
@@ -85,6 +86,7 @@ def check_token(fn):
 MarvinApp = Starlette()
 
 MarvinApp.add_route("/meet", check_token(google_meet_handler), methods=["POST"])
+MarvinApp.add_route("/public-slack-user-count", count_public_users, methods=["GET"])
 MarvinApp.add_route("/backlog", check_token(monday_handler_backlog), methods=["POST"])
 MarvinApp.add_route(
     "/monday-prefect-on-prefect",
