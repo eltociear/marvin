@@ -6,7 +6,7 @@ import pytest
 import marvin.responses
 import marvin.users
 
-MARVIN_ID = os.environ["MARVIN_ID"]
+MARVIN_ID = os.environ.get("MARVIN_ID")
 
 
 @pytest.fixture(autouse=True, scope="module")
