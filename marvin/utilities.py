@@ -9,9 +9,9 @@ from .firestore import client
 
 
 MARVIN_ACCESS_TOKEN = os.environ.get("MARVIN_ACCESS_TOKEN")
-OAUTH_TOKEN = os.environ.get("MARVIN_OAUTH_TOKEN")
+OAUTH_TOKEN = os.environ.get("MARVIN_SLACK_OAUTH_TOKEN")
 PUBLIC_OAUTH_TOKEN = os.environ.get("MARVIN_PUBLIC_OAUTH_TOKEN")
-TOKEN = os.environ.get("MARVIN_TOKEN")
+TOKEN = os.environ.get("MARVIN_SLACK_TOKEN")
 PUBLIC_TOKEN = os.environ.get("MARVIN_PUBLIC_TOKEN")
 
 
