@@ -33,7 +33,7 @@ def secret():
 
 @pytest.fixture
 def token():
-    return os.environ.get("SLACK_VALIDATION_TOKEN")
+    return os.environ.get("MARVIN_SLACK_VALIDATION_TOKEN")
 
 
 @pytest.fixture(autouse=True)
