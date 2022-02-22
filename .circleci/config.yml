@@ -93,12 +93,12 @@ jobs:
             echo -n "$MARVIN_PUBLIC_SLACK_VALIDATION_TOKEN" > marvinpublicslackvalidationtoken.txt
             kubectl delete secret marvinpublicslackvalidationtoken --ignore-not-found
             kubectl create secret generic marvinpublicslackvalidationtoken --from-file=./marvinpublicslackvalidationtoken.txt
-            echo -n "$MARVIN_PUBLIC_OAUTH_TOKEN" > marvinpublicoauthtoken.txt
-            kubectl delete secret marvinpublicoauthtoken --ignore-not-found
-            kubectl create secret generic marvinpublicoauthtoken --from-file=./marvinpublicoauthtoken.txt
-            echo -n "$MARVIN_PUBLIC_TOKEN" > marvinpublictoken.txt
-            kubectl delete secret marvinpublictoken --ignore-not-found
-            kubectl create secret generic marvinpublictoken --from-file=./marvinpublictoken.txt
+            echo -n "$MARVIN_PUBLIC_SLACK_OAUTH_TOKEN" > marvinpublicslackoauthtoken.txt
+            kubectl delete secret marvinpublicslackoauthtoken --ignore-not-found
+            kubectl create secret generic marvinpublicslackoauthtoken --from-file=./marvinpublicslackoauthtoken.txt
+            echo -n "$MARVIN_PUBLIC_SLACK_TOKEN" > marvinpublicslacktoken.txt
+            kubectl delete secret marvinpublicslacktoken --ignore-not-found
+            kubectl create secret generic marvinpublicslacktoken --from-file=./marvinpublicslacktoken.txt
             echo -n "$CIRCLE_SHA1" > gitsha.txt
             kubectl delete secret gitsha --ignore-not-found
             kubectl create secret generic gitsha --from-file=./gitsha.txt

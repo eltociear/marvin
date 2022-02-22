@@ -63,16 +63,16 @@ spec:
               secretKeyRef:
                 name: marvinpublicslackvalidationtoken
                 key: marvinpublicslackvalidationtoken.txt
-          - name: MARVIN_PUBLIC_OAUTH_TOKEN
+          - name: MARVIN_PUBLIC_SLACK_OAUTH_TOKEN
             valueFrom:
               secretKeyRef:
-                name: marvinpublicoauthtoken
-                key: marvinpublicoauthtoken.txt
-          - name: MARVIN_PUBLIC_TOKEN
+                name: marvinpublicslackoauthtoken
+                key: marvinpublicslackoauthtoken.txt
+          - name: MARVIN_PUBLIC_SLACK_TOKEN
             valueFrom:
               secretKeyRef:
-                name: marvinpublictoken
-                key: marvinpublictoken.txt
+                name: marvinpublicslacktoken
+                key: marvinpublicslacktoken.txt
           - name: GIT_SHA
             valueFrom:
               secretKeyRef:
