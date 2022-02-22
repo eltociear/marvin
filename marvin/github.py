@@ -11,12 +11,12 @@ from starlette.responses import Response
 
 from marvin.utilities import get_dm_channel_id, get_users, say, promotional_signup
 
-MARVIN_ACCESS_TOKEN = os.environ.get("MARVIN_ACCESS_TOKEN")
+MARVIN_GITHUB_ACCESS_TOKEN = os.environ.get("MARVIN_GITHUB_ACCESS_TOKEN")
 
 
 def create_issue(title, body, labels=None, issue_state="open", repo="prefect"):
     url = f"https://api.github.com/repos/PrefectHQ/{repo}/issues"
-    headers = {"AUTHORIZATION": f"token {MARVIN_ACCESS_TOKEN}"}
+    headers = {"AUTHORIZATION": f"token {MARVIN_GITHUB_ACCESS_TOKEN}"}
     issue = {"title": title, "body": body, "labels": labels or []}
     resp = requests.post(url, data=json.dumps(issue), headers=headers)
     if issue_state == "closed":
@@ -50,7 +50,7 @@ async def cloud_github_handler(request: Request):
 @lru_cache(maxsize=1024)
 def make_pr_comment(pr_num, body):
     url = f"https://api.github.com/repos/PrefectHQ/prefect/issues/{pr_num}/comments"
-    headers = {"AUTHORIZATION": f"token {MARVIN_ACCESS_TOKEN}"}
+    headers = {"AUTHORIZATION": f"token {MARVIN_GITHUB_ACCESS_TOKEN}"}
     comment = {"body": body}
     resp = requests.post(url, data=json.dumps(comment), headers=headers)
     if resp.status_code == 201:

@@ -28,7 +28,7 @@ async def app():
 
 @pytest.fixture
 def secret():
-    return os.environ.get("GITHUB_VALIDATION_TOKEN", "").encode()
+    return os.environ.get("MARVIN_GITHUB_VALIDATION_TOKEN", "").encode()
 
 
 @pytest.fixture
