@@ -28,12 +28,12 @@ async def app():
 
 @pytest.fixture
 def secret():
-    return os.environ.get("GITHUB_VALIDATION_TOKEN", "").encode()
+    return os.environ.get("MARVIN_GITHUB_VALIDATION_TOKEN", "").encode()
 
 
 @pytest.fixture
 def token():
-    return os.environ.get("SLACK_VALIDATION_TOKEN")
+    return os.environ.get("MARVIN_SLACK_VALIDATION_TOKEN")
 
 
 @pytest.fixture(autouse=True)

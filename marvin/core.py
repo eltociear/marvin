@@ -33,9 +33,13 @@ from .monday import (
 from .utilities import logger
 
 
-GITHUB_VALIDATION_TOKEN = os.environ.get("GITHUB_VALIDATION_TOKEN", "").encode()
-SLACK_VALIDATION_TOKEN = os.environ.get("SLACK_VALIDATION_TOKEN")
-PUBLIC_VALIDATION_TOKEN = os.environ.get("PUBLIC_VALIDATION_TOKEN")
+MARVIN_GITHUB_VALIDATION_TOKEN = os.environ.get(
+    "MARVIN_GITHUB_VALIDATION_TOKEN", ""
+).encode()
+MARVIN_SLACK_VALIDATION_TOKEN = os.environ.get("MARVIN_SLACK_VALIDATION_TOKEN")
+MARVIN_PUBLIC_SLACK_VALIDATION_TOKEN = os.environ.get(
+    "MARVIN_PUBLIC_SLACK_VALIDATION_TOKEN"
+)
 
 
 def slack_validation(data):
@@ -50,13 +54,13 @@ def slack_validation(data):
         token = data.get("token")[0]
         logger.debug("Query String parsed successfuly")
     assert token in [
-        PUBLIC_VALIDATION_TOKEN,
-        SLACK_VALIDATION_TOKEN,
+        MARVIN_PUBLIC_SLACK_VALIDATION_TOKEN,
+        MARVIN_SLACK_VALIDATION_TOKEN,
     ], "Token Authentication Failed"
 
 
 def github_validation(data, sig):
-    expected = f"sha1={hmac.new(GITHUB_VALIDATION_TOKEN, msg=data, digestmod='sha1').hexdigest()}"
+    expected = f"sha1={hmac.new(MARVIN_GITHUB_VALIDATION_TOKEN, msg=data, digestmod='sha1').hexdigest()}"
     assert expected == sig, "Secret Authentication Failed"
 
 
