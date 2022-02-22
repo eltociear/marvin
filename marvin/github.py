@@ -9,7 +9,7 @@ import requests
 from starlette.requests import Request
 from starlette.responses import Response
 
-from marvin.utilities import get_dm_channel_id, get_users, say, promotional_signup
+from marvin.utilities import get_dm_channel_id, get_users, say
 
 MARVIN_GITHUB_ACCESS_TOKEN = os.environ.get("MARVIN_GITHUB_ACCESS_TOKEN")
 
