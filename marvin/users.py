@@ -5,6 +5,7 @@ import random
 import re
 from concurrent.futures import ThreadPoolExecutor
 
+import pendulum
 import schedule
 from starlette.requests import Request
 from starlette.responses import Response
@@ -13,6 +14,7 @@ from .firestore import client
 from .github import create_issue
 from .karma import update_karma
 from .utilities import (
+    cache_with_key,
     get_dm_channel_id,
     get_user_info,
     public_speak,
@@ -48,10 +50,8 @@ def create_user(
     )
 
 
-async def count_public_users(request: Request) -> int:
-    """
-    Returns a count of the number of registered users in Community Slack.
-    """
+@cache_with_key
+def _count_public_users() -> int:
     collection = client.collection("public_user_stats")
     return (
         collection.order_by("count", direction="DESCENDING")
@@ -59,6 +59,17 @@ async def count_public_users(request: Request) -> int:
         .get()[0]
         .get("count")
     )
+
+
+async def count_public_users(request: Request) -> int:
+    """
+    Returns a count of the number of registered users in Community Slack.
+
+    Cached to only run once every hour.
+    """
+    # rounded timestamp to nearest hour for caching
+    timestamp = pendulum.now().strftime("%D/%H")  # month/day/year/hour
+    return _count_public_users(timestamp)
 
 
 def get_all_users():
