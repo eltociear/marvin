@@ -3,7 +3,7 @@ import logging
 import os
 import requests
 
-from functools import partial, lru_cache, wraps
+from functools import lru_cache
 
 from .firestore import client
 
