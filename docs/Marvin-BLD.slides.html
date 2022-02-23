@@ -11982,15 +11982,15 @@ a.anchor-link {
 </thead>
 <tbody>
 <tr>
-<td><code>MARVIN_TOKEN</code></td>
+<td><code>MARVIN_SLACK_TOKEN</code></td>
 <td style="text-align:center">Marvin's "bot user" token; this is the token Marvin needs for simply speaking / reacting</td>
 </tr>
 <tr>
-<td><code>MARVIN_OAUTH_TOKEN</code></td>
+<td><code>MARVIN_SLACK_OAUTH_TOKEN</code></td>
 <td style="text-align:center">Marvin's full OAuth token; this is the token Marvin needs for performing higher permission actions (such as editing pins)</td>
 </tr>
 <tr>
-<td><code>SLACK_VALIDATION_TOKEN</code></td>
+<td><code>MARVIN_SLACK_VALIDATION_TOKEN</code></td>
 <td style="text-align:center">this token is used to internally validate that incoming requests are legitimate Slack requests</td>
 </tr>
 <tr>
@@ -12028,7 +12028,7 @@ a.anchor-link {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Marvin's-webserver">Marvin's webserver<a class="anchor-link" href="#Marvin's-webserver">&#182;</a></h1><p>Slash commands and event subscriptions are sent to a fixed web address, which normally points to a Google Cloud IP Address; you can easily change this to point to a local (and temporary) address.  Run the <code>marvin</code> CLI command + <code>ngrok http 8080</code> to standup a webserver and
 <img src="ngrok_slack.png" width=500></p>
-<p>Notice the error message: this is the <code>SLACK_VALIDATION_TOKEN</code></p>
+<p>Notice the error message: this is the <code>MARVIN_SLACK_VALIDATION_TOKEN</code></p>
 
 </div>
 </div>

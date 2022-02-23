@@ -28,51 +28,51 @@ spec:
               secretKeyRef:
                 name: prefectauthtoken
                 key: prefectauthtoken.txt
-          - name: GITHUB_VALIDATION_TOKEN
+          - name: MARVIN_GITHUB_VALIDATION_TOKEN
             valueFrom:
               secretKeyRef:
-                name: githubvalidationtoken
-                key: githubvalidationtoken.txt
-          - name: MONDAY_API_TOKEN
+                name: marvingithubvalidationtoken
+                key: marvingithubvalidationtoken.txt
+          - name: MARVIN_MONDAY_API_TOKEN
             valueFrom:
               secretKeyRef:
-                name: mondaytoken
-                key: mondaytoken.txt
-          - name: MARVIN_ACCESS_TOKEN
+                name: marvinmondayapitoken
+                key: marvinmondayapitoken.txt
+          - name: MARVIN_GITHUB_ACCESS_TOKEN
             valueFrom:
               secretKeyRef:
-                name: marvinaccesstoken
-                key: marvinaccesstoken.txt
-          - name: MARVIN_TOKEN
+                name: marvingithubaccesstoken
+                key: marvingithubaccesstoken.txt
+          - name: MARVIN_SLACK_TOKEN
             valueFrom:
               secretKeyRef:
-                name: slacktoken
-                key: slacktoken.txt
-          - name: MARVIN_OAUTH_TOKEN
+                name: marvinslacktoken
+                key: marvinslacktoken.txt
+          - name: MARVIN_SLACK_OAUTH_TOKEN
             valueFrom:
               secretKeyRef:
-                name: slackoauthtoken
-                key: slackoauthtoken.txt
-          - name: SLACK_VALIDATION_TOKEN
+                name: marvinslackoauthtoken
+                key: marvinslackoauthtoken.txt
+          - name: MARVIN_SLACK_VALIDATION_TOKEN
             valueFrom:
               secretKeyRef:
-                name: slackvalidationtoken
-                key: slackvalidationtoken.txt
-          - name: PUBLIC_VALIDATION_TOKEN
+                name: marvinslackvalidationtoken
+                key: marvinslackvalidationtoken.txt
+          - name: MARVIN_PUBLIC_SLACK_VALIDATION_TOKEN
             valueFrom:
               secretKeyRef:
-                name: publicvalidationtoken
-                key: publicvalidationtoken.txt
-          - name: MARVIN_PUBLIC_OAUTH_TOKEN
+                name: marvinpublicslackvalidationtoken
+                key: marvinpublicslackvalidationtoken.txt
+          - name: MARVIN_PUBLIC_SLACK_OAUTH_TOKEN
             valueFrom:
               secretKeyRef:
-                name: marvinpublicoauthtoken
-                key: marvinpublicoauthtoken.txt
-          - name: MARVIN_PUBLIC_TOKEN
+                name: marvinpublicslackoauthtoken
+                key: marvinpublicslackoauthtoken.txt
+          - name: MARVIN_PUBLIC_SLACK_TOKEN
             valueFrom:
               secretKeyRef:
-                name: marvinpublictoken
-                key: marvinpublictoken.txt
+                name: marvinpublicslacktoken
+                key: marvinpublicslacktoken.txt
           - name: GIT_SHA
             valueFrom:
               secretKeyRef:
