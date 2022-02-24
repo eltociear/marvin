@@ -3,7 +3,13 @@ import pytest
 from collections import namedtuple
 from unittest.mock import MagicMock
 import marvin
-from marvin.utilities import get_channels, get_users, get_dm_channel_id, say
+from marvin.utilities import (
+    cache_with_key,
+    get_channels,
+    get_users,
+    get_dm_channel_id,
+    say,
+)
 
 
 @pytest.fixture
@@ -77,3 +83,21 @@ def test_get_dm_channel_returns_none_on_failed_request(monkeypatch, postdata):
     monkeypatch.setattr(marvin.utilities.requests, "post", post, raising=False)
     channel_id = get_dm_channel_id("irrelevant_string")
     assert channel_id is None
+
+
+def test_cache_with_key_caches():
+    @cache_with_key
+    def random_func():
+        import random
+
+        return round(random.random(), 6)
+
+    x = random_func("x")
+    y = random_func("y")
+
+    assert isinstance(x, float)
+    assert isinstance(y, float)
+
+    assert x != y
+    assert x == random_func("x")
+    assert y == random_func("y")

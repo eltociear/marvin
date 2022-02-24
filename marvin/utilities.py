@@ -26,6 +26,19 @@ logger.addHandler(logging.StreamHandler())
 logger.setLevel("INFO")
 
 
+def cache_with_key(func):
+    """
+    Modifies given function to accept a single argument; the return value of this function is cached
+    based on this input.
+    """
+
+    @lru_cache()
+    def cached_call(timestamp):
+        return func()
+
+    return cached_call
+
+
 def post_to_slack(url, data):
     r = requests.post(url=url, data=data)
     try:
