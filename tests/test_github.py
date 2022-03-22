@@ -120,9 +120,6 @@ async def test_github_welcomes_new_contributors(app, assoc, create_header, monke
     assert "@marvin-robot" in body
     assert "welcome" in body.lower()
 
-    assert notify_chris.called
-    assert notify_chris.call_args[0][0] == 42
-
 
 async def test_github_welcomes_new_contributors_only_once(
     app, create_header, monkeypatch
