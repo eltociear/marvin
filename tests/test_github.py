@@ -151,7 +151,6 @@ async def test_github_welcomes_new_contributors_only_once(
         assert r.ok
 
     assert len([p for p in post.call_args_list if "42" in p[0][0]]) == 1
-    assert say.call_count == 1
 
 
 async def test_github_doesnt_welcome_old_contributors(app, create_header, monkeypatch):
