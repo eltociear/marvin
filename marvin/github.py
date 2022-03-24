@@ -111,9 +111,11 @@ async def core_github_handler(request: Request):
             "Here I am, brain the size of a planet and they ask me to welcome you to Prefect.\n\n"
             f"So, welcome to the community @{author}! :tada: :tada:"
         )
-        try:
-            notify_chris(pr_num)
-        except:
-            pass
+        # you can uncomment these lines and update the notify function
+        # to send DMs to Prefect employees whenever a new contributor opens a PR
+        #        try:
+        #            notify_chris(pr_num)
+        #        except:
+        #            pass
         return make_pr_comment(pr_num, body)
     return Response()

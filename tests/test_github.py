@@ -120,9 +120,6 @@ async def test_github_welcomes_new_contributors(app, assoc, create_header, monke
     assert "@marvin-robot" in body
     assert "welcome" in body.lower()
 
-    assert notify_chris.called
-    assert notify_chris.call_args[0][0] == 42
-
 
 async def test_github_welcomes_new_contributors_only_once(
     app, create_header, monkeypatch
@@ -154,7 +151,6 @@ async def test_github_welcomes_new_contributors_only_once(
         assert r.ok
 
     assert len([p for p in post.call_args_list if "42" in p[0][0]]) == 1
-    assert say.call_count == 1
 
 
 async def test_github_doesnt_welcome_old_contributors(app, create_header, monkeypatch):
