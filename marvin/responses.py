@@ -252,7 +252,7 @@ async def public_event_handler(request: Request):
                 }
             )
         )
-        public_speak(msg, channel="DM1LRQH96")  # Chris DM
+        #        public_speak(msg, channel="DM1LRQH96")  # Chris DM
         public_speak(msg, channel="D01RXPH5NP9")  # Kevin DM
 
         # Welcome message to user
