@@ -50,7 +50,7 @@ here = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(here, "welcome.md"), "r") as f:
     WELCOME_MSG = f.read()
 
-karma_regex = re.compile(r"^(.+[^\s])(\+{2}|\-{2})(\s*|$)$")
+karma_regex = re.compile(r"^(.+)(\+{2}|\-{2})(\s*|$)$")
 
 
 async def event_handler(request: Request):
