@@ -5,34 +5,35 @@ import os
 import urllib
 
 import uvicorn
+from requests import Response
 from starlette.applications import Starlette
 from starlette.requests import Request
+from starlette.responses import Response as Resp
 from starlette.routing import Route
 
 from .defcon import defcon_handler
 from .github import cloud_github_handler, core_github_handler, core_promotion_handler
 from .leaderboard import leaderboard_handler
 from .loop_policy import run_scheduler
-from .responses import (
-    survey_says_handler,
-    event_handler,
-    public_event_handler,
-    version_handler,
-)
-from .standup import standup_handler
-from .team import roundtable_order_handler
 from .meet import google_meet_handler
-from .post_as_marvin import post_as_marvin_handler
 from .monday import (
+    monday_handler_any_board,
     monday_handler_backlog,
     monday_handler_blogs,
     monday_handler_customer_feedback,
     monday_handler_prefect_on_prefect,
-    monday_handler_any_board,
 )
+from .post_as_marvin import post_as_marvin_handler
+from .responses import (
+    event_handler,
+    public_event_handler,
+    survey_says_handler,
+    version_handler,
+)
+from .standup import standup_handler
+from .team import roundtable_order_handler
 from .users import count_public_users
 from .utilities import logger
-
 
 MARVIN_GITHUB_VALIDATION_TOKEN = os.environ.get(
     "MARVIN_GITHUB_VALIDATION_TOKEN", ""
@@ -87,8 +88,13 @@ def check_token(fn):
     return token_verification
 
 
+def healthcheck(request: Request):
+    return Resp()
+
+
 MarvinApp = Starlette()
 
+MarvinApp.add_route("/healthcheck", healthcheck, methods=["GET"])
 MarvinApp.add_route("/meet", check_token(google_meet_handler), methods=["POST"])
 MarvinApp.add_route("/public-slack-user-count", count_public_users, methods=["GET"])
 MarvinApp.add_route("/backlog", check_token(monday_handler_backlog), methods=["POST"])

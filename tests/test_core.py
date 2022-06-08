@@ -40,3 +40,8 @@ async def test_url_verification(app, token):
     )
     assert r.ok
     assert r.json()["challenge"] == "yy"
+
+
+async def test_healthcheck(app):
+    r = await app.get("/healthcheck")
+    assert r.ok
