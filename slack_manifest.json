@@ -12,83 +12,83 @@
         "slash_commands": [
             {
                 "command": "/standup",
-                "url": "http://35.194.67.119:80/standup",
+                "url": "https://marvin.prefect.io/standup",
                 "description": "Give Marvin your update!",
                 "usage_hint": "[my update]",
                 "should_escape": false
             },
             {
                 "command": "/version",
-                "url": "http://35.194.67.119:80/version",
+                "url": "https://marvin.prefect.io/version",
                 "description": "Reports the latest git commit Marvin is running off of.",
                 "should_escape": false
             },
             {
                 "command": "/defcon",
-                "url": "http://35.194.67.119:80/defcon",
+                "url": "https://marvin.prefect.io/defcon",
                 "description": "Sets, raises, or lowers defcon",
                 "usage_hint": "[5]; [raise]; [lower]",
                 "should_escape": false
             },
             {
                 "command": "/leaderboard",
-                "url": "http://35.194.67.119:80/leaderboard",
+                "url": "https://marvin.prefect.io/leaderboard",
                 "description": "Karma leaderboard!",
                 "usage_hint": "[top 10]; [bottom 3]; [5]",
                 "should_escape": false
             },
             {
                 "command": "/backlog",
-                "url": "http://35.194.67.119:80/backlog",
+                "url": "https://marvin.prefect.io/backlog",
                 "description": "Add a suggestion!",
                 "usage_hint": "[your suggestion here]",
                 "should_escape": false
             },
             {
                 "command": "/meet",
-                "url": "http://35.194.67.119:80/meet",
+                "url": "https://marvin.prefect.io/meet",
                 "description": "Sets up a private Google Meet",
                 "usage_hint": "[room name]",
                 "should_escape": false
             },
             {
                 "command": "/survey-says",
-                "url": "http://35.194.67.119:80/survey-says",
+                "url": "https://marvin.prefect.io/survey-says",
                 "description": ".",
                 "usage_hint": "[your response here] / [publish]",
                 "should_escape": false
             },
             {
                 "command": "/blog-idea",
-                "url": "http://35.194.67.119:80/monday-blogs",
+                "url": "https://marvin.prefect.io/monday-blogs",
                 "description": "Add an idea to our list!",
                 "usage_hint": "[your idea here]",
                 "should_escape": false
             },
             {
                 "command": "/customer-feedback",
-                "url": "http://35.194.67.119:80/monday-customer-feedback",
+                "url": "https://marvin.prefect.io/monday-customer-feedback",
                 "description": "Feedback -> Monday.com",
                 "usage_hint": "[feedback]",
                 "should_escape": false
             },
             {
                 "command": "/monday",
-                "url": "http://35.194.67.119:80/monday-any-board",
+                "url": "https://marvin.prefect.io/monday-any-board",
                 "description": "Item -> any board",
                 "usage_hint": "/monday [board_id] [text]",
                 "should_escape": false
             },
             {
                 "command": "/prefect-on-prefect",
-                "url": "http://35.194.67.119:80/monday-prefect-on-prefect",
+                "url": "https://marvin.prefect.io/monday-prefect-on-prefect",
                 "description": "Your idea -> Monday.com",
                 "usage_hint": "[your idea]",
                 "should_escape": false
             },
             {
                 "command": "/post-as-marvin",
-                "url": "http://35.194.67.119:80/post-as-marvin",
+                "url": "https://marvin.prefect.io/post-as-marvin",
                 "description": "Speak as Marvin!",
                 "usage_hint": "[message] in #[channel]",
                 "should_escape": false
@@ -147,7 +147,7 @@
     },
     "settings": {
         "event_subscriptions": {
-            "request_url": "http://35.194.67.119:80",
+            "request_url": "https://marvin.prefect.io",
             "bot_events": [
                 "app_mention",
                 "channel_created",
