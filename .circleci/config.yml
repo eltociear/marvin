@@ -18,6 +18,7 @@ setup_gcloud_sdk: &setup_gcloud_sdk
     gcloud auth activate-service-account --key-file key.json
     gcloud config set project $GCLOUD_PROJECT
     gcloud config set compute/zone $GCLOUD_ZONE
+    gcloud config set compute/region $GCLOUD_REGION
 
 version: 2
 jobs:
@@ -65,7 +66,7 @@ jobs:
     steps:
       - checkout
       - run: *setup_gcloud_sdk
-      - run: gcloud container clusters get-credentials $GCLOUD_GKE_CLUSTER
+      - run: gcloud container clusters get-credentials $GCLOUD_GKE_CLUSTER --region=$GCLOUD_REGION
       - run:
           name: Change default namespace to 'marvin'
           command: kubectl config set-context --current --namespace=marvin
