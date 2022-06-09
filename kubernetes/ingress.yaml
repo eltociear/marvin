@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: marvin
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "marvin"
+    kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.class: "gce"
+    networking.gke.io/managed-certificates: marvin-prefect-io
+spec:
+  defaultBackend:
+    service:
+      name: marvin
+      port:
+        number: 80

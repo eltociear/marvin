@@ -67,6 +67,9 @@ jobs:
       - run: *setup_gcloud_sdk
       - run: gcloud container clusters get-credentials $GCLOUD_GKE_CLUSTER
       - run:
+          name: Change default namespace to 'marvin'
+          command: kubectl config set-context --current --namespace=marvin
+      - run:
           name: Add Secrets to Kubernetes
           command: |
             echo -n "$MARVIN_MONDAY_API_TOKEN" > marvinmondayapitoken.txt
@@ -110,6 +113,9 @@ jobs:
           command: |
             sed -i  "s/\${IMAGE_TAG}/$CIRCLE_SHA1/g" kubernetes/deployment.yml
             kubectl apply -f kubernetes/deployment.yml
+            kubectl apply -f kubernetes/managedcert.yaml
+            kubectl apply -f kubernetes/service.yaml
+            kubectl apply -f kubernetes/ingress.yaml
 
 
 workflows:

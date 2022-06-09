@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: marvin-deployment
+  name: marvin
   labels:
     app: marvin
 spec:
@@ -17,7 +17,7 @@ spec:
       containers:
       - name: marvin
         image: gcr.io/prefect-marvin/marvin:${IMAGE_TAG}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 8080
         env:
@@ -83,4 +83,9 @@ spec:
               secretKeyRef:
                 name: marvinid
                 key: marvinid.txt
-
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
