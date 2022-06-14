@@ -112,9 +112,9 @@ jobs:
       - run:
           name: Deploy Marvin
           command: |
-            kubectl apply -f kubernetes/service-account.yml
-            sed -i  "s/\${IMAGE_TAG}/$CIRCLE_SHA1/g" kubernetes/deployment.yml
-            kubectl apply -f kubernetes/deployment.yml
+            kubectl apply -f kubernetes/service-account.yaml
+            sed -i  "s/\${IMAGE_TAG}/$CIRCLE_SHA1/g" kubernetes/deployment.yaml
+            kubectl apply -f kubernetes/deployment.yaml
             kubectl apply -f kubernetes/managedcert.yaml
             kubectl apply -f kubernetes/service.yaml
             kubectl apply -f kubernetes/ingress.yaml
