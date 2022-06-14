@@ -14,6 +14,7 @@ spec:
       labels:
         app: marvin
     spec:
+      serviceAccountName: marvin
       containers:
       - name: marvin
         image: gcr.io/prefect-marvin/marvin:${IMAGE_TAG}
