@@ -101,15 +101,20 @@
         ],
         "scopes": {
             "user": [
+                "channels:write",
                 "pins:read",
                 "pins:write",
-                "users:read"
+                "users:read",
+                "groups:write",
+                "mpim:write",
+                "im:write"
             ],
             "bot": [
                 "app_mentions:read",
                 "calls:read",
                 "calls:write",
                 "channels:history",
+                "channels:write",
                 "channels:join",
                 "channels:read",
                 "chat:write",
