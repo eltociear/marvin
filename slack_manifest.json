@@ -92,6 +92,13 @@
                 "description": "Speak as Marvin!",
                 "usage_hint": "[message] in #[channel]",
                 "should_escape": false
+            },
+            {
+              "command": "/expert",
+              "url": "https://warm-gorge-84643.herokuapp.com/techexpert",
+              "description": "Find Prefect Technology Experts",
+              "usage_hint": "tech1, tech 2, etc...",
+              "should_escape": true
             }
         ]
     },
