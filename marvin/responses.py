@@ -275,16 +275,20 @@ async def public_event_handler(request: Request):
         "UKTUC906M",  # Jeremiah
         "UN6FTLFAS",  # Nicholas
         "UKVFX6N3B",  # Dylan
-        "UUY8XPC21",
         "U01CEUST9B5",  # Michael
-        "U011EKN35PT",  # Jim
         "ULXMV9SD7",  # Jenny
         "U01SRTRJC0Y",  # Zach
-        "U01QEJ9PP53",  # Kevin
+        "U03D3KHGC0L",  # Rob Freedy
+        "U03B84QJ78A",  # Mason Menges
+        "U03KWSKFN8L",  # Jeff Hale
+        "U03FYEHGY57",  # Bianca 
+        "U03GUVCV8DS",  # Khuyen
+        "U03AT2QB6LF",  # Taylor Curran
         "U02EJ7FVCR5",  # Evan
         "U02FNMJB05N",  # Craig
         "U02H1A95XDW",  # Anna
-        "U02GDE5EQ68",  # Josh
+        "U02GD6A1HPU",  # Josh Furlin
+        "U02GG9EFASE",  # Anthony Head
         "U02H0TR3HQQ",  # Nate
         "U02GG396GN8",  # George
         "U02GPSFNQSD",  # Alex
