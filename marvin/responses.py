@@ -285,7 +285,7 @@ async def public_event_handler(request: Request):
         "U03GUVCV8DS",  # Khuyen
         "U03AT2QB6LF",  # Taylor Curran
         "U02EJ7FVCR5",  # Evan
-        "U02FNMJB05N",  # Craig
+        "U02F25U8A93",  # Craig Harshbarger
         "U02H1A95XDW",  # Anna
         "U02GD6A1HPU",  # Josh Furlin
         "U02GG9EFASE",  # Anthony Head
@@ -295,7 +295,7 @@ async def public_event_handler(request: Request):
         "U02GDE4SK7E",  # James
         "U02GPSFVBUZ",  # Jean
         "U02GF2MP605",  # Kalise
-        "U02FNMJB05N",  # Craig
+        "U030K7FU77U",  # Ryan Peden
     ]:
         return Response()
 
