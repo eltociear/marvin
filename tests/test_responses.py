@@ -224,7 +224,7 @@ async def test_marvin_create_issue_event_parsing(
             "title": "some title",
             "body": "the issue body",
             "issue_state": issue_state,
-            "labels": ["from:slack"],
+            "labels": ["from:slack", "status:triage"],
             "repo": repo,
         }
     else:

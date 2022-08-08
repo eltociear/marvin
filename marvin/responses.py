@@ -225,7 +225,7 @@ def get_create_issue_kwargs(event):
         "title": title,
         "body": issue_body,
         "issue_state": issue_state,
-        "labels": ["from:slack"],
+        "labels": ["from:slack", "status:triage"],
         "repo": repo,
     }
 
