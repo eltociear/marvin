@@ -76,9 +76,6 @@ jobs:
             echo -n "$MARVIN_MONDAY_API_TOKEN" > marvinmondayapitoken.txt
             kubectl delete secret marvinmondayapitoken --ignore-not-found
             kubectl create secret generic marvinmondayapitoken --from-file=./marvinmondayapitoken.txt
-            echo -n "$PREFECT__CLOUD__AUTH_TOKEN" > prefectauthtoken.txt
-            kubectl delete secret prefectauthtoken --ignore-not-found
-            kubectl create secret generic prefectauthtoken --from-file=./prefectauthtoken.txt
             echo -n "$MARVIN_GITHUB_VALIDATION_TOKEN" > marvingithubvalidationtoken.txt
             kubectl delete secret marvingithubvalidationtoken --ignore-not-found
             kubectl create secret generic marvingithubvalidationtoken --from-file=./marvingithubvalidationtoken.txt
