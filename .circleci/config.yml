@@ -19,7 +19,6 @@ setup_gcloud_sdk: &setup_gcloud_sdk
     gcloud config set project $GCLOUD_PROJECT
     gcloud config set compute/zone $GCLOUD_ZONE
     gcloud config set compute/region $GCLOUD_REGION
-    apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
 
 version: 2
 jobs:
