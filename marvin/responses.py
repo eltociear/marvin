@@ -270,12 +270,14 @@ async def public_event_handler(request: Request):
 
     # if its an auto-support question from one of the dedicated marvin channels
     if event.get("channel") == "GM3QRHMCN":
+        print(event)
         question = event.get("text", "").replace("“", '"').replace("”", '"').strip()
         data = {
             "channel": event["channel"],
             "thread": event.get("thread_ts"),
             "question": question,
         }
+        print(data)
         r = requests.post(url="http://ask-marvin:80/mention", json=data)
 
     # only chris and jeremiah allowed to use this
