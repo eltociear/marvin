@@ -3,6 +3,7 @@ import json
 import os
 import random
 import re
+import requests
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
