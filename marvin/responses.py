@@ -274,7 +274,7 @@ async def public_event_handler(request: Request):
         question = event.get("text", "").replace("“", '"').replace("”", '"').strip()
         data = {
             "channel": event["channel"],
-            "thread": event.get("thread_ts"),
+            "thread": event.get("thread_ts") or event.get("ts"),
             "question": question,
         }
         print(data)
