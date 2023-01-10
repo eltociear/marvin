@@ -267,6 +267,16 @@ async def public_event_handler(request: Request):
     if event_type != "app_mention":
         return Response()
 
+    # if its an auto-support question from one of the dedicated marvin channels
+    if event.get("channel") == "GM3QRHMCN":
+        question = event.get("text", "").replace("“", '"').replace("”", '"').strip()
+        data = {
+            "channel": event["channel"],
+            "thread": event.get("thread_ts"),
+            "question": question,
+        }
+        r = requests.post(url="http://ask-marvin:80/mention", json=data)
+
     # only chris and jeremiah allowed to use this
     # narrator: it wasn't just chris and jeremiah anymore
     who_spoke = event.get("user", "")
@@ -281,7 +291,7 @@ async def public_event_handler(request: Request):
         "U03D3KHGC0L",  # Rob Freedy
         "U03B84QJ78A",  # Mason Menges
         "U03KWSKFN8L",  # Jeff Hale
-        "U03FYEHGY57",  # Bianca 
+        "U03FYEHGY57",  # Bianca
         "U03GUVCV8DS",  # Khuyen
         "U03AT2QB6LF",  # Taylor Curran
         "U02EJ7FVCR5",  # Evan
