@@ -22,6 +22,7 @@ jobs:
         with:
           workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
           service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
+          project_id: prefect-marvin
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -29,23 +30,21 @@ jobs:
           cache-dependency-path: "requirements*.txt"
       - name: install marvin
         run: pip install -e .
-      # - name: lint
-      #   run: black --check .
       - name: run tests
         run: pytest -v
-  build-docker:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v3
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
-          service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
-      - name: Configure Google Cloud credential helper
-        run: gcloud auth configure-docker --quiet gcr.io
-      - name: Build Marvin image # defaults to tagging as "latest"
-        run: docker build --rm=false -t gcr.io/prefect-marvin/marvin/${GITHUB_SHA} .
+  # build-docker:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Authenticate to Google Cloud
+  #       uses: google-github-actions/auth@v1
+  #       with:
+  #         workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+  #         service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
+  #     - name: Configure Google Cloud credential helper
+  #       run: gcloud auth configure-docker --quiet gcr.io
+  #     - name: Build Marvin image # defaults to tagging as "latest"
+  #       run: docker build --rm=false -t gcr.io/prefect-marvin/marvin/${GITHUB_SHA} .
