@@ -66,7 +66,7 @@ async def standup_handler(request: Request):
     payload = await request.form()
     user = payload.get("user_name")
     update = payload.get("text")
-    clear_match = re.compile("^clear($|\s)")
+    clear_match = re.compile("^clear($|\\s)")
     if clear_match.match(update):
         old = pop_user_updates(user)
         if old is None:
@@ -75,7 +75,7 @@ async def standup_handler(request: Request):
             old = old.replace("\n", "")  # ensures strikethrough formats
             return Response(f"~{old}~")
 
-    show_match = re.compile("^show($|\s)")
+    show_match = re.compile("^show($|\\s)")
     if show_match.match(update):
         current_updates = get_latest_updates()
         current_update = current_updates.get(

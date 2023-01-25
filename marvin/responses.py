@@ -51,7 +51,7 @@ here = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(here, "welcome.md"), "r") as f:
     WELCOME_MSG = f.read()
 
-karma_regex = re.compile(r"^(.+)(\+{2}|\-{2})(\s*|$)$")
+karma_regex = re.compile(r"^(.+)(\+{2}|\-{2})(\\s*|$)$")
 
 
 async def event_handler(request: Request):
@@ -197,9 +197,9 @@ def get_create_issue_kwargs(event):
     """
     body = event.get("text", "").replace("“", '"').replace("”", '"').strip()
     message_types = [
-        (r'archive\s+"(.*?)"', "closed", "prefect"),
-        (r'open\s+"(.*?)"\s+in\s+(.*)', "open", None),
-        (r'open\s+"(.*?)"', "open", "prefect"),
+        (r'archive\\s+"(.*?)"', "closed", "prefect"),
+        (r'open\\s+"(.*?)"\\s+in\\s+(.*)', "open", None),
+        (r'open\\s+"(.*?)"', "open", "prefect"),
     ]
     for pattern, issue_state, repo in message_types:
         matches = re.findall(pattern, body)

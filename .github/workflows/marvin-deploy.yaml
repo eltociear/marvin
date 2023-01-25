@@ -26,9 +26,9 @@ jobs:
           cache: "pip"
           cache-dependency-path: "requirements*.txt"
       - name: Install Marvin
-        run: pip install -e . && pytest -v
-      # - name: Run Tests
-      #   run: pytest -v
+        run: pip install -e .
+      - name: Run Tests
+        run: pytest -v
 
   # build-marvin-image:
   #   runs-on: ubuntu-latest
