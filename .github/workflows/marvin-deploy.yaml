@@ -26,54 +26,83 @@ jobs:
           cache: "pip"
           cache-dependency-path: "requirements*.txt"
       - name: Install Marvin
-        run: pip install -e .
-      # - name: Run Tests
-      #   run: pytest -v
-  build-docker:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v3
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
-          service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
-      - name: Configure Google Cloud credential helper
-        run: gcloud auth configure-docker --quiet gcr.io
-      - name: Build Marvin image # defaults to tagging as "latest"
-        run: docker build --rm=false -t gcr.io/prefect-marvin/marvin/gha-test .
-      - name: Push image to gcr.io
-        run: docker push gcr.io/prefect-marvin/marvin/gha-test
+        run: pip install -e marvin
+      - name: Run Tests
+        run: pytest -v
+  # build-docker:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Authenticate to Google Cloud
+  #       uses: google-github-actions/auth@v1
+  #       with:
+  #         workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+  #         service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
+  #     - name: Configure Google Cloud credential helper
+  #       run: gcloud auth configure-docker --quiet gcr.io
+  #     - name: Build Marvin image # defaults to tagging as "latest"
+  #       run: docker build --rm=false -t gcr.io/prefect-marvin/marvin/${GITHUB_SHA} .
+  #     - name: Push image to gcr.io
+  #       run: docker push gcr.io/prefect-marvin/marvin/${GITHUB_SHA}
 
-  deploy-marvin:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v3
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
-          service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
-          project_id: prefect-marvin
-      - name: Configure Google Cloud credential helper
-        run: gcloud auth configure-docker --quiet gcr.io
-      - id: get-k8s-credentials
-        uses: google-github-actions/get-gke-credentials@v1
-        with:
-          cluster_name: ${{ vars.CLUSTER_NAME }}
-          location: ${{ vars.GKE_REGION }}
-      - name: Set K8s Context
-        run: |
-          kubectl config set-context --current --namespace=marvin
-      - name: Update K8s Secrets
-        run: |
-          kubectl get pods -n marvin
-          echo -n ${{ secrets.TEST_SECRET }} > testsecret.txt
-          kubectl delete secret secretvalidation --ignore-not-found
-          kubectl create secret generic secretvalidation --from-file=./testsecret.txt
+  # deploy-marvin:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Authenticate to Google Cloud
+  #       uses: google-github-actions/auth@v1
+  #       with:
+  #         workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+  #         service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
+  #         project_id: prefect-marvin
+  #     - name: Configure Google Cloud credential helper
+  #       run: gcloud auth configure-docker --quiet gcr.io
+  #     - id: get-k8s-credentials
+  #       uses: google-github-actions/get-gke-credentials@v1
+  #       with:
+  #         cluster_name: ${{ vars.CLUSTER_NAME }}
+  #         location: ${{ vars.GKE_REGION }}
+  #     - name: Set K8s Context
+  #       run: |
+  #         kubectl config set-context --current --namespace=marvin
+  #     - name: Update K8s Secrets
+  #       run: |
+  #         echo -n ${{ secrets.MARVIN_MONDAY_API_TOKEN }} > marvinmondayapitoken.txt
+  #         kubectl delete secret marvinmondayapitoken --ignore-not-found
+  #         kubectl create secret generic marvinmondayapitoken --from-file=./marvinmondayapitoken.txt
+  #         echo -n ${{ secrets.MARVIN_GITHUB_VALIDATION_TOKEN }} > marvingithubvalidationtoken.txt
+  #         kubectl delete secret marvingithubvalidationtoken --ignore-not-found
+  #         kubectl create secret generic marvingithubvalidationtoken --from-file=./marvingithubvalidationtoken.txt
+  #         echo -n ${{ secrets.MARVIN_GITHUB_ACCESS_TOKEN }} > marvingithubaccesstoken.txt
+  #         kubectl delete secret marvingithubaccesstoken --ignore-not-found
+  #         kubectl create secret generic marvingithubaccesstoken --from-file=./marvingithubaccesstoken.txt
+  #         echo -n ${{ secrets.MARVIN_SLACK_TOKEN }} > marvinslacktoken.txt
+  #         kubectl delete secret marvinslacktoken --ignore-not-found
+  #         kubectl create secret generic marvinslacktoken --from-file=./marvinslacktoken.txt
+  #         echo -n ${{ secrets.MARVIN_SLACK_OAUTH_TOKEN }} > marvinslackoauthtoken.txt
+  #         kubectl delete secret marvinslackoauthtoken --ignore-not-found
+  #         kubectl create secret generic marvinslackoauthtoken --from-file=./marvinslackoauthtoken.txt
+  #         echo -n ${{ secrets.MARVIN_SLACK_VALIDATION_TOKEN }} > marvinslackvalidationtoken.txt
+  #         kubectl delete secret marvinslackvalidationtoken --ignore-not-found
+  #         kubectl create secret generic marvinslackvalidationtoken --from-file=./marvinslackvalidationtoken.txt
+  #         echo -n ${{ secrets.MARVIN_PUBLIC_SLACK_VALIDATION_TOKEN }} > marvinpublicslackvalidationtoken.txt
+  #         kubectl delete secret marvinpublicslackvalidationtoken --ignore-not-found
+  #         kubectl create secret generic marvinpublicslackvalidationtoken --from-file=./marvinpublicslackvalidationtoken.txt
+  #         echo -n ${{ secrets.MARVIN_PUBLIC_SLACK_OAUTH_TOKEN }} > marvinpublicslackoauthtoken.txt
+  #         kubectl delete secret marvinpublicslackoauthtoken --ignore-not-found
+  #         kubectl create secret generic marvinpublicslackoauthtoken --from-file=./marvinpublicslackoauthtoken.txt
+  #         echo -n ${{ secrets.MARVIN_PUBLIC_SLACK_TOKEN }} > marvinpublicslacktoken.txt
+  #         kubectl delete secret marvinpublicslacktoken --ignore-not-found
+  #         kubectl create secret generic marvinpublicslacktoken --from-file=./marvinpublicslacktoken.txt
+  #         echo -n ${{ secrets.GITHUB_SHA }} > gitsha.txt
+  #         kubectl delete secret gitsha --ignore-not-found
+  #         kubectl create secret generic gitsha --from-file=./gitsha.txt
+  #         echo -n ${{ secrets.MARVIN_ID }} > marvinid.txt
+  #         kubectl delete secret marvinid --ignore-not-found
+  #         kubectl create secret generic marvinid --from-file=./marvinid.txt
