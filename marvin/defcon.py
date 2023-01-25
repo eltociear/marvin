@@ -54,13 +54,13 @@ async def defcon_handler(request: Request):
 
     defcon_pin = defcon_pins[0] if defcon_pins else None
     try:
-        old_level = int(re.compile("\\d").findall(defcon_pin["message"]["text"])[0])
+        old_level = int(re.compile("\d").findall(defcon_pin["message"]["text"])[0])
     except:
         old_level = None
 
-    lower_match = re.compile("^lower($|\\s)")
-    raise_match = re.compile("^raise($|\\s)")
-    level_match = re.compile("^\\d($|\\s)")
+    lower_match = re.compile("^lower($|\s)")
+    raise_match = re.compile("^raise($|\s)")
+    level_match = re.compile("^\d($|\s)")
 
     ## logic for setting the level from scratch
     if level_match.match(update):
