@@ -29,12 +29,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Authenticate to Google Cloud
-      #   uses: google-github-actions/auth@v1
-      #   with:
-      #     workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
-      #     service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
-      #     project_id: prefect-marvin
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
+          project_id: prefect-marvin
 
       - uses: actions/setup-python@v4
         with:
@@ -64,6 +64,6 @@ jobs:
 
       - name: Configure Google Cloud credential helper
         run: gcloud auth configure-docker --quiet gcr.io
-        
+
       - name: Build Marvin image
         run: docker build --rm=false -t gcr.io/prefect-marvin/marvin/${COMMIT_SHA} .
