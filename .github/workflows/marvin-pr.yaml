@@ -24,8 +24,8 @@ jobs:
       "MARVIN_SLACK_VALIDATION_TOKEN": ${{ secrets.MARVIN_SLACK_VALIDATION_TOKEN }}
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      id-token: write
+      contents: read #Allow to read data from GH
+      id-token: write #Allows us to connect to gcloud using a generated token
     steps:
       - uses: actions/checkout@v3
 
@@ -51,8 +51,8 @@ jobs:
   test-build-marvin-image:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      id-token: write
+      contents: read #Allow to read data from GH
+      id-token: write #Allows us to connect to gcloud using a generated token
     steps:
       - uses: actions/checkout@v3
 
