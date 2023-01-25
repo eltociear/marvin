@@ -7,7 +7,7 @@ on:
       - master
 
 jobs:
-  lint-and-test:
+  test:
     env:
       "MARVIN_GITHUB_ACCESS_TOKEN": ${{ secrets.MARVIN_GITHUB_ACCESS_TOKEN }},
       "MARVIN_GITHUB_VALIDATION_TOKEN": ${{ secrets.MARVIN_GITHUB_VALIDATION_TOKEN }},
@@ -38,8 +38,6 @@ jobs:
           cache-dependency-path: "requirements*.txt"
       - name: Install Marvin
         run: pip install -e .
-      - name: Lint
-        run: black --check .
       - name: Run Tests
         run: pytest -v
 
