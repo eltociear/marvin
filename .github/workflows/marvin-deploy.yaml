@@ -29,7 +29,7 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
-          service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
+          service_account: marvin-general-main@prefect-org-github-actions.iam.gserviceaccount.com
           project_id: prefect-marvin
       - uses: actions/setup-python@v4
         with:
@@ -52,7 +52,7 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
-          service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
+          service_account: marvin-general-main@prefect-org-github-actions.iam.gserviceaccount.com
       - name: Configure Google Cloud credential helper
         run: gcloud auth configure-docker --quiet gcr.io
       - name: Build Marvin image # defaults to tagging as "latest"
@@ -72,7 +72,7 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
-          service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
+          service_account: marvin-general-main@prefect-org-github-actions.iam.gserviceaccount.com
           project_id: prefect-marvin
       - name: Configure Google Cloud credential helper
         run: gcloud auth configure-docker --quiet gcr.io

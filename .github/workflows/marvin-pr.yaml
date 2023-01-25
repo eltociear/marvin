@@ -6,6 +6,9 @@ on:
     branches:
       - master
 
+env:
+  COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+
 jobs:
   python-tests:
     env:
@@ -40,3 +43,20 @@ jobs:
         run: pip install -e .
       - name: Run Tests
         run: pytest -v
+
+  test-build-marvin-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
+      - name: Configure Google Cloud credential helper
+        run: gcloud auth configure-docker --quiet gcr.io
+      - name: Build Marvin image # defaults to tagging as "latest"
+        run: docker build --rm=false -t gcr.io/prefect-marvin/marvin/${COMMIT_SHA} .
