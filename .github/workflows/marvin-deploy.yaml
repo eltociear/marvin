@@ -68,5 +68,12 @@ jobs:
         with:
           cluster_name: ${{ vars.CLUSTER_NAME }}
           location: ${{ vars.GKE_REGION }}
+      - name: Set K8s Context
+        run: |
+          kubectl config set-context --current --namespace=marvin
       - name: Update K8s Secrets
-        run: kubectl get pods -n marvin
+        run: |
+          kubectl get pods -n marvin
+          echo -n ${{ secrets.TEST_SECRET }} > testsecret.txt
+          kubectl delete secret secretvalidation --ignore-not-found
+          kubectl create secret generic secretvalidation --from-file=./testsecret.txt
