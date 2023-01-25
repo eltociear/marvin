@@ -63,7 +63,7 @@ jobs:
           project_id: prefect-marvin
       - name: Configure Google Cloud credential helper
         run: gcloud auth configure-docker --quiet gcr.io
-      - id: Get K8s Credentials
+      - id: get-k8s-credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
           cluster_name: ${{ vars.CLUSTER_NAME }}
