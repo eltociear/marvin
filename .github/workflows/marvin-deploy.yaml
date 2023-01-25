@@ -52,6 +52,11 @@ jobs:
       id-token: write #Allows us to connect to gcloud using a generated token
     steps:
       - uses: actions/checkout@v3
+      
+      - name: Generate Build ID
+        run: |
+          sha=$(git rev-parse --short=15 HEAD)
+          echo "BUILD_ID=${sha}" >> $GITHUB_ENV
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
@@ -63,10 +68,10 @@ jobs:
         run: gcloud auth configure-docker --quiet gcr.io
 
       - name: Build Marvin image
-        run: docker build --rm=false -t gcr.io/prefect-marvin/marvin:${GITHUB_SHA} .
+        run: docker build --rm=false -t gcr.io/prefect-marvin/marvin:${GITHUB_ENV} .
 
       - name: Push image to gcr.io
-        run: docker push gcr.io/prefect-marvin/marvin:${GITHUB_SHA}
+        run: docker push gcr.io/prefect-marvin/marvin:${GITHUB_ENV}
 
   deploy-marvin:
     needs: [build-marvin-image]
