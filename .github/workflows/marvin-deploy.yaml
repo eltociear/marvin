@@ -2,9 +2,9 @@
 name: Marvin Build and Push
 permissions: {}
 on:
-  push:
+  pull_request:
     branches:
-      - chore/migrate-off-circleci
+      - master
 
 jobs:
   lint-and-test:
