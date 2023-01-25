@@ -17,7 +17,7 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
-          service_account: marvin-general-main@prefect-org-github-actions.iam.gserviceaccount.com
+          service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
