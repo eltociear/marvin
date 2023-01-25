@@ -71,4 +71,4 @@ jobs:
         run: gcloud auth configure-docker --quiet gcr.io
 
       - name: Build Marvin image
-        run: docker build --rm=false -t gcr.io/prefect-marvin/marvin:${GITHUB_ENV} .
+        run: docker build --rm=false -t gcr.io/prefect-marvin/marvin:${{ env.BUILD_ID }} .

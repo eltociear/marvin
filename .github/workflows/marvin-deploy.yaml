@@ -68,10 +68,10 @@ jobs:
         run: gcloud auth configure-docker --quiet gcr.io
 
       - name: Build Marvin image
-        run: docker build --rm=false -t gcr.io/prefect-marvin/marvin:${GITHUB_ENV} .
+        run: docker build --rm=false -t gcr.io/prefect-marvin/marvin:${{ env.BUILD_ID }} .
 
       - name: Push image to gcr.io
-        run: docker push gcr.io/prefect-marvin/marvin:${GITHUB_ENV}
+        run: docker push gcr.io/prefect-marvin/marvin:${{ env.BUILD_ID }}
 
   deploy-marvin:
     needs: [build-marvin-image]
@@ -141,7 +141,7 @@ jobs:
       - name: Deploy Marvin
         run: |
           kubectl apply -f kubernetes/service-account.yaml
-          sed -i  "s/\${IMAGE_TAG}/$GIT_SHA/g" kubernetes/deployment.yaml
+          sed -i  "s/\${IMAGE_TAG}/${{ env.BUILD_ID }}/g" kubernetes/deployment.yaml
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/managedcert.yaml
           kubectl apply -f kubernetes/service.yaml
