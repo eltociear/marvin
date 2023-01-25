@@ -82,6 +82,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Generate Build ID #Have to set this twice since we cannot pass this value between jobs
+        run: |
+          sha=$(git rev-parse --short=15 HEAD)
+          echo "BUILD_ID=${sha}" >> $GITHUB_ENV
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
