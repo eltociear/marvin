@@ -48,7 +48,7 @@ quotes = [
     "Why should I want to make anything up? Life’s bad enough as it is without wanting to invent any more of it.",
 ]
 here = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(here, "welcome.md"), "r") as f:
+with open(os.path.join(here, "welcome.md")) as f:
     WELCOME_MSG = f.read()
 
 karma_regex = re.compile(r"^(.+)(\+{2}|\-{2})(\s*|$)$")
