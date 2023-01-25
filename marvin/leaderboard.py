@@ -16,8 +16,8 @@ async def leaderboard_handler(request: Request) -> Response:
     channel = payload.get("channel_id")
 
     # logic for making google query
-    top_match = re.compile("^top($|\\s)(\\d*)\\\s*$").match(update)
-    bottom_match = re.compile("^bottom($|\\s)(\\d*)\s*$").match(update)
+    top_match = re.compile("^top($|\\s)(\\d*)\\s*$").match(update)
+    bottom_match = re.compile("^bottom($|\\s)(\\d*)\\s*$").match(update)
     count_match = re.compile("(^\\d*)\\s*$").match(update)
 
     if top_match:
