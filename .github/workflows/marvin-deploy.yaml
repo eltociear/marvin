@@ -19,7 +19,6 @@ jobs:
       "MARVIN_SLACK_OAUTH_TOKEN": ${{ secrets.MARVIN_SLACK_OAUTH_TOKEN }},
       "MARVIN_SLACK_TOKEN": ${{ secrets.MARVIN_SLACK_TOKEN }},
       "MARVIN_SLACK_VALIDATION_TOKEN": ${{ secrets.MARVIN_SLACK_VALIDATION_TOKEN }}
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -39,6 +38,8 @@ jobs:
           cache-dependency-path: "requirements*.txt"
       - name: Install Marvin
         run: pip install -e .
+      - name: Lint
+        run: black --check .
       - name: Run Tests
         run: pytest -v
 
