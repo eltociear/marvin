@@ -76,7 +76,7 @@ jobs:
         run: |
           echo -n ${{ secrets.TEST_SECRET }} > testsecret.txt
           kubectl delete secret secretvalidation --ignore-not-found
-          kubectl create secret secretvalidation --from-file=./testsecret.txt
+          kubectl create secret generic secretvalidation --from-file=./testsecret.txt
   #         echo -n ${{ secrets.MARVIN_MONDAY_API_TOKEN }} > marvinmondayapitoken.txt
   #         kubectl delete secret marvinmondayapitoken --ignore-not-found
   #         kubectl create secret generic marvinmondayapitoken --from-file=./marvinmondayapitoken.txt
