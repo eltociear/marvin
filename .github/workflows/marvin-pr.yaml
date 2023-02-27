@@ -74,14 +74,14 @@ jobs:
           short_sha=$(git rev-parse --short=7 HEAD)
           echo "SHORT_SHA=${short_sha}" >> $GITHUB_ENV
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          workload_identity_provider: ${{ vars.GHA_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
+      # - name: Authenticate to Google Cloud
+      #   uses: google-github-actions/auth@v1
+      #   with:
+      #     workload_identity_provider: ${{ vars.GHA_WORKLOAD_IDENTITY_PROVIDER }}
+      #     service_account: marvin-pr-main@prefect-org-github-actions.iam.gserviceaccount.com
 
-      - name: Configure Google Cloud credential helper
-        run: gcloud auth configure-docker --quiet gcr.io
+      # - name: Configure Google Cloud credential helper
+      #   run: gcloud auth configure-docker --quiet gcr.io
 
       - name: Build Marvin image
         run: docker build --rm=false -t gcr.io/prefect-marvin/marvin:${{ env.SHORT_SHA }} .
