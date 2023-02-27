@@ -72,13 +72,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
-      - name: Get image version
-        id: get_image_version
-        run: |
-          short_sha=$(git rev-parse --short=7 HEAD)
-          echo "short_sha=${short_sha}" >> $GITHUB_OUTPUT
-          echo "SHORT_SHA=${short_sha}" >> $GITHUB_ENV
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
@@ -88,6 +81,13 @@ jobs:
 
       - name: Configure Google Cloud credential helper
         run: gcloud auth configure-docker --quiet gcr.io
+
+      - name: Get image version
+        id: get_image_version
+        run: |
+          short_sha=$(git rev-parse --short=7 HEAD)
+          echo "short_sha=${short_sha}" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=${short_sha}" >> $GITHUB_ENV
 
       - name: Build Marvin image
         run: docker build --rm=false -t gcr.io/prefect-marvin/marvin:${{ env.SHORT_SHA }} .
