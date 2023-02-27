@@ -86,7 +86,7 @@ jobs:
         id: get_image_version
         run: |
           short_sha=$(git rev-parse --short=7 HEAD)
-          echo "short_sha=${short_sha}" >> $GITHUB_OUTPUT
+          echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"
           echo "SHORT_SHA=${short_sha}" >> $GITHUB_ENV
 
       - name: Build Marvin image
