@@ -48,10 +48,6 @@ jobs:
         with:
           workload_identity_provider: ${{ vars.GHA_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: marvin-general-main@prefect-org-github-actions.iam.gserviceaccount.com
-          project_id: prefect-marvin
-
-      - name: Configure Google Cloud credential helper
-        run: gcloud auth configure-docker --quiet gcr.io
 
       - uses: actions/setup-python@v4
         with:
