@@ -19,9 +19,6 @@ concurrency:
 # Do not grant jobs any permissions by default
 permissions: {}
 
-env:
-  COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
-
 jobs:
   python_tests:
     env:
@@ -39,10 +36,18 @@ jobs:
     permissions:
       # required to read from the repo
       contents: read
+      # required to obtain Google Cloud service account credentials
+      id-token: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ vars.GHA_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: marvin-general-main@prefect-org-github-actions.iam.gserviceaccount.com
 
       - uses: actions/setup-python@v4
         with:
