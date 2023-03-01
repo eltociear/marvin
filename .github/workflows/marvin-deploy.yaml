@@ -1,13 +1,26 @@
 ---
-name: Marvin Build and Push
-permissions: {}
+name: Build and publish marvin image
+
 on:
   push:
     branches:
       - master
 
+# Limit concurrency by workflow/branch combination.
+#
+# For builds, pushing additional changes to the
+# branch will cancel prior in-progress and pending builds.
+#
+# https://docs.github.com/en/actions/using-jobs/using-concurrency
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Do not grant jobs any permissions by default
+permissions: {}
+
 jobs:
-  python-tests:
+  python_tests:
     env:
       "MARVIN_GITHUB_ACCESS_TOKEN": ${{ secrets.MARVIN_GITHUB_ACCESS_TOKEN }},
       "MARVIN_GITHUB_VALIDATION_TOKEN": ${{ secrets.MARVIN_GITHUB_VALIDATION_TOKEN }},
@@ -21,23 +34,26 @@ jobs:
       "MARVIN_SLACK_VALIDATION_TOKEN": ${{ secrets.MARVIN_SLACK_VALIDATION_TOKEN }}
     runs-on: ubuntu-latest
     permissions:
-      contents: read #Allow to read data from GH
-      id-token: write #Allows us to connect to gcloud using a generated token
+      # required to read from the repo
+      contents: read
+      # required to obtain Google Cloud service account credentials
+      id-token: write
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          workload_identity_provider: ${{ vars.GHA_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: marvin-general-main@prefect-org-github-actions.iam.gserviceaccount.com
-          project_id: prefect-marvin
 
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
-          cache: "pip"
-          cache-dependency-path: "requirements*.txt"
+          python-version: "3.10"
+          cache: pip
+          cache-dependency-path: requirements*.txt
 
       - name: Install Marvin
         run: pip install -e .
@@ -45,59 +61,68 @@ jobs:
       - name: Run Tests
         run: pytest -v
 
-  build-marvin-image:
+  build_push_image:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #Allow to read data from GH
-      id-token: write #Allows us to connect to gcloud using a generated token
+      # required to read from the repo
+      contents: read
+      # required to obtain Google Cloud service account credentials
+      id-token: write
+
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Generate Build ID
-        run: |
-          sha=$(git rev-parse --short=15 HEAD)
-          echo "BUILD_ID=${sha}" >> $GITHUB_ENV
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          workload_identity_provider: ${{ vars.GHA_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: marvin-general-main@prefect-org-github-actions.iam.gserviceaccount.com
 
       - name: Configure Google Cloud credential helper
         run: gcloud auth configure-docker --quiet gcr.io
+
+      - name: Get image version
+        id: get_image_version
+        run: |
+          short_sha=$(git rev-parse --short=7 HEAD)
+          echo "short_sha=${short_sha}" >> $GITHUB_OUTPUT
 
       - name: Build Marvin image
-        run: docker build --rm=false -t gcr.io/prefect-marvin/marvin:${{ env.BUILD_ID }} .
+        run: docker build --rm=false -t gcr.io/prefect-marvin/marvin:${{ steps.get_image_version.outputs.short_sha }} .
 
       - name: Push image to gcr.io
-        run: docker push gcr.io/prefect-marvin/marvin:${{ env.BUILD_ID }}
+        run: docker push gcr.io/prefect-marvin/marvin:${{ steps.get_image_version.outputs.short_sha }}
 
-  deploy-marvin:
-    needs: [build-marvin-image]
+    # this job output is referenced in the `deploy_marvin` job
+    # but sourced from the `get_image_version` step above
+    outputs:
+      # outputs are required to be sourced from steps.*, env variables are not supported
+      image_tag: ${{ steps.get_image_version.outputs.short_sha }}
+
+  deploy_marvin:
+    needs: [build_push_image]
     runs-on: ubuntu-latest
     permissions:
+      # required to read from the repo
       contents: read
+      # required to obtain Google Cloud service account credentials
       id-token: write
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Generate Build ID #Have to set this twice since we cannot pass this value between jobs
-        run: |
-          sha=$(git rev-parse --short=15 HEAD)
-          echo "BUILD_ID=${sha}" >> $GITHUB_ENV
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: 'projects/511611806264/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          workload_identity_provider: ${{ vars.GHA_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: marvin-general-main@prefect-org-github-actions.iam.gserviceaccount.com
-          project_id: prefect-marvin
 
       - name: Configure Google Cloud credential helper
         run: gcloud auth configure-docker --quiet gcr.io
 
-      - id: get-k8s-credentials
+      - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
           cluster_name: ${{ vars.CLUSTER_NAME }}
@@ -146,7 +171,7 @@ jobs:
       - name: Deploy Marvin
         run: |
           kubectl apply -f kubernetes/service-account.yaml
-          sed -i  "s/\${IMAGE_TAG}/${{ env.BUILD_ID }}/g" kubernetes/deployment.yaml
+          sed -i  "s/\${IMAGE_TAG}/${{ needs.build_push_image.outputs.image_tag }}/g" kubernetes/deployment.yaml
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/managedcert.yaml
           kubectl apply -f kubernetes/service.yaml
