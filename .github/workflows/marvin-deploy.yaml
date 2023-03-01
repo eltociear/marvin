@@ -116,8 +116,6 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          # needed since kubectl commands are used below
-          project: prefect-marvin
           service_account: marvin-general-main@prefect-org-github-actions.iam.gserviceaccount.com
           workload_identity_provider: ${{ vars.GHA_WORKLOAD_IDENTITY_PROVIDER }}
 
@@ -129,6 +127,7 @@ jobs:
         with:
           cluster_name: ${{ vars.CLUSTER_NAME }}
           location: ${{ vars.GKE_REGION }}
+          project_id: prefect-marvin
 
       - name: Set K8s Context
         run: |
