@@ -76,8 +76,8 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: ${{ vars.GHA_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: marvin-general-main@prefect-org-github-actions.iam.gserviceaccount.com
+          workload_identity_provider: ${{ vars.GHA_WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: Configure Google Cloud credential helper
         run: gcloud auth configure-docker --quiet gcr.io
@@ -116,8 +116,10 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: ${{ vars.GHA_WORKLOAD_IDENTITY_PROVIDER }}
+          # needed since kubectl commands are used below
+          project: prefect-marvin
           service_account: marvin-general-main@prefect-org-github-actions.iam.gserviceaccount.com
+          workload_identity_provider: ${{ vars.GHA_WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: Configure Google Cloud credential helper
         run: gcloud auth configure-docker --quiet gcr.io
